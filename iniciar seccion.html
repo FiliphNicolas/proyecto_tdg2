@@ -1,29 +1,86 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="cuenta-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar cuenta</title>
+    <title>Ingresar su cuenta</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+<style>
+html, body{
+  margin: 0;
+  background: linear-gradient(140deg, #00218f, #285aff, #72AAFF);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center; 
+}
+</style>
+
 <body>
-  <div class="container-0">
-      <div class="titulo">
-        <h2>Iniciar sección</h2> 
+  <div class="container-seccion">
+    <div class="titulo">
+      <h1>Systemsware</h1>
+    </div>
+    <form class="cuadro-azul" id="loginForm">
+      <p class="subtitulo">Ingresar a su cuenta</p>
+      <p class="descripcion">Ingrese sus datos para continuar.</p>
+      <div class="barra">
+        <label class="etiqueta" for="correo">Correo electrónico</label>
+        <input type="email" id="correo" placeholder="Ingresa tu correo">
+        <span class="error" id="error-correo"></span>
       </div>
-      <div class="cuadro-azul">
-          <label for="correo">Correo electronico</label>
-          <input type="email" id="correo" placeholder="Introduce correo">
-          <br>
-          <label for="contrasena">Contraseña</label>  
-          <input type="password" id="contrasena" placeholder="Introduce contraseña">
+      <div class="barra">
+        <label class="etiqueta" for="contrasena">Contraseña</label>  
+        <input type="password" id="contrasena" placeholder="Ingresa tu contraseña">
+        <span class="error" id="error-contrasena"></span>
       </div>
-      <div class="texto1">
-        <p>¿Olvidate la contraseña?</p>
-        <p>¿Olvidaste correo o nuero de celular?</p>
+        <a href="recuperar.html" class="olvidar">¿Olvidaste tu contraseña?</a>
       <div class="boton">
-        <a href="servicio.html">Entrar sección</a>
+        <button type="submit">Iniciar Cuenta</button>
       </div>
+    </form>
   </div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const correo = document.getElementById("correo").value.trim();
+  const contrasena = document.getElementById("contrasena").value.trim();
+
+  const errorCorreo = document.getElementById("error-correo");
+  const errorContrasena = document.getElementById("error-contrasena");
+
+  let valido = true;
+
+  errorCorreo.textContent = "";
+  errorContrasena.textContent = "";
+
+  const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (correo === "") {
+    errorCorreo.textContent = "El correo es obligatorio.";
+    valido = false;
+  } else if (!regexCorreo.test(correo)) {
+    errorCorreo.textContent = "Correo no válido.";
+    valido = false;
+  }
+
+  if (contrasena === "") {
+    errorContrasena.textContent = "La contraseña es obligatoria.";
+    valido = false;
+  } else if (contrasena.length < 6) {
+    errorContrasena.textContent = "Mínimo 6 caracteres.";
+    valido = false;
+  }
+
+  if (valido) {
+    alert("¡Cuenta ingresada con éxito!");
+    window.location.href = "servicio.html";
+  }
+});
+</script>
 </body>
 </html>

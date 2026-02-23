@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperar cuenta</title>
+
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #00218f, #285aff, #72AAFF);
+  font-family: Arial, sans-serif;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  background: #3786fc;
+  padding: 20px 25px;
+  border-radius: 20px;
+  width: 500px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.card h2 {
+  margin: 0 0 10px 0;
+}
+
+.card p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+input {
+  display: flex;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #98b9ff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+
+input:focus {
+  border-color: #285aff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.75);
+}
+
+input:hover {
+  background-color: #e7e7e7;
+}
+
+button {
+
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: #000000;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #dbe7ff;
+}
+
+.volver {
+  display: block;
+  margin-top: 15px;
+  color: white;
+  text-decoration: underline;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Recuperar cuenta</h2>
+  <p>Ingresa tu correo electrónico para enviarte un enlace de recuperación.</p>
+
+  <input type="email" placeholder="Ingresa tu correo" required>
+  <button>Enviar enlace</button>
+
+  <a href="iniciar seccion.html" class="volver">Volver al inicio</a>
+</div>
+
+</body>
+</html>

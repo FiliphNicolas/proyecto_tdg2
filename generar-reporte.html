@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Reporte de Inventario</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+  <nav>
+    <div class="barra-menu">
+        <h1>Systemsware</h1>
+    </div>
+    <div class="nav-link">
+      <a href="servicio.html">Inicio</a>
+      <a href="chatbot.html">Chatbot</a>
+      <a href="generar-reporte.html" class="seleccionado">Reportes</a>
+      <a href="perfil.html">Mi perfil</a>
+    </div>
+  </nav>
+<body>
+    <div class="container-reporte">
+        <h1>Reporte de Inventario</h1>
+        
+        <div class="filters">
+            <input type="text" id="searchProduct" placeholder="Buscar producto...">
+            <select id="filterCategory">
+                <option value="">Todas las categorías</option>
+                <option value="electronica">Electrónica</option>
+                <option value="ropa">Ropa</option>
+                <option value="alimentos">Alimentos</option>
+            </select>
+            <button onclick="generateReport()">Generar Reporte</button>
+            <button onclick="printReport()">Imprimir</button>
+        </div>
+
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function generateReport() {
+            alert('Reporte generado correctamente');
+        }
+        function printReport() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

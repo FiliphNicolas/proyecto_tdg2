@@ -1,35 +1,169 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="cuenta-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar tu cuenta</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+<style>
+html, body{
+  margin: 0;
+  background: linear-gradient(140deg, #00218f, #285aff, #72AAFF);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center; 
+}
+
+</style>
 <body>
-  <div class="container-0">
+  <div class="container-seccion">
     <div class="titulo">
-      <h2>Registre tu cuenta</h2>
+      <h1>Systemsware</h1>
     </div>
-    <div class="cuadro-azul">
-        <label for="nombre">Nombre</label>
-        <input type="name" class="barra" id="nombre" placeholder="Introduce nombre">
-        <br>
-        <label for="correo">Correo electronico</label>
-        <input type="email" class="barra" id="correo" placeholder="Introduce correo">
-        <br>
-        <label for="contrasena">Contraseña</label>
-        <input type="password" class="barra" id="contrasena" placeholder="Introduce contraseña">
-        <br>
-        <label for="direccion">Dirección</label>
-        <input type="address" class="barra" id="direccion" placeholder="Introduce dirección">
-        <br>
-        <label for="codigo_postal">Codigo postal</label>
-        <input type="zipcode" class="barra" id="codigo_postal" placeholder="Introduce codigo postal">
-    </div>
-    <div class="boton">
-        <a href="inicio de pagina.html">Registrar cuenta</a> 
-    </div>
+    <form class="cuadro-azul" id="registroForm">
+      <p class="subtitulo">Crear tu cuenta</p>
+      <p class="descripcion">Registrar a tus datos.</p>
+      <div class="barra">
+        <label class="etiqueta" for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="Introduce tu nombre">
+        <span class="error" id="error-nombre"></span>
+      </div>
+      <div class="barra">
+        <label class="etiqueta" for="correo">Correo electrónico</label>
+        <input type="email" id="correo" placeholder="Introduce tu correo">
+        <span class="error" id="error-correo"></span>
+      </div>
+      <div class="barra">
+        <label class="etiqueta" for="direccion">Dirección</label>
+        <input type="text" id="direccion" placeholder="Introduce la dirección">
+        <span class="error" id="error-direccion"></span>
+      </div>
+      <div class="barra">
+        <label class="etiqueta" for="numero_cel">Numero Celular</label>
+        <input type="text" id="numero_cel" placeholder="Introduce tu numero celular">
+        <span class="error" id="error-numero_cel"></span>
+      </div>
+      <div class="barra">
+        <label class="etiqueta" for="codigoPostal">Codigo Postal</label>
+        <input type="text" id="codigoPostal" placeholder="Introduce el codigo postal">
+        <span class="error" id="error-codigoPostal"></span>
+      </div>
+      <div class="barra">
+        <label class="etiqueta" for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" placeholder="Introduce tu contraseña">
+        <span class="error" id="error-contrasena"></span>
+      </div>
+      <div class="barra">
+        <label class="etiqueta" for="contrasena_nuevo">Contraseña de nuevo</label>
+        <input type="password" id="contrasena_nuevo" placeholder="Introduce tu contraseña">
+        <span class="error" id="error-contrasena_nuevo"></span>
+      </div>
+      <div class="boton-cuenta">
+        <button type="submit">Registrar cuenta</button>
+      </div>
+ 
+    </form>
   </div>
+
+<script>
+document.getElementById("registroForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const nombre            = document.getElementById("nombre").value.trim();
+  const correo            = document.getElementById("correo").value.trim();
+  const direccion         = document.getElementById("direccion").value.trim();
+  const numero_cel        = document.getElementById("numero_cel").value.trim();
+  const codigoPostal      = document.getElementById("codigoPostal").value.trim();
+  const contrasena        = document.getElementById("contrasena").value.trim();
+  const contrasena_nuevo  = document.getElementById("contrasena_nuevo").value.trim();
+
+  const errores = {
+    nombre:                document.getElementById("error-nombre"),
+    correo:                document.getElementById("error-correo"),
+    direccion:             document.getElementById("error-direccion"),
+    numero_cel:            document.getElementById("error-numero_cel"),
+    codigoPostal:          document.getElementById("error-codigoPostal"),
+    contrasena:            document.getElementById("error-contrasena"),
+    contrasena_nuevo:      document.getElementById("error-contrasena_nuevo")
+  };
+
+  // Limpiar errores
+  Object.values(errores).forEach(e => e.textContent = "");
+
+  let valido = true;
+
+  // Nombre
+  if (nombre === "") {
+    errores.nombre.textContent = "El nombre es obligatorio.";
+    valido = false;
+  } else if (nombre.length < 3) {
+    errores.nombre.textContent = "Mínimo 3 caracteres.";
+    valido = false;
+  }
+
+  // Correo
+  const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (correo === "") {
+    errores.correo.textContent = "El correo es obligatorio.";
+    valido = false;
+  } else if (!regexCorreo.test(correo)) {
+    errores.correo.textContent = "Correo no válido.";
+    valido = false;
+  }
+
+  // Dirección
+  if (direccion === "") {
+    errores.direccion.textContent = "La dirección es obligatoria.";
+    valido = false;
+  }
+
+  // Número celular
+  const regexCel = /^\d{7,10}$/;
+  if (numero_cel === "") {
+    errores.numero_cel.textContent = "El número es obligatorio.";
+    valido = false;
+  } else if (!regexCel.test(numero_cel)) {
+    errores.numero_cel.textContent = "Debe tener entre 7 y 10 dígitos.";
+    valido = false;
+  }
+
+  // Código Postal
+  const regexCP = /^\d{4,6}$/;
+  if (codigoPostal === "") {
+    errores.codigoPostal.textContent = "El código postal es obligatorio.";
+    valido = false;
+  } else if (!regexCP.test(codigoPostal)) {
+    errores.codigoPostal.textContent = "Debe tener entre 4 y 6 dígitos.";
+    valido = false;
+  }
+
+  // Contraseña
+  if (contrasena === "") {
+    errores.contrasena.textContent = "La contraseña es obligatoria.";
+    valido = false;
+  } else if (contrasena.length < 6) {
+    errores.contrasena.textContent = "Mínimo 6 caracteres.";
+    valido = false;
+  }
+
+  // Confirmar contraseña
+  if (contrasena_nuevo === "") {
+    errores.contrasena_nuevo.textContent = "Debes repetir la contraseña.";
+    valido = false;
+  } else if (contrasena !== contrasena_nuevo) {
+    errores.contrasena_nuevo.textContent = "Las contraseñas no coinciden.";
+    valido = false;
+  }
+
+  if (valido) {
+    alert("¡Cuenta registrada con éxito!");
+    window.location.href = "servicio.html";
+  }
+});
+
+</script>
 </body>
 </html>
