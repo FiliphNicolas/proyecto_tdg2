@@ -7,25 +7,59 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <nav>
-    <div class="barra-menu">
-        <h1>Systemsware</h1>
-    </div>
-    <div class="nav-link">
-      <a href="servicio.html">Inicio</a>
-      <a href="chatbot.html">Chatbot</a>
-      <a href="generar-reporte.html">Reportes</a>
-      <a href="perfil.html" class="seleccionado">Mi perfil</a>
-    </div>
-    
-  </nav>
 <h1 class="titulo-perfil">Mi perfil</h1>
 <div class="perfil-flex">
-  <img src="perfil-default.png" class="perfil" alt="Mi perfil">
   <div class="contenedor-perfil">
-      <a class="carta-perfil" href="informacion-personal.html">información personal</a>
-      <a class="carta-perfil" href="cerrar-cuenta.html">cerrar sección</a>
+
+      <button class="carta-perfil" onclick="window.location.href='ver-estado-cuenta.html'" title="Ver y editar información personal">
+        Ver estado de cuenta
+      </button>
+      <button class="carta-perfil" onclick="window.location.href='editar-informacion-personal.html'" title="Ver y editar información personal">
+        Editar información personal
+      </button>
+      <button class="carta-perfil cerrar-seccion" onclick="confirmarCerrarSesion()">
+        Cerrar sesión
+      </button>
+      <button class="carta-perfil cerrar-cuenta" onclick="confirmarEliminacion()">
+        Eliminar cuenta permanentemente
+      </button>
+
   </div>
 </div>
+<script>
+function confirmarCerrarSesion() {
+  if (confirm("¿Deseas cerrar sesión?")) {
+    // Aquí iría fetch o petición al servidor
+    window.location.href = "index.html";
+  }
+}
+
+function confirmarEliminacion() {
+  const advertencia = confirm(
+    "⚠️ Esta acción eliminará tu cuenta PERMANENTEMENTE.\n\n¿Deseas continuar?"
+  );
+
+  if (!advertencia) return;
+
+  const codigo = prompt("Escribe ELIMINAR para confirmar:");
+
+  if (codigo === "ELIMINAR") {
+    
+    // Aquí debería ir un fetch al servidor
+    fetch("eliminar-cuenta.php", {
+      method: "POST"
+    })
+    .then(res => res.text())
+    .then(data => {
+      alert("Cuenta eliminada definitivamente.");
+      window.location.href = "index.html";
+    });
+
+  } else {
+    alert("Confirmación incorrecta. La cuenta NO fue eliminada.");
+  }
+}
+</script>
+<script src="nav-loader.js"></script>
 </body>
 </html>

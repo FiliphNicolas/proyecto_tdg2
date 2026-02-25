@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estado de cuenta</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1 class="titulo-perfil">Estado de cuenta</h1>
+
+  <main>
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="avatar-ring">
+          <div class="avatar-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="user-name" id="acc-name">Cuenta</div>
+        <div class="user-email" id="acc-email"></div>
+      </div>
+
+      <div class="card-body">
+        <div class="section-label">Resumen</div>
+        <div class="info-list">
+          <div class="info-row"><div class="info-label">Usuario</div><div class="info-value" id="acc-username">-</div></div>
+          <div class="info-row"><div class="info-label">Correo</div><div class="info-value" id="acc-email2">-</div></div>
+          <div class="info-row"><div class="info-label">Estado</div><div class="info-value" id="acc-status">-</div></div>
+          <div class="info-row"><div class="info-label">Suscripción</div><div class="info-value" id="acc-subscription">-</div></div>
+          <div class="info-row"><div class="info-label">Registrado desde</div><div class="info-value" id="acc-registered">-</div></div>
+          <div class="info-row"><div class="info-label">Último acceso</div><div class="info-value" id="acc-lastlogin">-</div></div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="carta-perfil" id="refreshBtn">Actualizar</button>
+          <div id="account-msg" style="display:inline-block;margin-left:12px;color:green"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+async function apiFetch(path, opts={}){
+  const token = localStorage.getItem('token');
+  const headers = opts.headers || {};
+  headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  return res;
+}
+
+async function loadAccount(){
+  const msg = document.getElementById('account-msg');
+  msg.style.color = 'red'; msg.textContent = '';
+  try{
+    // Intentar obtener info desde /api/me (ajusta si tu API usa otro endpoint)
+    const res = await apiFetch('/api/me', { method: 'GET' });
+    if (!res.ok) { msg.textContent = 'No autorizado o sesión expirada.'; return; }
+    const data = await res.json();
+    const user = data.user || {};
+    document.getElementById('acc-username').textContent = user.nombre_usuario || user.username || '-';
+    document.getElementById('acc-email2').textContent = user.email || '-';
+    document.getElementById('acc-name').textContent = user.nombre_usuario || 'Cuenta';
+    // Campos opcionales: status, subscription, registeredAt, lastLogin
+    document.getElementById('acc-status').textContent = (data.status || user.status) || 'Activo';
+    document.getElementById('acc-subscription').textContent = (data.subscription || user.subscription) || 'N/A';
+    document.getElementById('acc-registered').textContent = (user.created_at || user.registeredAt) || '-';
+    document.getElementById('acc-lastlogin').textContent = (user.last_login || user.lastLogin) || '-';
+    msg.style.color = 'green'; msg.textContent = '';
+  }catch(err){
+    console.error(err);
+    msg.textContent = 'Error al cargar estado de cuenta.';
+  }
+}
+
+document.getElementById('refreshBtn').addEventListener('click', loadAccount);
+loadAccount();
+</script>
+<script src="nav-loader.js"></script>
+</body>
+</html>

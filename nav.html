@@ -1,0 +1,35 @@
+<!-- Componente de navegación reutilizable -->
+<nav>
+  <div class="barra-menu">
+    <h1>Systemsware</h1>
+  </div>
+  <div class="nav-link">
+    <a href="servicio.html" id="nav-inicio">Inicio</a>
+    <a href="chatbot.html" id="nav-chatbot">Chatbot</a>
+    <a href="generar-reporte.html" id="nav-reportes">Reportes</a>
+    <a href="perfil.html" id="nav-perfil">Mi perfil</a>
+  </div>
+</nav>
+
+<script>
+// Marcar link activo según la página actual
+function highlightNavLink() {
+  const currentPage = window.location.pathname.split('/').pop() || 'servicio.html';
+  const links = {
+    'servicio.html': 'nav-inicio',
+    'chatbot.html': 'nav-chatbot',
+    'generar-reporte.html': 'nav-reportes',
+    'nuevo-chat.html': 'nav-chatbot',
+    'perfil.html': 'nav-perfil',
+    'informacion-personal.html': 'nav-perfil',
+    'editar-informacion-personal.html': 'nav-perfil',
+    'ver-estado-cuenta.html': 'nav-perfil',
+  };
+  const navId = links[currentPage];
+  if (navId) {
+    document.getElementById(navId)?.classList.add('seleccionado');
+  }
+}
+
+highlightNavLink();
+</script>

@@ -19,6 +19,15 @@ body, html{
   font-size: 24px;
 }
 
+.titulo-inicio{
+  margin: 0;
+  color: white;
+  text-align: center;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 22px;
+  padding: 12px;
+}
+
 h1, h2, h3, h4, h5, h6, p, a {
   margin: 0;
 }
@@ -41,7 +50,8 @@ h1, h2, h3, h4, h5, h6, p, a {
   flex-direction: column;
   justify-content: center;
   align-items: center; 
-  gap: 14px;
+  gap: 15px;
+  margin: 30px auto;
 }
 .cuadro-azul { 
   display: flex;
@@ -66,6 +76,22 @@ h1, h2, h3, h4, h5, h6, p, a {
   width: 100%;
 }
 
+.cuenta{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.boton-inicio button{
+  background: white;
+  color: #000000;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 15px;
+  transition: 0.3s;
+  gap: 20px;
+}
+
 .boton-cuenta{
   display: flex;
   justify-content: center;
@@ -80,6 +106,7 @@ h1, h2, h3, h4, h5, h6, p, a {
   border-radius: 12px;
   padding: 10px 25px;
   transition: 0.3s;
+  gap: 20px;
 }
 
 .boton-cuenta button:hover {
@@ -147,7 +174,7 @@ nav {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  background-color: #2e69c2;
+  background: linear-gradient(180deg, #00218f, #223e9b, #0032d6);
   font-size: 15px;
   z-index: 1000;
   margin: 0;
@@ -168,25 +195,26 @@ nav {
     font-size: 16px; 
     gap: 20px;
     border-radius: 6px;
-    color: #e5e7eb;
+    color: #97979788;
     padding: 5px 10px;
     transition: all 0.3s ease;
     background-color: #0056b3;
     margin: 8px 0;
+    font-weight: bold;
 }
 .nav-link a {
     text-decoration: none;
-    color: #e5e7eb;
+    color: #9e9e9e;
     border-radius: 6px;
     transition: all 0.3s ease;
 }
 
 .nav-link a:hover{
-  color: #8f8f8f;
+  color: #ffffff;
 }
 
-.seleccionado {
-  color: #c6eaff;
+.nav-link a.seleccionado {
+  color: #ffffff;
   font-weight: bold;
 }
 
@@ -644,4 +672,34 @@ main {
 .info-value {
   font-size: 14px;
   color: var(--text);
+}
+
+/* Mejoras específicas para informacion-personal.html */
+.info-list { border: 1px solid #e6e6e6; }
+.info-list .info-row { gap: 12px; }
+.info-row .info-value {
+  width: 60%;
+  padding: 8px 10px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fbfbfb;
+}
+.info-row button {
+  padding: 10px 16px;
+  background: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.info-row button:hover { background: #0056b3; }
+#update-profile-msg, #update-password-msg { font-size: 13px; margin-top: 8px; }
+hr { border: none; height: 1px; background: #efefef; }
+
+@media (max-width: 480px) {
+  .info-row { flex-direction: column; align-items: flex-start; }
+  .info-row .info-label { margin-bottom: 6px; }
+  .info-row .info-value { width: 100%; }
+  .profile-card { margin: 12px; }
 }
