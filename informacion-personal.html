@@ -30,41 +30,101 @@
             </svg>
           </div>
         </div>
-        <div class="user-name">Filiph Suan</div>
-        <div class="user-email">fsuan62@uan.edu.co</div>
+        <div class="user-name" id="display-name">Usuario</div>
+        <div class="user-email" id="display-email">correo@ejemplo.com</div>
       </div>
 
       <div class="card-body">
-        <div class="section-label">Información personal</div>
-        <div class="info-list">
+        <div class="section-label">Editar información</div>
+        <form id="updateForm" class="info-list">
           <div class="info-row">
-            <span class="info-label">Nombre</span>
-            <span class="info-value">Filiph Nicolas Saun yara</span>
+            <label class="info-label" for="nombre">Nombre</label>
+            <input class="info-value" id="nombre" type="text" />
           </div>
           <div class="info-row">
-            <span class="info-label">Correo</span>
-            <span class="info-value">fsuan62@uan.edu.co</span>
+            <label class="info-label" for="correo">Correo</label>
+            <input class="info-value" id="correo" type="email" />
           </div>
           <div class="info-row">
-            <span class="info-label">Teléfono</span>
-            <span class="info-value">+573114317402</span>
+            <label class="info-label" for="contrasena">Nueva contraseña</label>
+            <input class="info-value" id="contrasena" type="password" placeholder="Dejar vacío para no cambiar" />
           </div>
           <div class="info-row">
-            <span class="info-label">Empresa</span>
-            <span class="info-value">Systemsware S.A.S</span>
+            <label class="info-label" for="contrasena_confirm">Repetir contraseña</label>
+            <input class="info-value" id="contrasena_confirm" type="password" />
           </div>
           <div class="info-row">
-            <span class="info-label">Rol</span>
-            <span class="info-value">Desarrollador</span>
+            <button type="submit">Guardar cambios</button>
           </div>
-          <div class="info-row">
-            <span class="info-label">Miembro desde</span>
-            <span class="info-value">Febrero 2026</span>
-          </div>
-        </div>
+          <div id="update-msg" style="color:green;margin-top:8px"></div>
+        </form>
       </div>
 
     </div>
   </main>
+<script>
+async function apiFetch(path, opts={}){
+  const token = localStorage.getItem('token');
+  const headers = opts.headers || {};
+  headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  return res;
+}
+
+async function loadProfile(){
+  try{
+    const res = await apiFetch('/api/me', { method: 'GET' });
+    if (!res.ok) throw new Error('No autorizado');
+    const data = await res.json();
+    const user = data.user;
+    document.getElementById('display-name').textContent = user.nombre_usuario || 'Usuario';
+    document.getElementById('display-email').textContent = user.email || '';
+    document.getElementById('nombre').value = user.nombre_usuario || '';
+    document.getElementById('correo').value = user.email || '';
+  }catch(err){
+    console.error(err);
+    document.getElementById('update-msg').textContent = 'Debe iniciar sesión para editar.';
+  }
+}
+
+document.getElementById('updateForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const nombre = document.getElementById('nombre').value.trim();
+  const correo = document.getElementById('correo').value.trim();
+  const contrasena = document.getElementById('contrasena').value;
+  const contrasena_confirm = document.getElementById('contrasena_confirm').value;
+  const msg = document.getElementById('update-msg');
+  msg.style.color = 'red';
+  msg.textContent = '';
+
+  if (contrasena || contrasena_confirm){
+    if (contrasena.length < 6){ msg.textContent = 'Contraseña mínimo 6 caracteres.'; return; }
+    if (contrasena !== contrasena_confirm){ msg.textContent = 'Las contraseñas no coinciden.'; return; }
+  }
+
+  try{
+    const body = {};
+    if (nombre) body.nombre = nombre;
+    if (correo) body.correo = correo;
+    if (contrasena) body.contrasena = contrasena;
+
+    const res = await apiFetch('/api/me', { method: 'PATCH', body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { msg.textContent = data.error || 'Error al actualizar'; return; }
+    msg.style.color = 'green';
+    msg.textContent = 'Perfil actualizado.';
+    document.getElementById('display-name').textContent = data.user.nombre_usuario || nombre;
+    document.getElementById('display-email').textContent = data.user.email || correo;
+    document.getElementById('contrasena').value = '';
+    document.getElementById('contrasena_confirm').value = '';
+  }catch(err){
+    console.error(err);
+    msg.textContent = 'Error de red';
+  }
+});
+
+loadProfile();
+</script>
 </body>
 </html>

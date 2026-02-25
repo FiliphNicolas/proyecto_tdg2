@@ -78,8 +78,24 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
   }
 
   if (valido) {
-    alert("¡Cuenta ingresada con éxito!");
-    window.location.href = "servicio.html";
+      fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo, contrasena })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          localStorage.setItem('token', data.token);
+          window.location.href = 'servicio.html';
+        } else {
+          alert(data.error || 'Credenciales inválidas');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error de red');
+      });
   }
 });
 </script>

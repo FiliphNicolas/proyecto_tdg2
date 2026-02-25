@@ -159,8 +159,25 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   }
 
   if (valido) {
-    alert("¡Cuenta registrada con éxito!");
-    window.location.href = "servicio.html";
+    // Enviar al servidor
+    fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, correo, contrasena })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.ok) {
+        localStorage.setItem('token', data.token);
+        window.location.href = 'servicio.html';
+      } else {
+        alert(data.error || 'Error al registrar');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Error de red');
+    });
   }
 });
 
