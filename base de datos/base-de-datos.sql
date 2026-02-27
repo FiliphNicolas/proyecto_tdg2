@@ -2,7 +2,6 @@
 CREATE DATABASE Systemsware;
 
 -- Tabla Cliente
--- Tabla Cliente
 CREATE TABLE Cliente (
     id_cliente   SERIAL PRIMARY KEY,
     nombre       VARCHAR(100) NOT NULL,
@@ -47,6 +46,7 @@ CREATE TABLE Pedido (
 
 -- Tabla Detalle_Pedido
 CREATE TABLE Detalle_Pedido (
+    codigo_detalle  VARCHAR(10)   NOT NULL PRIMARY KEY,
     id_pedido       INT           NOT NULL REFERENCES Pedido(id_pedido),
     id_producto     INT           NOT NULL REFERENCES Producto(id_producto),
     cantidad        INT           NOT NULL,
