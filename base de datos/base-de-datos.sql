@@ -41,7 +41,8 @@ CREATE TABLE Pedido (
     id_usuario   INT NOT NULL REFERENCES Usuario(id_usuario),
     fecha_pedido TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
     total        NUMERIC(10,2),
-    estado       VARCHAR(50)   DEFAULT 'pendiente'
+    estado       VARCHAR(50)   DEFAULT 'pendiente',
+    codigo_detalle  VARCHAR(10)   NOT NULL 
 );
 
 -- Tabla Detalle_Pedido
