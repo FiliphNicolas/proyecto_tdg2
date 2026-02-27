@@ -47,7 +47,6 @@ CREATE TABLE Pedido (
 
 -- Tabla Detalle_Pedido
 CREATE TABLE Detalle_Pedido (
-    id_detalle      SERIAL PRIMARY KEY,
     id_pedido       INT           NOT NULL REFERENCES Pedido(id_pedido),
     id_producto     INT           NOT NULL REFERENCES Producto(id_producto),
     cantidad        INT           NOT NULL,
