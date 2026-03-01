@@ -156,6 +156,103 @@ app.patch('/api/me', authMiddleware, async (req, res) => {
   }
 });
 
+// PRODUCTO CRUD
+// Crear producto
+app.post('/api/productos', authMiddleware, async (req, res) => {
+  try {
+    const { nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+    if (!nombre || precio == null) return res.status(400).json({ error: 'Faltan campos obligatorios' });
+
+    const text = 'INSERT INTO "Producto" (nombre, descripcion, precio, cantidad_stock, categoria, fecha_creacion) VALUES ($1,$2,$3,$4,$5,NOW()) RETURNING id_producto, nombre, descripcion, precio, cantidad_stock, categoria';
+    const values = [nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null];
+    const result = await db.query(text, values);
+    res.status(201).json({ ok: true, product: result.rows[0] });
+  } catch (err) {
+    console.error('Error POST /api/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Listar productos (con búsqueda y filtrado opcional)
+app.get('/api/productos', authMiddleware, async (req, res) => {
+  try {
+    const { q, categoria } = req.query;
+    let text = 'SELECT id_producto, nombre, descripcion, precio, cantidad_stock, categoria FROM "Producto"';
+    const clauses = [];
+    const values = [];
+    if (q) {
+      values.push('%' + q + '%');
+      clauses.push('(nombre ILIKE $' + values.length + ' OR descripcion ILIKE $' + values.length + ')');
+    }
+    if (categoria) {
+      values.push(categoria);
+      clauses.push('categoria = $' + values.length);
+    }
+    if (clauses.length) text += ' WHERE ' + clauses.join(' AND ');
+    text += ' ORDER BY id_producto';
+
+    const result = await db.query(text, values);
+    res.json({ ok: true, products: result.rows });
+  } catch (err) {
+    console.error('Error GET /api/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Obtener un producto por id
+app.get('/api/productos/:id', authMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const result = await db.query('SELECT id_producto, nombre, descripcion, precio, cantidad_stock, categoria FROM "Producto" WHERE id_producto = $1', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ ok: true, product: result.rows[0] });
+  } catch (err) {
+    console.error('Error GET /api/productos/:id', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Actualizar producto
+app.put('/api/productos/:id', authMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const { nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+    const fields = [];
+    const values = [];
+    if (nombre !== undefined) { values.push(nombre); fields.push('nombre = $' + values.length); }
+    if (descripcion !== undefined) { values.push(descripcion); fields.push('descripcion = $' + values.length); }
+    if (precio !== undefined) { values.push(precio); fields.push('precio = $' + values.length); }
+    if (cantidad_stock !== undefined) { values.push(cantidad_stock); fields.push('cantidad_stock = $' + values.length); }
+    if (categoria !== undefined) { values.push(categoria); fields.push('categoria = $' + values.length); }
+    if (fields.length === 0) return res.status(400).json({ error: 'Nada para actualizar' });
+
+    values.push(id);
+    const text = 'UPDATE "Producto" SET ' + fields.join(', ') + ' WHERE id_producto = $' + values.length + ' RETURNING id_producto, nombre, descripcion, precio, cantidad_stock, categoria';
+    const result = await db.query(text, values);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ ok: true, product: result.rows[0] });
+  } catch (err) {
+    console.error('Error PUT /api/productos/:id', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Eliminar producto
+app.delete('/api/productos/:id', authMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (Number.isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+    const result = await db.query('DELETE FROM "Producto" WHERE id_producto = $1 RETURNING id_producto', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error DELETE /api/productos/:id', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
