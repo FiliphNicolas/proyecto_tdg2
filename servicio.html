@@ -3,31 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Systemsware</title>
+    <title>Servicios - Systemsware</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="servicio-grid">
-        <div class="servicio">
-            <a href="">Mantenimiento preventivo
-            <div class="servicio-fondo">
-                <img src="ver_contenido.jpg" class="imagen_servicio">
-                </a>
+    <div class="container-servicios">
+        <div class="servicios-header">
+            <h1>Nuestros Servicios</h1>
+            <div class="servicios-info">
+                <span class="servicios-count">Total de servicios: <strong id="totalServicios">0</strong></span>
             </div>
-            </a>
-        </div>
-       <div class="servicio">
-            <a href="">reparacion
-            <div class="servicio-fondo">
-                <img src="ver_contenido.jpg" class="imagen_servicio">
-                </a>
-            </div>
-            </a>
         </div>
 
-            </a>
+        <div class="servicios-filtros">
+            <input type="text" id="searchService" placeholder="Buscar servicio...">
+            <button onclick="loadServices()">Actualizar</button>
+        </div>
+
+        <div id="loadingMessage" style="display:none; text-align:center; padding:40px;">
+            <p>Cargando servicios...</p>
+        </div>
+
+        <div class="servicio-grid" id="serviciosContainer">
+            <!-- Los servicios se cargarán aquí dinámicamente -->
         </div>
     </div>
-<script src="nav-loader.js"></script>
+
+    <script>
+        let allServices = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('searchService').addEventListener('keyup', debounce(filterServices, 300));
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function loadServices() {
+            try {
+                document.getElementById('loadingMessage').style.display = 'block';
+                
+                const response = await fetch('/api/servicios');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    allServices = result.servicios;
+                } else {
+                    // Si no hay API, usar servicios predeterminados
+                    allServices = [
+                        { id: 1, nombre: 'Mantenimiento preventivo', descripcion: 'Mantenimiento regular para prevenir problemas', enlace: '#' },
+                        { id: 2, nombre: 'Reparación', descripcion: 'Reparación de equipos y sistemas', enlace: '#' },
+                        { id: 3, nombre: 'Consultoría técnica', descripcion: 'Asesoría especializada en tecnología', enlace: '#' },
+                        { id: 4, nombre: 'Instalación de sistemas', descripcion: 'Instalación y configuración de soluciones', enlace: '#' }
+                    ];
+                }
+                
+                document.getElementById('loadingMessage').style.display = 'none';
+                displayServices(allServices);
+                updateCounter();
+            } catch (error) {
+                console.error('Error:', error);
+                // Usar servicios predeterminados si hay error
+                allServices = [
+                    { id: 1, nombre: 'Mantenimiento preventivo', descripcion: 'Mantenimiento regular para prevenir problemas', enlace: '#' },
+                    { id: 2, nombre: 'Reparación', descripcion: 'Reparación de equipos y sistemas', enlace: '#' },
+                    { id: 3, nombre: 'Consultoría técnica', descripcion: 'Asesoría especializada en tecnología', enlace: '#' },
+                    { id: 4, nombre: 'Instalación de sistemas', descripcion: 'Instalación y configuración de soluciones', enlace: '#' }
+                ];
+                document.getElementById('loadingMessage').style.display = 'none';
+                displayServices(allServices);
+                updateCounter();
+            }
+        }
+
+        function displayServices(services) {
+            const container = document.getElementById('serviciosContainer');
+            container.innerHTML = '';
+
+            if (services.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No hay servicios disponibles</p>';
+                return;
+            }
+
+            services.forEach(servicio => {
+                const div = document.createElement('div');
+                div.className = 'servicio';
+                div.innerHTML = `
+                    <a href="${servicio.enlace}" class="servicio-link">
+                        <div class="servicio-fondo">
+                            <div class="servicio-contenido">
+                                <img src="ver_contenido.jpg" class="imagen_servicio" alt="${servicio.nombre}">
+                            </div>
+                        </div>
+                        <h3 class="servicio-nombre">${escapeHtml(servicio.nombre)}</h3>
+                        <p class="servicio-descripcion">${escapeHtml(servicio.descripcion || '')}</p>
+                    </a>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function filterServices() {
+            const searchTerm = document.getElementById('searchService').value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                displayServices(allServices);
+                return;
+            }
+
+            const filtered = allServices.filter(servicio =>
+                servicio.nombre.toLowerCase().includes(searchTerm) ||
+                (servicio.descripcion && servicio.descripcion.toLowerCase().includes(searchTerm))
+            );
+
+            displayServices(filtered);
+            document.getElementById('totalServicios').textContent = filtered.length + ' (de ' + allServices.length + ')';
+        }
+
+        function updateCounter() {
+            document.getElementById('totalServicios').textContent = allServices.length;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+    <script src="nav-loader.js"></script>
 </body>
 </html>

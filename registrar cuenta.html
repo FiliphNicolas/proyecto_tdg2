@@ -45,11 +45,6 @@ body{
         <span class="error" id="error-nombre"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="correo">Correo electrónico</label>
-        <input type="email" id="correo" placeholder="Introduce tu correo">
-        <span class="error" id="error-correo"></span>
-      </div>
-      <div class="barra">
         <label class="etiqueta" for="direccion">Dirección</label>
         <input type="text" id="direccion" placeholder="Introduce la dirección">
         <span class="error" id="error-direccion"></span>
@@ -65,6 +60,11 @@ body{
         <span class="error" id="error-codigoPostal"></span>
       </div>
       <div class="barra">
+        <label class="etiqueta" for="correo">Correo electrónico</label>
+        <input type="email" id="correo" placeholder="Introduce tu correo">
+        <span class="error" id="error-correo"></span>
+      </div>
+      <div class="barra">
         <label class="etiqueta" for="contrasena">Contraseña</label>
         <input type="password" id="contrasena" placeholder="Introduce tu contraseña">
         <span class="error" id="error-contrasena"></span>
@@ -74,14 +74,35 @@ body{
         <input type="password" id="contrasena_nuevo" placeholder="Introduce tu contraseña">
         <span class="error" id="error-contrasena_nuevo"></span>
       </div>
+      <div id="errorConexion" class="error-conexion" style="display: none; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin-top: 15px; color: #c00; font-size: 13px; white-space: pre-wrap; line-height: 1.6;"></div>
       <div class="boton-cuenta">
         <button type="submit">Registrar cuenta</button>
       </div>
- 
+      <p style="text-align: center; margin-top: 20px; color: white;">
+        ¿Ya tienes cuenta? <a href="iniciar seccion.html" class="olvidar" style="display: inline;">Inicia sesión aquí</a>
+      </p>
     </form>
   </div>
 
 <script>
+function createErrorElement() {
+  let errorDiv = document.getElementById('errorConexion');
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'errorConexion';
+    errorDiv.className = 'error-conexion';
+    errorDiv.style.cssText = 'display: none; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin-top: 15px; color: #c00; font-size: 13px; white-space: pre-wrap; line-height: 1.6;';
+    document.querySelector('.cuadro-azul').insertBefore(errorDiv, document.querySelector('.boton-cuenta'));
+  }
+  return errorDiv;
+}
+
+function showError(element, mensaje) {
+  element.textContent = mensaje;
+  element.style.display = 'block';
+  element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 document.getElementById("registroForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -173,23 +194,49 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
 
   if (valido) {
     // Enviar al servidor
+    const submitButton = document.querySelector('.boton-cuenta button');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Registrando...';
+    const errorElement = document.querySelector('.error-conexion') || createErrorElement();
+
     fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, correo, contrasena })
+      body: JSON.stringify({ nombre, correo, contrasena }),
+      timeout: 5000
     })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) throw new Error(`Servidor respondió con error: ${r.status}`);
+      return r.json();
+    })
     .then(data => {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Registrar cuenta';
+      errorElement.style.display = 'none';
+      
       if (data.ok) {
-        localStorage.setItem('token', data.token);
-        window.location.href = 'servicio.html';
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userName', data.user.nombre_usuario);
+        alert('¡Registro exitoso! Bienvenido.');
+        window.location.href = 'index.html';
       } else {
-        alert(data.error || 'Error al registrar');
+        showError(errorElement, data.error || 'Error al registrar la cuenta');
       }
     })
     .catch(err => {
-      console.error(err);
-      alert('Error de red');
+      console.error('Error:', err);
+      submitButton.disabled = false;
+      submitButton.textContent = 'Registrar cuenta';
+      
+      let mensaje = 'Error de conexión';
+      if (err.message.includes('Failed to fetch')) {
+        mensaje = '❌ No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
+      } else if (err.message.includes('timeout')) {
+        mensaje = '⏱️ El servidor tardó demasiado en responder. Intenta nuevamente.';
+      } else {
+        mensaje = 'Error de red: ' + err.message;
+      }
+      showError(errorElement, mensaje);
     });
   }
 });

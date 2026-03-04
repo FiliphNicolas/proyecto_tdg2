@@ -2,21 +2,51 @@
 <nav>
   <div class="barra-menu">
     <h1>Systemsware</h1>
+    <span id="userGreeting" style="margin-left: auto; color: white; font-size: 14px; display: none;"></span>
   </div>
   <div class="nav-link">
-    <a href="servicio.html" id="nav-inicio">Inicio</a>
+    <a href="index.html" id="nav-inicio">Inicio</a>
+    <a href="servicio.html" id="nav-servicios">Servicios</a>
     <a href="chatbot.html" id="nav-chatbot">Chatbot</a>
     <a href="generar-reporte.html" id="nav-reportes">Reportes</a>
     <a href="perfil.html" id="nav-perfil">Mi perfil</a>
+    <a href="#" id="nav-logout" onclick="handleLogout(event)" style="display: none; color: #ff6b6b;">Cerrar sesión</a>
   </div>
 </nav>
 
 <script>
+// Verificar autenticación y mostrar/ocultar elementos
+function setupNav() {
+  const token = localStorage.getItem('authToken');
+  const userName = localStorage.getItem('userName');
+  const userGreeting = document.getElementById('userGreeting');
+  const logoutBtn = document.getElementById('nav-logout');
+  
+  if (token) {
+    // Usuario autenticado
+    if (userGreeting) {
+      userGreeting.textContent = '👤 ' + (userName || 'Usuario');
+      userGreeting.style.display = 'block';
+    }
+    if (logoutBtn) logoutBtn.style.display = 'block';
+  }
+}
+
+function handleLogout(event) {
+  event.preventDefault();
+  if (confirm('¿Deseas cerrar sesión?')) {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userName');
+    window.location.href = 'iniciar seccion.html';
+  }
+}
+
 // Marcar link activo según la página actual
 function highlightNavLink() {
-  const currentPage = window.location.pathname.split('/').pop() || 'servicio.html';
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
   const links = {
-    'servicio.html': 'nav-inicio',
+    'index.html': 'nav-inicio',
+    'servicio.html': 'nav-servicios',
     'chatbot.html': 'nav-chatbot',
     'generar-reporte.html': 'nav-reportes',
     'nuevo-chat.html': 'nav-chatbot',
@@ -27,9 +57,19 @@ function highlightNavLink() {
   };
   const navId = links[currentPage];
   if (navId) {
-    document.getElementById(navId)?.classList.add('seleccionado');
+    const element = document.getElementById(navId);
+    if (element) element.classList.add('seleccionado');
   }
 }
 
-highlightNavLink();
+// Ejecutar cuando el nav está listo
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setupNav();
+    highlightNavLink();
+  });
+} else {
+  setupNav();
+  highlightNavLink();
+}
 </script>

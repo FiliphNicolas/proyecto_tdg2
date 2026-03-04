@@ -48,15 +48,37 @@ body{
         <input type="password" id="contrasena" placeholder="Ingresa tu contraseña">
         <span class="error" id="error-contrasena"></span>
       </div>
-        <a href="recuperar.html" class="olvidar">¿Olvidaste tu contraseña?</a>
+      <div id="errorConexion" class="error-conexion" style="display: none; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin-top: 15px; color: #c00; font-size: 13px; white-space: pre-wrap; line-height: 1.6;"></div>
+      <a href="recuperar.html" class="olvidar">¿Olvidaste tu contraseña?</a>
         <a href="registrar cuenta.html" class="olvidar">¿No tienes cuenta?</a>
       <div class="boton-cuenta">
-        <button type="submit">Iniciar Cuenta</button>
+        <button type="submit">Iniciar Sesión</button>
       </div>
+      <p style="text-align: center; margin-top: 20px; color: white;">
+        ¿No tienes cuenta? <a href="registrar cuenta.html" class="olvidar" style="display: inline;">Regístrate aquí</a>
+      </p>
     </form>
   </div>
 
 <script>
+function createErrorElement() {
+  let errorDiv = document.getElementById('errorConexion');
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.id = 'errorConexion';
+    errorDiv.className = 'error-conexion';
+    errorDiv.style.cssText = 'display: none; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin-top: 15px; color: #c00; font-size: 13px; white-space: pre-wrap; line-height: 1.6;';
+    document.querySelector('.cuadro-azul').insertBefore(errorDiv, document.querySelector('.boton-cuenta'));
+  }
+  return errorDiv;
+}
+
+function showError(element, mensaje) {
+  element.textContent = mensaje;
+  element.style.display = 'block';
+  element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 document.getElementById("loginForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -90,24 +112,52 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
   }
 
   if (valido) {
-      fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ correo, contrasena })
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.ok) {
-          localStorage.setItem('token', data.token);
-          window.location.href = 'servicio.html';
-        } else {
-          alert(data.error || 'Credenciales inválidas');
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Error de red');
-      });
+    const submitButton = document.querySelector('.boton-cuenta button');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Verificando...';
+    const errorElement = document.getElementById('errorConexion');
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo, contrasena }),
+      timeout: 5000
+    })
+    .then(r => {
+      if (!r.ok) throw new Error(`Servidor respondió con error: ${r.status}`);
+      return r.json();
+    })
+    .then(data => {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Iniciar Sesión';
+      errorElement.style.display = 'none';
+      
+      if (data.ok) {
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userName', data.user.nombre_usuario);
+        alert('¡Bienvenido de vuelta!');
+        window.location.href = 'index.html';
+      } else {
+        showError(errorElement, data.error || 'Correo o contraseña incorrectos');
+        errorCorreo.textContent = '';
+      }
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      submitButton.disabled = false;
+      submitButton.textContent = 'Iniciar Sesión';
+      
+      let mensaje = 'Error de conexión';
+      if (err.message.includes('Failed to fetch')) {
+        mensaje = '❌ No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
+      } else if (err.message.includes('timeout')) {
+        mensaje = '⏱️ El servidor tardó demasiado en responder. Intenta nuevamente.';
+      } else {
+        mensaje = 'Error de red: ' + err.message;
+      }
+      showError(errorElement, mensaje);
+      errorCorreo.textContent = '';
+    });
   }
 });
 </script>

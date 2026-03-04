@@ -19,12 +19,12 @@ app.use(express.static(path.join(__dirname)));
 app.post('/api/register', async (req, res) => {
   try {
     const { nombre, correo, contrasena } = req.body;
-    if (!nombre || !correo || !contrasena) return res.status(400).json({ error: 'Faltan campos' });
+    if (!nombre || !correo || !contrasena) return res.status(400).json({ error: 'Faltan campos requeridos' });
 
     const hashed = await bcrypt.hash(contrasena, 10);
 
-    const text = 'INSERT INTO "Usuario" (nombre_usuario, "contraseña", email, rol, activo) VALUES ($1,$2,$3,$4,$5) RETURNING id_usuario, nombre_usuario, email';
-    const values = [nombre, hashed, correo, 'empleado', 1];
+    const text = 'INSERT INTO "Usuario" (nombre_usuario, contrasena, email, rol, activo) VALUES ($1,$2,$3,$4,$5) RETURNING id_usuario, nombre_usuario, email';
+    const values = [nombre, hashed, correo, 'empleado', true];
 
     const result = await db.query(text, values);
     const user = result.rows[0];
@@ -34,8 +34,8 @@ app.post('/api/register', async (req, res) => {
     res.json({ ok: true, user, token });
   } catch (err) {
     console.error('Error /api/register', err);
-    if (err.code === '23505') return res.status(409).json({ error: 'Usuario o correo ya existe' });
-    res.status(500).json({ error: 'Error del servidor' });
+    if (err.code === '23505') return res.status(409).json({ error: 'El usuario o correo ya existe' });
+    res.status(500).json({ error: 'Error al registrar: ' + err.message });
   }
 });
 
@@ -43,22 +43,22 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
-    if (!correo || !contrasena) return res.status(400).json({ error: 'Faltan campos' });
+    if (!correo || !contrasena) return res.status(400).json({ error: 'Faltan campos requeridos' });
 
-    const text = 'SELECT id_usuario, nombre_usuario, "contraseña" FROM "Usuario" WHERE email = $1 LIMIT 1';
+    const text = 'SELECT id_usuario, nombre_usuario, contrasena FROM "Usuario" WHERE email = $1 LIMIT 1';
     const values = [correo];
     const result = await db.query(text, values);
     if (result.rowCount === 0) return res.status(401).json({ error: 'Credenciales inválidas' });
 
     const user = result.rows[0];
-    const match = await bcrypt.compare(contrasena, user.contraseña);
+    const match = await bcrypt.compare(contrasena, user.contrasena);
     if (!match) return res.status(401).json({ error: 'Credenciales inválidas' });
 
     const token = jwt.sign({ id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, JWT_SECRET, { expiresIn: '8h' });
     res.json({ ok: true, user: { id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, token });
   } catch (err) {
     console.error('Error /api/login', err);
-    res.status(500).json({ error: 'Error del servidor' });
+    res.status(500).json({ error: 'Error del servidor: ' + err.message });
   }
 });
 
@@ -249,6 +249,76 @@ app.delete('/api/productos/:id', authMiddleware, async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     console.error('Error DELETE /api/productos/:id', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Generar Reporte de Inventario
+app.get('/api/reporte', authMiddleware, async (req, res) => {
+  try {
+    const { q, categoria } = req.query;
+    let text = `SELECT 
+                  codigo_producto as codigo,
+                  nombre as producto,
+                  categoria,
+                  cantidad_stock as cantidad,
+                  precio,
+                  (cantidad_stock * precio) as total
+                FROM "Producto"`;
+    const clauses = [];
+    const values = [];
+    
+    if (q) {
+      values.push('%' + q + '%');
+      clauses.push('(nombre ILIKE $' + values.length + ' OR codigo_producto ILIKE $' + values.length + ')');
+    }
+    if (categoria) {
+      values.push(categoria);
+      clauses.push('categoria = $' + values.length);
+    }
+    if (clauses.length) text += ' WHERE ' + clauses.join(' AND ');
+    text += ' ORDER BY codigo_producto';
+
+    const result = await db.query(text, values);
+    res.json({ ok: true, data: result.rows });
+  } catch (err) {
+    console.error('Error GET /api/reporte', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Obtener lista de servicios
+app.get('/api/servicios', async (req, res) => {
+  try {
+    const servicios = [
+      { 
+        id: 1, 
+        nombre: 'Mantenimiento preventivo', 
+        descripcion: 'Mantenimiento regular para prevenir problemas y garantizar disponibilidad',
+        enlace: '#'
+      },
+      { 
+        id: 2, 
+        nombre: 'Reparación', 
+        descripcion: 'Reparación de equipos y sistemas dañados con garantía',
+        enlace: '#'
+      },
+      { 
+        id: 3, 
+        nombre: 'Consultoría técnica', 
+        descripcion: 'Asesoría especializada en tecnología y optimización',
+        enlace: '#'
+      },
+      { 
+        id: 4, 
+        nombre: 'Instalación de sistemas', 
+        descripcion: 'Instalación y configuración de soluciones completas',
+        enlace: '#'
+      }
+    ];
+    res.json({ ok: true, servicios: servicios });
+  } catch (err) {
+    console.error('Error GET /api/servicios', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
