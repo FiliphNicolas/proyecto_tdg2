@@ -24,7 +24,7 @@ function getUserName() {
 function logout() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userName');
-    window.location.href = 'iniciar-seccion.html';
+    window.location.href = 'iniciar-sesion.html';
 }
 
 // Crear encabezado de autenticación para fetch requests
@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // Páginas que NO requieren autenticación
     const publicPages = [
-        'iniciar-seccion.html',
+        'iniciar-sesion.html',
         'registrar-cuenta.html',
         'recuperar.html',
         'index.html',

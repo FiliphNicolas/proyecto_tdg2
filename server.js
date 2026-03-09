@@ -145,7 +145,7 @@ app.patch('/api/me', authMiddleware, async (req, res) => {
     // Actualizar contraseña
     if (contrasena) {
       const hashed = await bcrypt.hash(contrasena, 10);
-      await db.query('UPDATE "Usuario" SET "contraseña" = $1 WHERE id_usuario = $2', [hashed, id]);
+      await db.query('UPDATE "Usuario" SET contrasena = $1 WHERE id_usuario = $2', [hashed, id]);
     }
 
     const result = await db.query('SELECT id_usuario, nombre_usuario, email, rol, activo FROM "Usuario" WHERE id_usuario = $1', [id]);
