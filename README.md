@@ -1,6 +1,6 @@
 # Systemsware – Sistema de Inventario
 
-## Descripción
+## Descripción 
 
 **Systemsware** es un sistema de inventario web diseñado para pequeñas y medianas empresas que requieren un control fiable y trazabilidad de sus existencias, movimientos y usuarios. La aplicación centraliza la gestión de productos, almacenes, entradas y salidas de stock, y proporciona herramientas para generar reportes detallados sobre ventas, ajustes e histórico de inventario.
 
