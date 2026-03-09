@@ -12,8 +12,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'systemsware_secret_change_this';
 app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos (HTML/CSS) desde la carpeta del proyecto
-app.use(express.static(path.join(__dirname)));
+// --- API endpoints defined below ---
+// (Static files are served after so that POST/PUT/etc. don't trigger 405 responses)
 
 // Registro de usuario
 app.post('/api/register', async (req, res) => {
@@ -119,7 +119,7 @@ app.get('/api/me', authMiddleware, async (req, res) => {
   }
 });
 
-// Actualizar datos del usuario autenticado
+// Actualizar datos del usuario autenticado (incluye nombre, correo y/o contraseña)
 app.patch('/api/me', authMiddleware, async (req, res) => {
   try {
     const id = req.user.id_usuario;
@@ -152,6 +152,21 @@ app.patch('/api/me', authMiddleware, async (req, res) => {
     res.json({ ok: true, user: result.rows[0] });
   } catch (err) {
     console.error('Error PATCH /api/me', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// endpoint dedicado solo a cambiar contraseña (utilizado por la interfaz actualmente)
+app.post('/api/me/password', authMiddleware, async (req, res) => {
+  try {
+    const id = req.user.id_usuario;
+    const { contrasena } = req.body;
+    if (!contrasena) return res.status(400).json({ error: 'Contraseña requerida' });
+    const hashed = await bcrypt.hash(contrasena, 10);
+    await db.query('UPDATE "Usuario" SET contrasena = $1 WHERE id_usuario = $2', [hashed, id]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error POST /api/me/password', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
@@ -322,6 +337,10 @@ app.get('/api/servicios', async (req, res) => {
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
+
+// Servir archivos estáticos (HTML/CSS) desde la carpeta del proyecto
+// debe definirse después de las rutas de la API para que solo responda a solicitudes GET/HEAD
+app.use(express.static(path.join(__dirname)));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

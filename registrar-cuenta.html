@@ -55,9 +55,9 @@ body{
         <span class="error" id="error-numero_cel"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="codigoPostal">Codigo Postal</label>
-        <input type="text" id="codigoPostal" placeholder="Introduce el codigo postal">
-        <span class="error" id="error-codigoPostal"></span>
+        <label class="etiqueta" for="ciudad">Ciudad</label>
+        <input type="text" id="ciudad" placeholder="Introduce la ciudad">
+        <span class="error" id="error-ciudad"></span>
       </div>
       <div class="barra">
         <label class="etiqueta" for="correo">Correo electrónico</label>
@@ -110,7 +110,7 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   const correo            = document.getElementById("correo").value.trim();
   const direccion         = document.getElementById("direccion").value.trim();
   const numero_cel        = document.getElementById("numero_cel").value.trim();
-  const codigoPostal      = document.getElementById("codigoPostal").value.trim();
+  const ciudad            = document.getElementById("ciudad").value.trim();
   const contrasena        = document.getElementById("contrasena").value.trim();
   const contrasena_nuevo  = document.getElementById("contrasena_nuevo").value.trim();
 
@@ -119,7 +119,7 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     correo:                document.getElementById("error-correo"),
     direccion:             document.getElementById("error-direccion"),
     numero_cel:            document.getElementById("error-numero_cel"),
-    codigoPostal:          document.getElementById("error-codigoPostal"),
+    ciudad:                document.getElementById("error-ciudad"),
     contrasena:            document.getElementById("error-contrasena"),
     contrasena_nuevo:      document.getElementById("error-contrasena_nuevo")
   };
@@ -164,13 +164,13 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     valido = false;
   }
 
-  // Código Postal
-  const regexCP = /^\d{4,6}$/;
-  if (codigoPostal === "") {
-    errores.codigoPostal.textContent = "El código postal es obligatorio.";
+  // Ciudad
+  const regexCP = /^[a-zA-Z\s]+$/;
+  if (ciudad === "") {
+    errores.ciudad.textContent = "La ciudad es obligatoria.";
     valido = false;
-  } else if (!regexCP.test(codigoPostal)) {
-    errores.codigoPostal.textContent = "Debe tener entre 4 y 6 dígitos.";
+  } else if (!regexCP.test(ciudad)) {
+    errores.ciudad.textContent = "Debe escribir una ciudad válida.";
     valido = false;
   }
 
