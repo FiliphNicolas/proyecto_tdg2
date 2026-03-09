@@ -64,7 +64,7 @@ const PORT = process.env.PORT || 3001; // Cambia 3001 por otro número
 ├── 📁 base de datos/
 │   └── 📄 base-de-datos.sql  (Script SQL)
 ├── 📄 index.html          (Página de inicio)
-├── 📄 iniciar seccion.html (Login)
+├── 📄 iniciar sesion.html (Login)
 ├── 📄 registrar cuenta.html (Registro)
 ├── 📄 servicio.html       (Servicios)
 ├── 📄 generar-reporte.html (Reportes)

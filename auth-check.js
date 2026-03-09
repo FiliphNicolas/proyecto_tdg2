@@ -7,7 +7,7 @@ function checkAuth() {
     const token = localStorage.getItem('authToken');
     if (!token) {
         // No hay token, redirigir a login
-        window.location.href = 'iniciar-seccion.html';
+        window.location.href = 'iniciar-sesion.html';
         return false;
     }
     return true;
