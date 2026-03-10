@@ -3,45 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bievenido a Systemsware</title>
+    <title>Bienvenido a Systemsware</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<style>
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html{
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-}
-body{
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(140deg, #00218f, #285aff, #72AAFF);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; 
-}
-</style>
 <body>
+  <div class="content-wrap">
     <div class="container-seccion">
-        <div class="titulo-inicio">
-            <h1>Bievenido a Systemsware</h1>
+      <div class="titulo-inicio">
+        <h1>Bienvenido a Systemsware</h1>
+      </div>
+      <div class="cuadro-azul">
+        <div class="boton-inicio">
+          <button onclick="window.location.href='registrar-cuenta.html'">Registrar cuenta</button>
+          <button onclick="window.location.href='iniciar-sesion.html'">Iniciar sesión</button>
         </div>
-        <div class="cuadro-azul">
-
-            <div class="boton-inicio">
-                <button onclick="window.location.href='registrar-cuenta.html'">Registar cuenta</button>
-                o
-                <button onclick="window.location.href='iniciar-sesion.html'">Iniciar sesión</button>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
+    <script src="nav-loader.js"></script>
 </body>
 </html>

@@ -6,31 +6,6 @@
     <title>Registrar tu cuenta</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<style>
-
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html{
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-}
-body{
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(140deg, #00218f, #285aff, #72AAFF);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; 
-}
-
-</style>
 <body>
   <div class="container-seccion">
     <div class="titulo">
@@ -38,48 +13,48 @@ body{
     </div>
     <form class="cuadro-azul" id="registroForm">
       <p class="subtitulo">Crear tu cuenta</p>
-      <p class="descripcion">Registrar a tus datos.</p>
+      <p class="descripcion">Registra tus datos para comenzar.</p>
       <div class="barra">
-        <label class="etiqueta" for="nombre">Nombre</label>
-        <input type="text" id="nombre" placeholder="Introduce tu nombre">
+        <label class="etiqueta" for="nombre">👤 Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Ingresa tu nombre completo" required>
         <span class="error" id="error-nombre"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="direccion">Dirección</label>
-        <input type="text" id="direccion" placeholder="Introduce la dirección">
+        <label class="etiqueta" for="direccion">🏠 Dirección</label>
+        <input type="text" id="direccion" placeholder="Ingresa tu dirección" required>
         <span class="error" id="error-direccion"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="numero_cel">Numero Celular</label>
-        <input type="text" id="numero_cel" placeholder="Introduce tu numero celular">
+        <label class="etiqueta" for="numero_cel">📱 Número de celular</label>
+        <input type="tel" id="numero_cel" placeholder="Ingresa tu número (7-10 dígitos)" required>
         <span class="error" id="error-numero_cel"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="ciudad">Ciudad</label>
-        <input type="text" id="ciudad" placeholder="Introduce la ciudad">
+        <label class="etiqueta" for="ciudad">🏙️ Ciudad</label>
+        <input type="text" id="ciudad" placeholder="Ingresa tu ciudad" required>
         <span class="error" id="error-ciudad"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="correo">Correo electrónico</label>
-        <input type="email" id="correo" placeholder="Introduce tu correo">
+        <label class="etiqueta" for="correo">📧 Correo electrónico</label>
+        <input type="email" id="correo" placeholder="Ingresa tu correo electrónico" required>
         <span class="error" id="error-correo"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="contrasena">Contraseña</label>
-        <input type="password" id="contrasena" placeholder="Introduce tu contraseña">
+        <label class="etiqueta" for="contrasena">🔒 Contraseña</label>
+        <input type="password" id="contrasena" placeholder="Crea una contraseña segura" required>
         <span class="error" id="error-contrasena"></span>
       </div>
       <div class="barra">
-        <label class="etiqueta" for="contrasena_nuevo">Contraseña de nuevo</label>
-        <input type="password" id="contrasena_nuevo" placeholder="Introduce tu contraseña">
+        <label class="etiqueta" for="contrasena_nuevo">🔒 Confirmar contraseña</label>
+        <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseña" required>
         <span class="error" id="error-contrasena_nuevo"></span>
       </div>
-      <div id="errorConexion" class="error-conexion" style="display: none; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin-top: 15px; color: #c00; font-size: 13px; white-space: pre-wrap; line-height: 1.6;"></div>
+      <div id="errorConexion" class="error-conexion" style="display: none;"></div>
       <div class="boton-cuenta">
         <button type="submit">Registrar cuenta</button>
       </div>
-      <p style="text-align: center; margin-top: 20px; color: white;">
-        ¿Ya tienes cuenta? <a href="iniciar-sesion.html" class="olvidar" style="display: inline;">Inicia sesión aquí</a>
+      <p style="text-align: center; margin-top: 20px;">
+        <a href="iniciar-sesion.html" class="olvidar">¿Ya tienes cuenta? Inicia sesión aquí</a>
       </p>
     </form>
   </div>

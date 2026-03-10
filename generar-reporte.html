@@ -42,134 +42,13 @@
             </tbody>
         </table>
         
-        <div id="summaryInfo" style="margin-top:20px; padding:15px; background:#f0f0f0; border-radius:5px;">
+        <div id="summaryInfo" class="summaryInfo">
             <p><strong>Total productos:</strong> <span id="totalProducts">0</span></p>
             <p><strong>Inventario total ($):</strong> <span id="inventoryTotal">$0.00</span></p>
         </div>
     </div>
 
-    <script>
-        let currentData = [];
-
-        // Obtener token del localStorage
-        function getAuthToken() {
-            return localStorage.getItem('authToken');
-        }
-
-        // Llamar cuando la página carga
-        window.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            generateReport(); // Cargar reporte inicial
-        });
-
-        function setupEventListeners() {
-            document.getElementById('searchProduct').addEventListener('keyup', debounce(generateReport, 500));
-            document.getElementById('filterCategory').addEventListener('change', generateReport);
-        }
-
-        // Debounce para evitar muchas llamadas al servidor
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        async function generateReport() {
-            const token = getAuthToken();
-            if (!token) {
-                alert('No estás autenticado. Por favor inicia sesión.');
-                window.location.href = 'iniciar-sesion.html';
-                return;
-            }
-
-            try {
-                const searchProduct = document.getElementById('searchProduct').value.trim();
-                const filterCategory = document.getElementById('filterCategory').value.trim();
-                
-                let url = '/api/reporte';
-                const params = [];
-                if (searchProduct) params.push('q=' + encodeURIComponent(searchProduct));
-                if (filterCategory) params.push('categoria=' + encodeURIComponent(filterCategory));
-                if (params.length) url += '?' + params.join('&');
-
-                document.getElementById('loadingMessage').style.display = 'block';
-                document.getElementById('reportTable').style.display = 'none';
-
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('reportTable').style.display = 'table';
-
-                if (!response.ok) {
-                    throw new Error('Error al obtener el reporte');
-                }
-
-                const result = await response.json();
-                currentData = result.data;
-                populateTable(currentData);
-                updateSummary(currentData);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error al generar el reporte: ' + error.message);
-                document.getElementById('loadingMessage').style.display = 'none';
-                document.getElementById('reportTable').style.display = 'table';
-            }
-        }
-
-        function populateTable(data) {
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = '';
-
-            if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No hay productos que mostrar</td></tr>';
-                return;
-            }
-
-            data.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${escapeHtml(row.codigo)}</td>
-                    <td>${escapeHtml(row.producto)}</td>
-                    <td>${escapeHtml(row.categoria || 'Sin categoría')}</td>
-                    <td>${row.cantidad}</td>
-                    <td>$${parseFloat(row.precio).toFixed(2)}</td>
-                    <td>$${parseFloat(row.total).toFixed(2)}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        function updateSummary(data) {
-            const totalProducts = data.length;
-            const inventoryTotal = data.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
-            
-            document.getElementById('totalProducts').textContent = totalProducts;
-            document.getElementById('inventoryTotal').textContent = '$' + inventoryTotal.toFixed(2);
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function printReport() {
-            window.print();
-        }
-    </script>
+    
     <script src="nav-loader.js"></script>
 </body>
 </html>
