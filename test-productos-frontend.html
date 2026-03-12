@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Productos - PostgreSQL</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .product { border: 1px solid #ddd; margin: 10px; padding: 15px; border-radius: 5px; }
+        .product h3 { margin: 0 0 10px 0; color: #333; }
+        .product p { margin: 5px 0; }
+        .price { font-weight: bold; color: #28a745; }
+        .stock { color: #007bff; }
+        .category { background: #f8f9fa; padding: 2px 8px; border-radius: 3px; font-size: 12px; }
+        .loading { text-align: center; padding: 20px; }
+        .error { color: red; text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <h1>📦 Productos desde PostgreSQL</h1>
+    <div id="loading" class="loading">Cargando productos...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <div id="products"></div>
+
+    <script>
+        async function loadProducts() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const productsDiv = document.getElementById('products');
+            
+            try {
+                const response = await fetch('/api/public/productos');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    loading.style.display = 'none';
+                    
+                    if (result.products.length === 0) {
+                        productsDiv.innerHTML = '<p>No hay productos disponibles</p>';
+                        return;
+                    }
+                    
+                    productsDiv.innerHTML = result.products.map(product => `
+                        <div class="product">
+                            <h3>${product.nombre}</h3>
+                            <p><strong>ID:</strong> ${product.id_producto}</p>
+                            <p><strong>Categoría:</strong> <span class="category">${product.categoria || 'Sin categoría'}</span></p>
+                            <p><strong>Descripción:</strong> ${product.descripcion || 'Sin descripción'}</p>
+                            <p><strong>Precio:</strong> <span class="price">$${Number(product.precio).toFixed(2)}</span></p>
+                            <p><strong>Stock:</strong> <span class="stock">${product.cantidad_stock} unidades</span></p>
+                        </div>
+                    `).join('');
+                    
+                    console.log(`✅ Se cargaron ${result.products.length} productos desde PostgreSQL`);
+                } else {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = 'Error al cargar productos: ' + err.message;
+                console.error('❌ Error:', err);
+            }
+        }
+
+        // Cargar productos cuando se carga la página
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html>

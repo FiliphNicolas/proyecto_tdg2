@@ -12,19 +12,41 @@ const JWT_SECRET = process.env.JWT_SECRET || 'systemsware_secret_change_this';
 app.use(cors());
 app.use(express.json());
 
+// Inicializar base de datos al iniciar el servidor
+const initializeServer = async () => {
+  try {
+    console.log('🔄 Inicializando conexión a PostgreSQL...');
+    
+    // Probar conexión
+    const connected = await db.testConnection();
+    if (!connected) {
+      console.error('❌ No se pudo conectar a PostgreSQL. Verifica tu configuración.');
+      process.exit(1);
+    }
+    
+    // Inicializar base de datos
+    await db.initializeDatabase();
+    
+    console.log('✅ Servidor inicializado correctamente');
+  } catch (error) {
+    console.error('❌ Error al inicializar el servidor:', error);
+    process.exit(1);
+  }
+};
+
 // --- API endpoints defined below ---
 // (Static files are served after so that POST/PUT/etc. don't trigger 405 responses)
 
 // Registro de usuario
 app.post('/api/register', async (req, res) => {
   try {
-    const { nombre, correo, contrasena } = req.body;
+    const { nombre, correo, contrasena, direccion, numero_cel, ciudad } = req.body;
     if (!nombre || !correo || !contrasena) return res.status(400).json({ error: 'Faltan campos requeridos' });
 
     const hashed = await bcrypt.hash(contrasena, 10);
 
-    const text = 'INSERT INTO "Usuario" (nombre_usuario, contrasena, email, rol, activo) VALUES ($1,$2,$3,$4,$5) RETURNING id_usuario, nombre_usuario, email';
-    const values = [nombre, hashed, correo, 'empleado', true];
+    const text = 'INSERT INTO "Usuario" (nombre_usuario, contrasena, email, rol, activo, direccion, numero_cel, ciudad) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id_usuario, nombre_usuario, email';
+    const values = [nombre, hashed, correo, 'empleado', true, direccion || null, numero_cel || null, ciudad || null];
 
     const result = await db.query(text, values);
     const user = result.rows[0];
@@ -188,6 +210,90 @@ app.post('/api/productos', authMiddleware, async (req, res) => {
   }
 });
 
+// Crear producto (público para pruebas)
+app.post('/api/public/productos', async (req, res) => {
+  try {
+    const { nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+    if (!nombre || precio == null) return res.status(400).json({ error: 'Faltan campos obligatorios' });
+
+    // Generar código de producto único
+    const codigo = 'PROD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    
+    const text = 'INSERT INTO producto (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, fecha_creacion) VALUES ($1,$2,$3,$4,$5,$6,NOW()) RETURNING codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria';
+    const values = [codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null];
+    const result = await db.query(text, values);
+    res.status(201).json({ ok: true, product: result.rows[0] });
+  } catch (err) {
+    console.error('Error POST /api/public/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Actualizar producto (público para pruebas)
+app.put('/api/public/productos/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+    const fields = [];
+    const values = [];
+    if (nombre !== undefined) { fields.push('nombre = $' + (values.length + 1)); values.push(nombre); }
+    if (descripcion !== undefined) { fields.push('descripcion = $' + (values.length + 1)); values.push(descripcion); }
+    if (precio !== undefined) { fields.push('precio = $' + (values.length + 1)); values.push(precio); }
+    if (cantidad_stock !== undefined) { fields.push('cantidad_stock = $' + (values.length + 1)); values.push(cantidad_stock); }
+    if (categoria !== undefined) { fields.push('categoria = $' + (values.length + 1)); values.push(categoria); }
+    if (fields.length === 0) return res.status(400).json({ error: 'No hay campos para actualizar' });
+    
+    fields.push('fecha_actualizacion = NOW()');
+    values.push(id);
+    const text = 'UPDATE producto SET ' + fields.join(', ') + ' WHERE codigo_producto = $' + values.length + ' RETURNING codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria';
+    const result = await db.query(text, values);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ ok: true, product: result.rows[0] });
+  } catch (err) {
+    console.error('Error PUT /api/public/productos/:id', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Eliminar producto (público para pruebas)
+app.delete('/api/public/productos/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await db.query('DELETE FROM producto WHERE codigo_producto = $1', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error DELETE /api/public/productos/:id', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Listar productos (público, sin autenticación)
+app.get('/api/public/productos', async (req, res) => {
+  try {
+    const { q, categoria } = req.query;
+    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria FROM producto';
+    const clauses = [];
+    const values = [];
+    if (q) {
+      values.push('%' + q + '%');
+      clauses.push('(nombre ILIKE $' + values.length + ' OR descripcion ILIKE $' + values.length + ')');
+    }
+    if (categoria) {
+      values.push(categoria);
+      clauses.push('categoria = $' + values.length);
+    }
+    if (clauses.length) text += ' WHERE ' + clauses.join(' AND ');
+    text += ' ORDER BY codigo_producto';
+
+    const result = await db.query(text, values);
+    res.json({ ok: true, products: result.rows });
+  } catch (err) {
+    console.error('Error GET /api/public/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // Listar productos (con búsqueda y filtrado opcional)
 app.get('/api/productos', authMiddleware, async (req, res) => {
   try {
@@ -342,6 +448,13 @@ app.get('/api/servicios', async (req, res) => {
 // debe definirse después de las rutas de la API para que solo responda a solicitudes GET/HEAD
 app.use(express.static(path.join(__dirname)));
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Iniciar servidor después de inicializar la base de datos
+initializeServer().then(() => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📱 Open http://localhost:${PORT} in your browser`);
+  });
+}).catch(error => {
+  console.error('❌ Error crítico al iniciar el servidor:', error);
+  process.exit(1);
 });

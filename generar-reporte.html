@@ -14,10 +14,11 @@
             <input type="text" id="searchProduct" placeholder="Buscar producto...">
             <select id="filterCategory">
                 <option value="">Todas las categorías</option>
-                <option value="electronica">Electrónica</option>
-                <option value="ropa">Ropa</option>
-                <option value="alimentos">Alimentos</option>
-                <option value="tecnologia">Tecnología</option>
+                <option value="Electrónica">Electrónica</option>
+                <option value="Software">Software</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Oficina">Oficina</option>
+                <option value="Redes">Redes</option>
             </select>
             <button onclick="generateReport()">Generar Reporte</button>
             <button onclick="printReport()">Imprimir</button>
@@ -34,8 +35,8 @@
                     <th>Producto</th>
                     <th>Categoría</th>
                     <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Total</th>
+                    <th>Precio (COP)</th>
+                    <th>Total (COP)</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
@@ -44,11 +45,110 @@
         
         <div id="summaryInfo" class="summaryInfo">
             <p><strong>Total productos:</strong> <span id="totalProducts">0</span></p>
-            <p><strong>Inventario total ($):</strong> <span id="inventoryTotal">$0.00</span></p>
+            <p><strong>Inventario total (COP$):</strong> <span id="inventoryTotal">$0.00</span></p>
         </div>
     </div>
 
     
+    <script>
+        let allProducts = [];
+        let filteredProducts = [];
+
+        // Cargar productos al iniciar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+        });
+
+        async function loadProducts() {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('Debes iniciar sesión para ver los reportes');
+                    window.location.href = 'iniciar-sesion.html';
+                    return;
+                }
+
+                const response = await fetch('/api/reporte', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar los productos');
+                }
+
+                const data = await response.json();
+                allProducts = data.data || [];
+                filteredProducts = [...allProducts];
+                
+                updateTable();
+                updateSummary();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar los productos: ' + error.message);
+            }
+        }
+
+        function generateReport() {
+            const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
+            const categoryFilter = document.getElementById('filterCategory').value;
+
+            // Filtrar productos
+            filteredProducts = allProducts.filter(product => {
+                const matchesSearch = !searchTerm || 
+                    product.producto.toLowerCase().includes(searchTerm) ||
+                    product.codigo.toLowerCase().includes(searchTerm);
+                const matchesCategory = !categoryFilter || product.categoria === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            updateTable();
+            updateSummary();
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            filteredProducts.forEach(product => {
+                const row = document.createElement('tr');
+                // Los precios ya están en COP, solo formatear
+                const precioCOP = parseFloat(product.precio);
+                const totalCOP = parseFloat(product.total || product.cantidad * product.precio);
+                
+                row.innerHTML = `
+                    <td>${product.codigo || product.id_producto}</td>
+                    <td>${product.producto || product.nombre}</td>
+                    <td>${product.categoria || 'Sin categoría'}</td>
+                    <td>${product.cantidad}</td>
+                    <td>$${precioCOP.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+                    <td>$${totalCOP.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateSummary() {
+            const totalProducts = filteredProducts.length;
+            const inventoryTotal = filteredProducts.reduce((sum, product) => {
+                const totalCOP = parseFloat(product.total || product.cantidad * product.precio);
+                return sum + totalCOP;
+            }, 0);
+
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('inventoryTotal').textContent = `COP $${inventoryTotal.toFixed(2)}`;
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Event listeners para filtros
+        document.getElementById('searchProduct').addEventListener('input', generateReport);
+        document.getElementById('filterCategory').addEventListener('change', generateReport);
+    </script>
     <script src="nav-loader.js"></script>
 </body>
 </html>

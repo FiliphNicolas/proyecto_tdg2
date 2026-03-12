@@ -1,0 +1,138 @@
+const http = require('http');
+
+console.log('🧪 Probando formulario con categorías actualizadas\n');
+
+// 1. Probar agregar producto con nueva categoría
+console.log('1️⃣ Agregando producto con categoría "Periféricos"...');
+const newProduct = {
+    nombre: "Mouse Gaming RGB Pro",
+    descripcion: "Mouse gaming con sensor óptico 16000 DPI, iluminación RGB",
+    precio: 89999.99,
+    cantidad_stock: 35,
+    categoria: "Periféricos"
+};
+
+const addOptions = {
+    hostname: 'localhost',
+    port: 3000,
+    path: '/api/public/productos',
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(JSON.stringify(newProduct))
+    }
+};
+
+const addReq = http.request(addOptions, (res) => {
+    console.log(`   Status: ${res.statusCode}`);
+    res.setEncoding('utf8');
+    let data = '';
+    
+    res.on('data', (chunk) => { data += chunk; });
+    
+    res.on('end', () => {
+        const result = JSON.parse(data);
+        if (result.ok) {
+            const newId = result.product.codigo_producto;
+            console.log(`   ✅ Producto agregado: ${newId}`);
+            console.log(`   📝 Nombre: ${result.product.nombre}`);
+            console.log(`   🏷️  Categoría: ${result.product.categoria}`);
+            
+            // 2. Probar filtrar por categoría
+            console.log(`\n2️⃣ Filtrando productos por categoría "Periféricos"...`);
+            testCategoryFilter();
+        } else {
+            console.log('   ❌ Error al agregar:', result.error);
+        }
+    });
+});
+
+addReq.on('error', (e) => {
+    console.error('   ❌ Error al agregar:', e.message);
+});
+
+addReq.write(JSON.stringify(newProduct));
+addReq.end();
+
+function testCategoryFilter() {
+    const filterOptions = {
+        hostname: 'localhost',
+        port: 3000,
+        path: '/api/public/productos?categoria=Periféricos',
+        method: 'GET'
+    };
+
+    const filterReq = http.request(filterOptions, (res) => {
+        console.log(`   Status: ${res.statusCode}`);
+        res.setEncoding('utf8');
+        let data = '';
+        
+        res.on('data', (chunk) => { data += chunk; });
+        
+        res.on('end', () => {
+            const result = JSON.parse(data);
+            if (result.ok) {
+                console.log(`   ✅ Encontrados ${result.products.length} productos en categoría "Periféricos":`);
+                
+                result.products.forEach((product, index) => {
+                    console.log(`   ${index + 1}. ${product.nombre} - ${product.codigo_producto}`);
+                });
+                
+                // 3. Mostrar todas las categorías disponibles
+                console.log(`\n3️⃣ Categorías disponibles en la base de datos:`);
+                showAllCategories();
+            } else {
+                console.log('   ❌ Error al filtrar:', result.error);
+            }
+        });
+    });
+
+    filterReq.on('error', (e) => {
+        console.error('   ❌ Error al filtrar:', e.message);
+    });
+
+    filterReq.end();
+}
+
+function showAllCategories() {
+    const allOptions = {
+        hostname: 'localhost',
+        port: 3000,
+        path: '/api/public/productos',
+        method: 'GET'
+    };
+
+    const allReq = http.request(allOptions, (res) => {
+        res.setEncoding('utf8');
+        let data = '';
+        
+        res.on('data', (chunk) => { data += chunk; });
+        
+        res.on('end', () => {
+            const result = JSON.parse(data);
+            
+            // Extraer categorías únicas
+            const categories = [...new Set(result.products.map(p => p.categoria).filter(Boolean))].sort();
+            
+            console.log(`   📊 Total categorías: ${categories.length}`);
+            categories.forEach((cat, index) => {
+                const count = result.products.filter(p => p.categoria === cat).length;
+                console.log(`   ${index + 1}. ${cat} (${count} productos)`);
+            });
+            
+            console.log('\n🎉 ¡Formulario de categorías actualizado y funcionando!');
+            console.log('🌐 Frontend con categorías completas: http://localhost:3000/productos.html');
+            console.log('\n💡 Categorías disponibles en el formulario:');
+            console.log('   - Computadores, Monitores, Periféricos, Audio');
+            console.log('   - Cables, Adaptadores, Almacenamiento, Accesorios');
+            console.log('   - Impresoras, Redes, Mobiliario, Hardware');
+            console.log('   - Software, Oficina, Electrónica');
+        });
+    });
+
+    allReq.on('error', (e) => {
+        console.error('   ❌ Error:', e.message);
+    });
+
+    allReq.end();
+}

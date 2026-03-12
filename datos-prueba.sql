@@ -33,7 +33,12 @@ INSERT INTO Producto (codigo_producto, nombre, descripcion, precio, cantidad_sto
 ('PROD-007', 'Cable HDMI 2.1', 'Cable HDMI 2.1 de 3 metros, soporta 4K@120Hz', 45000.00, 100, 'Cables'),
 ('PROD-008', 'Adaptador USB-C Hub', 'Hub USB-C 7 en 1 con HDMI, USB 3.0 y carga rápida', 120000.00, 30, 'Adaptadores'),
 ('PROD-009', 'SSD Externo 1TB Samsung', 'Disco duro externo SSD 1TB, USB 3.1, portátil', 550000.00, 8, 'Almacenamiento'),
-('PROD-010', 'Mousepad Gaming XXL', 'Mousepad grande 80x30cm con base antideslizante', 85000.00, 50, 'Accesorios');
+('PROD-010', 'Mousepad Gaming XXL', 'Mousepad grande 80x30cm con base antideslizante', 85000.00, 50, 'Accesorios'),
+('PROD-011', 'Agrar Producto Nuevo', 'Producto agregado para prueba del sistema', 999999.99, 5, 'Prueba'),
+('PROD-012', 'Impresora Laser HP', 'Impresora láser monocromática, 30ppm, WiFi', 850000.00, 25, 'Impresoras'),
+('PROD-013', 'Router WiFi 6', 'Router inalámbrico 6GHz, 4 puertos Gigabit', 650000.00, 15, 'Redes'),
+('PROD-014', 'Silla Gaming Ergonómica', 'Silla gaming con soporte lumbar, ajuste de altura', 1200000.00, 8, 'Mobiliario'),
+('PROD-015', 'Disco Duro Externo 2TB', 'Disco duro externo 2TB USB 3.0', 450000.00, 12, 'Almacenamiento');
 
 -- PEDIDOS DE PRUEBA
 

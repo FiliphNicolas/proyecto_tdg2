@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Systemsware</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-productos">
+        <div class="productos-header">
+            <h1>Nuestros Productos</h1>
+            <div class="productos-info">
+                <span class="productos-count">Total de productos: <strong id="totalProductos">0</strong></span>
+                <button class="btn-agregar" onclick="mostrarFormularioAgregar()">+ Agregar Producto</button>
+            </div>
+        </div>
+
+        <div class="productos-filtros">
+            <input type="text" id="searchProduct" placeholder="Buscar producto...">
+            <select id="filterCategory">
+                <option value="">Todas las categorías</option>
+                <option value="Computadores">Computadores</option>
+                <option value="Monitores">Monitores</option>
+                <option value="Periféricos">Periféricos</option>
+                <option value="Audio">Audio</option>
+                <option value="Cables">Cables</option>
+                <option value="Adaptadores">Adaptadores</option>
+                <option value="Almacenamiento">Almacenamiento</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Impresoras">Impresoras</option>
+                <option value="Redes">Redes</option>
+                <option value="Mobiliario">Mobiliario</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Oficina">Oficina</option>
+                <option value="Electrónica">Electrónica</option>
+            </select>
+            <button onclick="loadProducts()">Actualizar</button>
+        </div>
+
+        <!-- Formulario para agregar nuevo producto -->
+        <div id="formularioProducto" class="formulario-producto" style="display: none;">
+            <h3>Agregar Nuevo Producto</h3>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productName">Nombre del Producto:</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">Categoría:</label>
+                    <select id="productCategory" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="Computadores">Computadores</option>
+                        <option value="Monitores">Monitores</option>
+                        <option value="Periféricos">Periféricos</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Cables">Cables</option>
+                        <option value="Adaptadores">Adaptadores</option>
+                        <option value="Almacenamiento">Almacenamiento</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Impresoras">Impresoras</option>
+                        <option value="Redes">Redes</option>
+                        <option value="Mobiliario">Mobiliario</option>
+                        <option value="Hardware">Hardware</option>
+                        <option value="Software">Software</option>
+                        <option value="Oficina">Oficina</option>
+                        <option value="Electrónica">Electrónica</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Precio:</label>
+                    <input type="number" id="productPrice" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Stock:</label>
+                    <input type="number" id="productStock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Descripción:</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">URL de la imagen:</label>
+                    <input type="url" id="productImage" placeholder="https://ejemplo.com/imagen.jpg">
+                    <small>Deja en blanco para usar imagen predeterminada</small>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit">Guardar Producto</button>
+                    <button type="button" onclick="ocultarFormularioAgregar()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="loadingMessage" style="display:none; text-align:center; padding:40px;">
+            <p>Cargando productos...</p>
+        </div>
+
+        <div class="producto-grid" id="productosContainer">
+            <!-- Los productos se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <script>
+        let allProducts = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('searchProduct').addEventListener('keyup', debounce(filterProducts, 300));
+            document.getElementById('filterCategory').addEventListener('change', filterProducts);
+            document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function loadProducts() {
+            try {
+                document.getElementById('loadingMessage').style.display = 'block';
+                
+                const response = await fetch('/api/public/productos');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    allProducts = result.products.map(product => ({
+                        id: product.codigo_producto,
+                        nombre: product.nombre,
+                        categoria: product.categoria || 'Sin categoría',
+                        precio: Number(product.precio),
+                        stock: product.cantidad_stock,
+                        descripcion: product.descripcion || '',
+                        imagen: `https://via.placeholder.com/300x200/${getRandomColor()}/FFFFFF?text=${encodeURIComponent(product.nombre)}`
+                    }));
+                } else {
+                    throw new Error('Error al cargar productos');
+                }
+                
+                displayProducts(allProducts);
+                updateCounter();
+                updateCategoryFilter();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingMessage').innerHTML = '<p style="color: red;">Error al cargar productos desde la base de datos</p>';
+            } finally {
+                document.getElementById('loadingMessage').style.display = 'none';
+            }
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('productosContainer');
+            container.innerHTML = '';
+
+            if (products.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">No hay productos disponibles</p>';
+                return;
+            }
+
+            products.forEach(producto => {
+                const div = document.createElement('div');
+                div.className = 'producto';
+                
+                const stockClass = producto.stock > 10 ? 'stock-alto' : producto.stock > 0 ? 'stock-bajo' : 'stock-agotado';
+                const stockText = producto.stock > 10 ? 'Disponible' : producto.stock > 0 ? `Poco stock (${producto.stock})` : 'Agotado';
+                
+                div.innerHTML = `
+                    <div class="producto-imagen">
+                        <img src="${producto.imagen || 'https://via.placeholder.com/300x200/CCCCCC/FFFFFF?text=Producto'}" alt="${producto.nombre}" onerror="this.src='https://via.placeholder.com/300x200/CCCCCC/FFFFFF?text=Producto'">
+                    </div>
+                    <div class="producto-contenido">
+                        <h3 class="producto-nombre">${escapeHtml(producto.nombre)}</h3>
+                        <span class="producto-categoria">${escapeHtml(producto.categoria)}</span>
+                        <p class="producto-descripcion">${escapeHtml(producto.descripcion || '')}</p>
+                        <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
+                        <div class="producto-stock ${stockClass}">${stockText}</div>
+                        <div class="producto-acciones">
+                            <button class="btn-editar" onclick="editarProducto('${producto.id}')">Editar</button>
+                            <button class="btn-eliminar" onclick="eliminarProducto('${producto.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchProduct').value.toLowerCase().trim();
+            const categoryFilter = document.getElementById('filterCategory').value;
+            
+            let filtered = allProducts;
+
+            if (searchTerm) {
+                filtered = filtered.filter(producto =>
+                    producto.nombre.toLowerCase().includes(searchTerm) ||
+                    (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (categoryFilter) {
+                filtered = filtered.filter(producto => producto.categoria === categoryFilter);
+            }
+
+            displayProducts(filtered);
+            document.getElementById('totalProductos').textContent = filtered.length + ' (de ' + allProducts.length + ')';
+        }
+
+        function updateCategoryFilter() {
+            const categorySelect = document.getElementById('filterCategory');
+            const categories = [...new Set(allProducts.map(p => p.categoria))].sort();
+            
+            categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
+            categories.forEach(cat => {
+                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+        }
+
+        function updateCounter() {
+            document.getElementById('totalProductos').textContent = allProducts.length;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function mostrarFormularioAgregar() {
+            document.getElementById('formularioProducto').style.display = 'block';
+            document.getElementById('productForm').reset();
+        }
+
+        function ocultarFormularioAgregar() {
+            document.getElementById('formularioProducto').style.display = 'none';
+        }
+
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            
+            const productData = {
+                nombre: document.getElementById('productName').value,
+                categoria: document.getElementById('productCategory').value,
+                precio: parseFloat(document.getElementById('productPrice').value),
+                cantidad_stock: parseInt(document.getElementById('productStock').value),
+                descripcion: document.getElementById('productDescription').value
+            };
+
+            try {
+                const response = await fetch('/api/public/productos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    await loadProducts(); // Recargar desde la base de datos
+                    ocultarFormularioAgregar();
+                    alert('Producto agregado exitosamente a la base de datos');
+                } else {
+                    alert('Error al agregar producto: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al guardar producto');
+            }
+        }
+
+        async function editarProducto(id) {
+            const producto = allProducts.find(p => p.id === id);
+            if (producto) {
+                // Llenar el formulario con los datos del producto
+                document.getElementById('productName').value = producto.nombre;
+                document.getElementById('productCategory').value = producto.categoria;
+                document.getElementById('productPrice').value = producto.precio;
+                document.getElementById('productStock').value = producto.stock;
+                document.getElementById('productDescription').value = producto.descripcion;
+                document.getElementById('productImage').value = producto.imagen || '';
+                
+                // Mostrar el formulario
+                mostrarFormularioAgregar();
+                
+                // Cambiar el comportamiento del formulario para editar
+                document.getElementById('productForm').onsubmit = async function(e) {
+                    e.preventDefault();
+                    
+                    const productData = {
+                        nombre: document.getElementById('productName').value,
+                        categoria: document.getElementById('productCategory').value,
+                        precio: parseFloat(document.getElementById('productPrice').value),
+                        cantidad_stock: parseInt(document.getElementById('productStock').value),
+                        descripcion: document.getElementById('productDescription').value
+                    };
+                    
+                    try {
+                        const response = await fetch(`/api/public/productos/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(productData)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.ok) {
+                            await loadProducts(); // Recargar desde la base de datos
+                            ocultarFormularioAgregar();
+                            alert('Producto actualizado exitosamente en la base de datos');
+                        } else {
+                            alert('Error al actualizar producto: ' + result.error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error al actualizar producto');
+                    }
+                };
+            }
+        }
+
+        async function eliminarProducto(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+                try {
+                    const response = await fetch(`/api/public/productos/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.ok) {
+                        await loadProducts(); // Recargar desde la base de datos
+                        alert('Producto eliminado exitosamente de la base de datos');
+                    } else {
+                        alert('Error al eliminar producto: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error al eliminar producto');
+                }
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['4A90E2', '0078D4', '000000', 'E60012', 'EA3E23', 'FF6B35', '28A745', '17A2B8', '6F42C1', 'FD7E14'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+    <script src="nav-loader.js"></script>
+</body>
+</html>

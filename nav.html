@@ -2,11 +2,16 @@
 <nav>
   <div class="barra-menu">
     <h1>Systemsware</h1>
+    <div class="perfil-nav" id="perfilNav" style="display: none;">
+      <img src="perfil-default.png" alt="Perfil" class="perfil-avatar" id="perfilAvatar">
+      <span class="perfil-nombre" id="perfilNombre">Usuario</span>
+    </div>
     <span id="userGreeting" style="margin-left: auto; color: white; font-size: 14px; display: none;"></span>
   </div>
   <div class="nav-link">
     <a href="index.html" id="nav-inicio">Inicio</a>
     <a href="servicio.html" id="nav-servicios">Servicios</a>
+    <a href="productos.html" id="nav-productos">Productos</a>
     <a href="chatbot.html" id="nav-chatbot">Chatbot</a>
     <a href="generar-reporte.html" id="nav-reportes">Reportes</a>
     <a href="perfil.html" id="nav-perfil">Mi perfil</a>
@@ -21,6 +26,8 @@ function setupNav() {
   const userName = localStorage.getItem('userName');
   const userGreeting = document.getElementById('userGreeting');
   const logoutBtn = document.getElementById('nav-logout');
+  const perfilNav = document.getElementById('perfilNav');
+  const perfilNombre = document.getElementById('perfilNombre');
   
   if (token) {
     // Usuario autenticado
@@ -29,6 +36,14 @@ function setupNav() {
       userGreeting.style.display = 'block';
     }
     if (logoutBtn) logoutBtn.style.display = 'block';
+    
+    // Mostrar perfil junto al título
+    if (perfilNav) {
+      perfilNav.style.display = 'flex';
+      if (perfilNombre) {
+        perfilNombre.textContent = userName || 'Usuario';
+      }
+    }
   }
 }
 
@@ -47,6 +62,7 @@ function highlightNavLink() {
   const links = {
     'index.html': 'nav-inicio',
     'servicio.html': 'nav-servicios',
+    'productos.html': 'nav-productos',
     'chatbot.html': 'nav-chatbot',
     'generar-reporte.html': 'nav-reportes',
     'nuevo-chat.html': 'nav-chatbot',

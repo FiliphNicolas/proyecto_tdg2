@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Selección Automática de Categoría</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .demo-section { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9; }
+        .demo-section h3 { margin-top: 0; color: #333; }
+        .code-block { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 15px; margin: 10px 0; font-family: 'Courier New', monospace; font-size: 14px; overflow-x: auto; }
+        .highlight { background: #fff3cd; padding: 2px 4px; border-radius: 3px; }
+        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin: 20px 0; }
+        .product { border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #fff; }
+        .product h4 { margin: 0 0 10px 0; color: #333; }
+        .product .category { background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #495057; display: inline-block; margin-bottom: 10px; }
+        .product .price { font-size: 18px; font-weight: bold; color: #28a745; margin-bottom: 10px; }
+        .edit-btn { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .edit-btn:hover { background: #0056b3; }
+        .form-demo { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .auto-selected { background: #d4edda; border-color: #28a745; }
+        .note { background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 15px; margin: 10px 0; }
+        .note strong { color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Demo - Selección Automática de Categoría</h1>
+            <p>Cómo el input de categoría se selecciona automáticamente al editar productos</p>
+        </div>
+
+        <div class="demo-section">
+            <h3>📋 Cómo Funciona la Selección Automática</h3>
+            <p>Cuando haces clic en "Editar" un producto, el formulario se llena automáticamente con los datos actuales del producto, incluyendo la categoría.</p>
+            
+            <div class="code-block">
+// En la función editarProducto(id):
+const producto = allProducts.find(p => p.id === id);
+if (producto) {
+    // Llenar el formulario con los datos del producto
+    document.getElementById("productName").value = producto.nombre;
+    <span class="highlight">document.getElementById("productCategory").value = producto.categoria;</span> // ✅ AUTOMÁTICO
+    document.getElementById("productPrice").value = producto.precio;
+    document.getElementById("productStock").value = producto.stock;
+    document.getElementById("productDescription").value = producto.descripcion;
+    // Mostrar el formulario
+    mostrarFormularioAgregar();
+}
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🏪 Productos Disponibles para Editar</h3>
+            <p>Haz clic en "Editar" para ver la selección automática de categoría en acción:</p>
+            
+            <div id="productList" class="product-list">
+                <!-- Products will be loaded here -->
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📝 Formulario de Edición (Demo)</h3>
+            <p>Este es el formulario que se llena automáticamente cuando editas un producto:</p>
+            
+            <div class="form-demo">
+                <div class="form-group">
+                    <label for="demoName">Nombre del Producto:</label>
+                    <input type="text" id="demoName" readonly placeholder="Se llenará automáticamente">
+                </div>
+                <div class="form-group">
+                    <label for="demoCategory">Categoría:</label>
+                    <select id="demoCategory">
+                        <option value="">Seleccionar categoría</option>
+                        <option value="Computadores">Computadores</option>
+                        <option value="Monitores">Monitores</option>
+                        <option value="Periféricos">Periféricos</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Cables">Cables</option>
+                        <option value="Adaptadores">Adaptadores</option>
+                        <option value="Almacenamiento">Almacenamiento</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Impresoras">Impresoras</option>
+                        <option value="Redes">Redes</option>
+                        <option value="Mobiliario">Mobiliario</option>
+                        <option value="Hardware">Hardware</option>
+                        <option value="Software">Software</option>
+                        <option value="Oficina">Oficina</option>
+                        <option value="Electrónica">Electrónica</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="demoPrice">Precio:</label>
+                    <input type="number" id="demoPrice" readonly placeholder="Se llenará automáticamente">
+                </div>
+                <div class="form-group">
+                    <label for="demoStock">Stock:</label>
+                    <input type="number" id="demoStock" readonly placeholder="Se llenará automáticamente">
+                </div>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>💡 Nota Importante:</strong> La selección automática funciona porque el código JavaScript establece <code>document.getElementById("productCategory").value = producto.categoria;</code> cuando se carga el formulario de edición. Esto asegura que el menú desplegable de categoría muestre la categoría actual del producto.
+        </div>
+
+        <div class="demo-section">
+            <h3>🌐 Para Probar en el Frontend Real</h3>
+            <ol>
+                <li>Abre: <a href="http://localhost:3000/productos.html" target="_blank">http://localhost:3000/productos.html</a></li>
+                <li>Busca cualquier producto con categoría definida</li>
+                <li>Haz clic en el botón "Editar"</li>
+                <li><strong>✅ Observa cómo el menú de categoría se selecciona automáticamente</strong></li>
+                <li>Todos los demás campos también se llenan automáticamente</li>
+                <li>Puedes modificar cualquier campo y guardar los cambios</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let allProducts = [];
+
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+        });
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/public/productos');
+                const result = await response.json();
+
+                if (result.ok) {
+                    allProducts = result.products.map(product => ({
+                        id: product.codigo_producto,
+                        nombre: product.nombre,
+                        categoria: product.categoria || 'Sin categoría',
+                        precio: Number(product.precio),
+                        stock: product.cantidad_stock,
+                        descripcion: product.descripcion || ''
+                    }));
+                    
+                    displayProducts();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function displayProducts() {
+            const container = document.getElementById('productList');
+            
+            container.innerHTML = allProducts.map(product => `
+                <div class="product">
+                    <h4>${product.nombre}</h4>
+                    <span class="category">${product.categoria}</span>
+                    <div class="price">$${product.precio.toFixed(2)}</div>
+                    <button class="edit-btn" onclick="demoEdit('${product.id}', '${product.nombre}', '${product.categoria}', ${product.precio}, ${product.stock})">
+                        📝 Editar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function demoEdit(id, nombre, categoria, precio, stock) {
+            // Simular la selección automática del formulario real
+            document.getElementById('demoName').value = nombre;
+            document.getElementById('demoCategory').value = categoria;
+            document.getElementById('demoPrice').value = precio;
+            document.getElementById('demoStock').value = stock;
+            
+            // Resaltar la categoría seleccionada automáticamente
+            const categorySelect = document.getElementById('demoCategory');
+            categorySelect.classList.add('auto-selected');
+            
+            // Mostrar notificación
+            alert(`✅ Editando: ${nombre}\n🏷️ Categoría seleccionada automáticamente: "${categoria}"`);
+            
+            // Remover resaltado después de 2 segundos
+            setTimeout(() => {
+                categorySelect.classList.remove('auto-selected');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

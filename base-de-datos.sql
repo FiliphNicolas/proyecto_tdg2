@@ -1,6 +1,9 @@
 -- base de datos systemsware
 CREATE DATABASE Systemsware;
 
+--\c Systemsware 
+-- psql shell
+
 -- Tabla Cliente
 CREATE TABLE Cliente (
     id_cliente      SERIAL PRIMARY KEY,          -- ✅ NUEVO CAMPO
@@ -21,6 +24,7 @@ CREATE TABLE Usuario (
     rol             VARCHAR(50)  DEFAULT 'empleado',
     activo          BOOLEAN      DEFAULT TRUE,
     fecha_creacion  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Producto  ✅ id_producto → codigo_producto VARCHAR(30)
@@ -31,7 +35,8 @@ CREATE TABLE Producto (
     precio          NUMERIC(10,2) NOT NULL,
     cantidad_stock  INT           DEFAULT 0,
     categoria       VARCHAR(100),
-    fecha_creacion  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+    fecha_creacion  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Pedido

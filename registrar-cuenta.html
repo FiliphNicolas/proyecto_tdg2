@@ -3,63 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar tu cuenta</title>
+    <title>Registrarse - Systemsware</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container-seccion">
     <div class="titulo">
-      <h1>Systemsware</h1>
+      <h1>📝 Systemsware</h1>
     </div>
     <form class="cuadro-azul" id="registroForm">
-      <p class="subtitulo">Crear tu cuenta</p>
-      <p class="descripcion">Registra tus datos para comenzar.</p>
+      <div class="login-header">
+        <h2 class="subtitulo">Crear tu cuenta</h2>
+        <p class="descripcion">Completa tus datos para unirte a Systemsware</p>
+      </div>
+      
       <div class="barra">
         <label class="etiqueta" for="nombre">👤 Nombre completo</label>
-        <input type="text" id="nombre" placeholder="Ingresa tu nombre completo" required>
+        <input type="text" id="nombre" placeholder="Juan Pérez" required autocomplete="name">
         <span class="error" id="error-nombre"></span>
       </div>
+      
       <div class="barra">
         <label class="etiqueta" for="direccion">🏠 Dirección</label>
-        <input type="text" id="direccion" placeholder="Ingresa tu dirección" required>
+        <input type="text" id="direccion" placeholder="Calle Principal #123" required autocomplete="street-address">
         <span class="error" id="error-direccion"></span>
       </div>
+      
       <div class="barra">
         <label class="etiqueta" for="numero_cel">📱 Número de celular</label>
-        <input type="tel" id="numero_cel" placeholder="Ingresa tu número (7-10 dígitos)" required>
+        <input type="tel" id="numero_cel" placeholder="3001234567" required autocomplete="tel">
         <span class="error" id="error-numero_cel"></span>
       </div>
+      
       <div class="barra">
         <label class="etiqueta" for="ciudad">🏙️ Ciudad</label>
-        <input type="text" id="ciudad" placeholder="Ingresa tu ciudad" required>
+        <input type="text" id="ciudad" placeholder="Bogotá" required autocomplete="address-level2">
         <span class="error" id="error-ciudad"></span>
       </div>
+      
       <div class="barra">
         <label class="etiqueta" for="correo">📧 Correo electrónico</label>
-        <input type="email" id="correo" placeholder="Ingresa tu correo electrónico" required>
+        <input type="email" id="correo" placeholder="correo@ejemplo.com" required autocomplete="email">
         <span class="error" id="error-correo"></span>
       </div>
+      
       <div class="barra">
         <label class="etiqueta" for="contrasena">🔒 Contraseña</label>
-        <input type="password" id="contrasena" placeholder="Crea una contraseña segura" required>
+        <div class="password-input-container">
+          <input type="password" id="contrasena" placeholder="Crea una contraseña segura" required autocomplete="new-password">
+          <button type="button" class="password-toggle" onclick="togglePassword('contrasena')">
+            <span id="eyeIcon1">👁️</span>
+          </button>
+        </div>
         <span class="error" id="error-contrasena"></span>
       </div>
+      
       <div class="barra">
         <label class="etiqueta" for="contrasena_nuevo">🔒 Confirmar contraseña</label>
-        <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseña" required>
+        <div class="password-input-container">
+          <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseña" required autocomplete="new-password">
+          <button type="button" class="password-toggle" onclick="togglePassword('contrasena_nuevo')">
+            <span id="eyeIcon2">👁️</span>
+          </button>
+        </div>
         <span class="error" id="error-contrasena_nuevo"></span>
       </div>
-      <div id="errorConexion" class="error-conexion" style="display: none;"></div>
-      <div class="boton-cuenta">
-        <button type="submit">Registrar cuenta</button>
+      
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" id="acceptTerms">
+          <span class="checkmark"></span>
+          Acepto los términos y condiciones
+        </label>
       </div>
-      <p style="text-align: center; margin-top: 20px;">
-        <a href="iniciar-sesion.html" class="olvidar">¿Ya tienes cuenta? Inicia sesión aquí</a>
-      </p>
+      
+      <div id="errorConexion" class="error-conexion" style="display: none;"></div>
+      
+      <div class="boton-cuenta">
+        <button type="submit" id="registerButton">
+          <span class="button-text">Crear cuenta</span>
+          <span class="button-loader" style="display: none;">⏳</span>
+        </button>
+      </div>
+      
+      <div class="register-link">
+        <p>¿Ya tienes cuenta? <a href="iniciar-sesion.html" class="olvidar">Inicia sesión</a></p>
+      </div>
     </form>
   </div>
 
 <script>
+function togglePassword(fieldId) {
+  const passwordInput = document.getElementById(fieldId);
+  const eyeIcon = document.getElementById(fieldId === 'contrasena' ? 'eyeIcon1' : 'eyeIcon2');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    eyeIcon.textContent = '🙈';
+  } else {
+    passwordInput.type = 'password';
+    eyeIcon.textContent = '👁️';
+  }
+}
+
 function createErrorElement() {
   let errorDiv = document.getElementById('errorConexion');
   if (!errorDiv) {
@@ -78,6 +124,22 @@ function showError(element, mensaje) {
   element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+function setLoading(loading) {
+  const button = document.getElementById('registerButton');
+  const buttonText = button.querySelector('.button-text');
+  const buttonLoader = button.querySelector('.button-loader');
+  
+  if (loading) {
+    button.disabled = true;
+    buttonText.style.display = 'none';
+    buttonLoader.style.display = 'inline';
+  } else {
+    button.disabled = false;
+    buttonText.style.display = 'inline';
+    buttonLoader.style.display = 'none';
+  }
+}
+
 document.getElementById("registroForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
@@ -88,6 +150,7 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   const ciudad            = document.getElementById("ciudad").value.trim();
   const contrasena        = document.getElementById("contrasena").value.trim();
   const contrasena_nuevo  = document.getElementById("contrasena_nuevo").value.trim();
+  const acceptTerms       = document.getElementById('acceptTerms').checked;
 
   const errores = {
     nombre:                document.getElementById("error-nombre"),
@@ -104,12 +167,21 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
 
   let valido = true;
 
+  // Validar términos y condiciones
+  if (!acceptTerms) {
+    showError(document.getElementById('errorConexion'), '❌ Debes aceptar los términos y condiciones para continuar.');
+    valido = false;
+  }
+
   // Nombre
   if (nombre === "") {
     errores.nombre.textContent = "El nombre es obligatorio.";
     valido = false;
   } else if (nombre.length < 3) {
-    errores.nombre.textContent = "Mínimo 3 caracteres.";
+    errores.nombre.textContent = "El nombre debe tener al menos 3 caracteres.";
+    valido = false;
+  } else if (!/^[a-zA-Z\s]+$/.test(nombre)) {
+    errores.nombre.textContent = "El nombre solo puede contener letras y espacios.";
     valido = false;
   }
 
@@ -119,13 +191,16 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     errores.correo.textContent = "El correo es obligatorio.";
     valido = false;
   } else if (!regexCorreo.test(correo)) {
-    errores.correo.textContent = "Correo no válido.";
+    errores.correo.textContent = "Por favor, ingresa un correo válido.";
     valido = false;
   }
 
   // Dirección
   if (direccion === "") {
     errores.direccion.textContent = "La dirección es obligatoria.";
+    valido = false;
+  } else if (direccion.length < 5) {
+    errores.direccion.textContent = "La dirección debe tener al menos 5 caracteres.";
     valido = false;
   }
 
@@ -140,12 +215,11 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   }
 
   // Ciudad
-  const regexCP = /^[a-zA-Z\s]+$/;
   if (ciudad === "") {
     errores.ciudad.textContent = "La ciudad es obligatoria.";
     valido = false;
-  } else if (!regexCP.test(ciudad)) {
-    errores.ciudad.textContent = "Debe escribir una ciudad válida.";
+  } else if (!/^[a-zA-Z\s]+$/.test(ciudad)) {
+    errores.ciudad.textContent = "La ciudad solo puede contener letras y espacios.";
     valido = false;
   }
 
@@ -154,7 +228,10 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     errores.contrasena.textContent = "La contraseña es obligatoria.";
     valido = false;
   } else if (contrasena.length < 6) {
-    errores.contrasena.textContent = "Mínimo 6 caracteres.";
+    errores.contrasena.textContent = "La contraseña debe tener al menos 6 caracteres.";
+    valido = false;
+  } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(contrasena)) {
+    errores.contrasena.textContent = "La contraseña debe incluir mayúsculas, minúsculas y números.";
     valido = false;
   }
 
@@ -168,16 +245,20 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   }
 
   if (valido) {
-    // Enviar al servidor
-    const submitButton = document.querySelector('.boton-cuenta button');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Registrando...';
-    const errorElement = document.querySelector('.error-conexion') || createErrorElement();
+    setLoading(true);
+    const errorElement = document.getElementById('errorConexion');
 
     fetch('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre, correo, contrasena }),
+      body: JSON.stringify({ 
+        nombre, 
+        correo, 
+        contrasena, 
+        direccion, 
+        numero_cel, 
+        ciudad 
+      }),
       timeout: 5000
     })
     .then(r => {
@@ -185,25 +266,32 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
       return r.json();
     })
     .then(data => {
-      submitButton.disabled = false;
-      submitButton.textContent = 'Registrar cuenta';
+      setLoading(false);
       errorElement.style.display = 'none';
       
       if (data.ok) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userName', data.user.nombre_usuario);
-        alert('¡Registro exitoso! Bienvenido.');
-        window.location.href = 'index.html';
+        
+        // Mostrar mensaje de éxito
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = '✅ ¡Cuenta creada exitosamente! Redirigiendo...';
+        successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
+        document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
+        
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
       } else {
-        showError(errorElement, data.error || 'Error al registrar la cuenta');
+        showError(errorElement, data.error || '❌ Error al registrar la cuenta');
       }
     })
     .catch(err => {
       console.error('Error:', err);
-      submitButton.disabled = false;
-      submitButton.textContent = 'Registrar cuenta';
+      setLoading(false);
       
-      let mensaje = 'Error de conexión';
+      let mensaje = '❌ Error de conexión';
       if (err.message.includes('Failed to fetch')) {
         mensaje = '❌ No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
       } else if (err.message.includes('timeout')) {
@@ -216,6 +304,10 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   }
 });
 
+// Auto-focus en el campo nombre al cargar
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('nombre').focus();
+});
 </script>
 </body>
 </html>
