@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Inventario - Systemsware</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; }
+        .report-container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        
+        .report-header { text-align: center; border-bottom: 3px solid var(--light); margin-bottom: 25px; padding-bottom: 20px; }
+        .report-header h1 { color: var(--secondary); margin-bottom: 5px; }
+
+        /* Filtros */
+        .filters-section { background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: end; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 13px; font-weight: 600; color: var(--dark); }
+        .filter-group input, .filter-group select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        
+        .btn-filter { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .btn-filter:hover { opacity: 0.9; }
+
+        /* Estadísticas */
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .summary-item { padding: 20px; border-radius: 10px; color: white; text-align: center; }
+        .bg-total { background: linear-gradient(45deg, #2193b0, #6dd5ed); }
+        .bg-entrada { background: linear-gradient(45deg, #11998e, #38ef7d); }
+        .bg-salida { background: linear-gradient(45deg, #cb2d3e, #ef473a); }
+        .summary-value { font-size: 28px; font-weight: bold; display: block; }
+        .summary-label { font-size: 14px; opacity: 0.9; display: block; margin-bottom: 8px; }
+
+        /* Tabla */
+        .table-wrapper { overflow-x: auto; }
+        .movements-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .movements-table th { background: #eee; padding: 12px; text-align: left; font-size: 14px; }
+        .movements-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        
+        .type-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .entrada { background: #d4edda; color: #155724; }
+        .salida { background: #f8d7da; color: #721c24; }
+
+        /* Botones Acción */
+        .export-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-bottom: 15px; }
+        .btn-export { border: none; padding: 10px 18px; border-radius: 6px; color: white; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .excel { background: #1D6F42; }
+        .pdf { background: #E02424; }
+        .print { background: #6B7280; }
+
+        @media print { .filters-section, .export-buttons { display: none; } body { padding: 0; } .report-container { box-shadow: none; } }
+    </style>
+<body>
+
+    <div class="report-container">
+        <div class="report-header">
+            <h1>📊 Systemsware Inventory</h1>
+            <p>Reporte Consolidado de Movimientos</p>
+            <small>Generado: <span id="currentDate"></span></small>
+        </div>
+
+        <div class="filters-section">
+            <div class="filter-group">
+                <label>Producto</label>
+                <select id="filterProduct"><option value="">Todos</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Tipo</label>
+                <select id="filterType">
+                    <option value="">Todos</option>
+                    <option value="entrada">Entradas</option>
+                    <option value="salida">Salidas</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Desde</label>
+                <input type="date" id="dateFrom">
+            </div>
+            <div class="filter-group">
+                <label>Hasta</label>
+                <input type="date" id="dateTo">
+            </div>
+            <button class="btn-filter" onclick="applyFilters()">Aplicar Filtros</button>
+            <button class="btn-filter" style="background:#6c757d" onclick="resetFilters()">Limpiar</button>
+        </div>
+
+        <div class="summary-grid">
+            <div class="summary-item bg-total">
+                <span class="summary-label">Movimientos Totales</span>
+                <span class="summary-value" id="statTotal">0</span>
+            </div>
+            <div class="summary-item bg-entrada">
+                <span class="summary-label">Unidades Ingresadas</span>
+                <span class="summary-value" id="statEntradas">0</span>
+            </div>
+            <div class="summary-item bg-salida">
+                <span class="summary-label">Unidades Retiradas</span>
+                <span class="summary-value" id="statSalidas">0</span>
+            </div>
+        </div>
+
+        <div class="export-buttons">
+            <button class="btn-export excel" onclick="exportToExcel()">📗 Excel</button>
+            <button class="btn-export pdf" onclick="exportToPDF()">📕 PDF</button>
+            <button class="btn-export print" onclick="window.print()">🖨️ Imprimir</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="movements-table" id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Tipo</th>
+                        <th>Cant.</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo basados en tu estructura (Simulando API)
+        let allMovements = [
+            { fecha: '2026-03-10', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'entrada', cantidad: 20, desc: 'Compra Inicial' },
+            { fecha: '2026-03-11', codigo: 'PROD-002', nombre: 'Monitor LG 24"', tipo: 'entrada', cantidad: 30, desc: 'Stock Nuevo' },
+            { fecha: '2026-03-11', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'salida', cantidad: 2, desc: 'Venta Directa' },
+            { fecha: '2026-03-12', codigo: 'PROD-003', nombre: 'Teclado Mecánico', tipo: 'entrada', cantidad: 50, desc: 'Proveedor X' },
+            { fecha: '2026-03-12', codigo: 'PROD-002', nombre: 'Monitor LG 24"', tipo: 'salida', cantidad: 5, desc: 'Envío Cliente' }
+        ];
+
+        let filteredData = [...allMovements];
+
+        // Cargar datos desde API
+        async function loadInventoryData() {
+            try {
+                const response = await fetch('/api/public/inventario');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    allMovements = result.movements.map(m => ({
+                        fecha: new Date(m.fecha_movimiento).toISOString().slice(0, 10),
+                        codigo: m.codigo_producto,
+                        nombre: m.nombre_producto,
+                        tipo: m.tipo_movimiento,
+                        cantidad: m.cantidad,
+                        desc: m.descripcion || 'Sin descripción'
+                    }));
+                    filteredData = [...allMovements];
+                    loadProductOptions();
+                    renderTable(allMovements);
+                } else {
+                    // Fallback a datos de ejemplo si API falla
+                    console.warn('Usando datos de ejemplo - API no disponible');
+                }
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('currentDate').innerText = new Date().toLocaleString();
+            loadInventoryData();
+        });
+
+        function loadProductOptions() {
+            const select = document.getElementById('filterProduct');
+            select.innerHTML = '<option value="">Todos</option>';
+            
+            const uniqueProducts = [...new Set(allMovements.map(m => m.nombre))];
+            uniqueProducts.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.innerText = p;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            let totalIn = 0;
+            let totalOut = 0;
+
+            data.forEach(m => {
+                const row = `<tr>
+                    <td>${m.fecha}</td>
+                    <td><code>${m.codigo}</code></td>
+                    <td>${m.nombre}</td>
+                    <td><span class="type-badge ${m.tipo}">${m.tipo}</span></td>
+                    <td><strong>${m.cantidad}</strong></td>
+                    <td>${m.desc}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+
+                if(m.tipo === 'entrada') totalIn += m.cantidad;
+                else totalOut += m.cantidad;
+            });
+
+            document.getElementById('statTotal').innerText = data.length;
+            document.getElementById('statEntradas').innerText = totalIn;
+            document.getElementById('statSalidas').innerText = totalOut;
+            filteredData = data; // Guardamos lo que se está viendo para exportar
+        }
+
+        function applyFilters() {
+            const prod = document.getElementById('filterProduct').value;
+            const type = document.getElementById('filterType').value;
+            const from = document.getElementById('dateFrom').value;
+            const to = document.getElementById('dateTo').value;
+
+            const filtered = allMovements.filter(m => {
+                return (!prod || m.nombre === prod) &&
+                       (!type || m.tipo === type) &&
+                       (!from || m.fecha >= from) &&
+                       (!to || m.fecha <= to);
+            });
+
+            renderTable(filtered);
+        }
+
+        function resetFilters() {
+            document.querySelectorAll('.filters-section input, .filters-section select').forEach(i => i.value = '');
+            renderTable(allMovements);
+        }
+
+        // --- FUNCIONES DE EXPORTACIÓN ---
+
+        function exportToExcel() {
+            if(filteredData.length === 0) return alert("No hay datos para exportar");
+
+            const ws = XLSX.utils.json_to_sheet(filteredData.map(m => ({
+                'Fecha': m.fecha,
+                'Código': m.codigo,
+                'Producto': m.nombre,
+                'Tipo': m.tipo.toUpperCase(),
+                'Cantidad': m.cantidad,
+                'Motivo': m.desc
+            })));
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Movimientos");
+            XLSX.writeFile(wb, `Reporte_Systemsware_${new Date().getTime()}.xlsx`);
+        }
+
+        function exportToPDF() {
+            if(filteredData.length === 0) return alert("No hay datos para exportar");
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título
+            doc.setFontSize(18);
+            doc.text("Reporte de Inventario - Systemsware", 14, 20);
+            doc.setFontSize(10);
+            doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, 28);
+
+            // Tabla
+            const headers = [["Fecha", "Código", "Producto", "Tipo", "Cant.", "Descripción"]];
+            const rows = filteredData.map(m => [m.fecha, m.codigo, m.nombre, m.tipo.toUpperCase(), m.cantidad, m.desc]);
+
+            doc.autoTable({
+                head: headers,
+                body: rows,
+                startY: 35,
+                theme: 'grid',
+                headStyles: { fillColor: [118, 75, 162] } // Color secundario del CSS
+            });
+
+            doc.save(`Reporte_Systemsware_${new Date().getTime()}.pdf`);
+        }
+    </script>
+    <script src="nav-loader.js"></script>
+</body>
+</html>

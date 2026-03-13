@@ -3,29 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi perfil</title>
+    <title>Mi perfil - Systemsware</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<h1 class="titulo-perfil">Mi perfil</h1>
-<div class="perfil-flex">
-  <div class="contenedor-perfil">
+    <div class="container">
+        <h1 class="titulo-perfil">Mi perfil</h1>
+        <div class="perfil-flex">
+            <div class="contenedor-perfil">
+                <button class="carta-perfil" onclick="window.location.href='ver-estado-cuenta.html'" title="Ver y editar información personal">
+                    📋 Ver estado de cuenta
+                </button>
+                <button class="carta-perfil cerrar-seccion" onclick="cerrarSesion()">
+                    🚪 Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </div>
 
-      <button class="carta-perfil" onclick="window.location.href='ver-estado-cuenta.html'" title="Ver y editar información personal">
-        Ver estado de cuenta
-      </button>
-      <button class="carta-perfil" onclick="window.location.href='editar-informacion-personal.html'" title="Ver y editar información personal">
-        Editar información personal
-      </button>
-      <button class="carta-perfil cerrar-seccion" onclick="">
-        Cerrar sesión
-      </button>
-      <button class="carta-perfil cerrar-cuenta" onclick="">
-        Eliminar cuenta permanentemente
-      </button>
+    <script src="nav-loader.js"></script>
+    <script>
+        function cerrarSesion() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                // Limpiar localStorage/sessionStorage
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('userInfo');
+                sessionStorage.clear();
+                
+                // Redirigir a login
+                window.location.href = 'iniciar-sesion.html';
+            }
+        }
 
-  </div>
-</div>
-<script src="nav-loader.js"></script>
+        async function eliminarCuenta() {
+            try {
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('No tienes sesión activa');
+                    window.location.href = 'iniciar-sesion.html';
+                    return;
+                }
+
+                const response = await fetch('/api/me', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    alert('✅ Tu cuenta ha sido eliminada permanentemente.\n\nSerás redirigido a la página principal.');
+                    
+                    // Limpiar datos locales
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    
+                    // Redirigir a página principal
+                    window.location.href = 'index.html';
+                } else {
+                    const error = await response.json();
+                    alert('❌ Error al eliminar la cuenta: ' + (error.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error al eliminar cuenta:', error);
+                alert('❌ Error de conexión al eliminar la cuenta. Por favor intenta nuevamente.');
+            }
+        }
+
+        // Verificar si el usuario está logueado
+        document.addEventListener('DOMContentLoaded', function() {
+            const userToken = localStorage.getItem('authToken') || localStorage.getItem('userToken');
+            if (!userToken) {
+                alert('Debes iniciar sesión para acceder a tu perfil');
+                window.location.href = 'iniciar-sesion.html';
+                return;
+            }
+
+            // Cargar la navegación
+            if (typeof loadNavigation === 'function') {
+                loadNavigation();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -14,9 +14,13 @@
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
-    "pg": "^8.11.0"
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
+    "pg": "^8.20.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "eslint": "^10.0.3",
