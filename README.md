@@ -1,18 +1,22 @@
-# Systemsware – Sistema de Inventario
+# Systemsware – Sistema de Gestión Integral
 
 ## Descripción 
 
-**Systemsware** es un sistema de inventario web diseñado para pequeñas y medianas empresas que requieren un control fiable y trazabilidad de sus existencias, movimientos y usuarios. La aplicación centraliza la gestión de productos, almacenes, entradas y salidas de stock, y proporciona herramientas para generar reportes detallados sobre ventas, ajustes e histórico de inventario.
+**Systemsware** es un sistema de gestión web completo diseñado para pequeñas y medianas empresas que requieren control integral de inventario, pedidos, usuarios y atención al cliente. La aplicación centraliza la gestión de productos, almacenes, movimientos de stock, estado de cuentas y proporciona herramientas avanzadas de reportes y un chatbot inteligente para soporte 24/7.
 
 ### Características principales
 
-- ✅ Registro e inicio de sesión con roles y permisos (admin, empleado, vendedor)
-- ✅ Gestión de productos: alta, baja, modificación, categorías
-- ✅ Control de inventario y movimientos (entradas/salidas/ajustes)
-- ✅ Generación de reportes y exportación de datos
-- ✅ Sistema de soporte/chat integrado
-- ✅ Administración de perfiles y usuarios
-- ✅ Base de datos PostgreSQL con trazabilidad completa
+- ✅ **Autenticación avanzada** con JWT y roles (admin, empleado, vendedor)
+- ✅ **Estado de cuenta completo** con estadísticas en tiempo real
+- ✅ **Chatbot inteligente** con respuestas contextuales
+- ✅ **Gestión de productos**: alta, baja, modificación, categorías
+- ✅ **Control de inventario** y movimientos (entradas/salidas/ajustes)
+- ✅ **Sistema de pedidos** con seguimiento completo
+- ✅ **Reportes PDF** con filtros avanzados y exportación
+- ✅ **Soporte/chat integrado** con asistente virtual
+- ✅ **Administración de perfiles** y usuarios
+- ✅ **Base de datos PostgreSQL** con trazabilidad completa
+- ✅ **UI/UX moderna** con gradientes y diseño responsive
 
 ---
 
@@ -23,6 +27,32 @@ Antes de instalar Systemsware, asegúrate de tener:
 - **Node.js** (v14 o superior) — [descargar](https://nodejs.org/)
 - **PostgreSQL** (v12 o superior) — [descargar](https://www.postgresql.org/download/)
 - **npm** (incluido con Node.js)
+
+---
+
+## 🆕 Nuevas Funcionalidades (v2.0)
+
+### 🤖 Chatbot Inteligente
+- **Asistente virtual 24/7** con respuestas contextuales
+- **Indicador de escritura** animado para mejor UX
+- **Respuestas rápidas** predefinidas (Servicios, Precios, Soporte, Inventario)
+- **Interfaz conversacional** moderna con gradientes
+- **Integración completa** con el sistema de gestión
+
+### 📊 Estado de Cuenta Avanzado
+- **Dashboard personal** con información completa del usuario
+- **Estadísticas en tiempo real**: total pedidos, gastado, pendientes, completados
+- **Historial de pedidos** con detalles y estados
+- **Movimientos de inventario** (para roles autorizados)
+- **Avatar automático** con iniciales del usuario
+- **Diseño responsive** con tarjetas y tablas modernas
+
+### 🎨 Mejoras de UI/UX
+- **Diseño moderno** con gradientes y sombras suaves
+- **Animaciones fluidas** y transiciones elegantes
+- **Header centrado** perfectamente alineado
+- **Mensajes del chatbot** centrados verticalmente
+- **Interfaz limpia** e intuitiva
 
 ---
 
@@ -150,11 +180,37 @@ Si ejecutaste `datos-prueba.sql`, puedes ingresar con:
 
 Encontrarás acceso a:
 
-- **📦 Inventario** — Ver, agregar, editar productos
-- **📊 Reportes** — Generar reportes de stock y ventas
+- **📦 Inventario** — Ver, agregar, editar productos y movimientos
+- **📊 Reportes** — Generar reportes de stock y ventas con exportación PDF
 - **👤 Mi perfil** — Editar datos personales y cambiar contraseña
-- **💬 Soporte** — Sistema de chat para consultas internas
+- **� Ver estado de cuenta** — Dashboard completo con estadísticas
+- **💬 Chatbot** — Asistente virtual inteligente 24/7
 - **⚙️ Configuración** — Opciones del sistema
+
+### 🤖 Usar el Chatbot
+
+1. Accede al **Chatbot** desde el menú principal
+2. El asistente te saludará automáticamente
+3. Puedes usar las **respuestas rápidas**:
+   - **Servicios** - Información sobre servicios disponibles
+   - **Precios** - Tarifas y costos
+   - **Soporte** - Contacto y ayuda técnica
+   - **Inventario** - Consulta de productos y stock
+4. Escribe tu pregunta en lenguaje natural
+5. El chatbot responderá con información contextualizada
+
+### 📊 Estado de Cuenta
+
+1. Ve a **Ver estado de cuenta** desde tu perfil
+2. Verás tu **información personal** completa:
+   - Nombre, email, rol, teléfono, dirección
+   - Avatar automático con tus iniciales
+3. Consulta tus **estadísticas**:
+   - Total de pedidos realizados
+   - Total gastado
+   - Pedidos pendientes y completados
+4. Revisa tu **historial de pedidos** reciente
+5. Si tienes rol autorizado, verás **movimientos de inventario**
 
 ### Gestión de productos
 
@@ -226,19 +282,53 @@ Encontrarás acceso a:
 
 ```
 proyecto_tdg2/
-├── server.js                          # Servidor Express principal
-├── databasepg.js                      # Conexión a PostgreSQL
-├── auth-check.js                      # Validación de autenticación
-├── package.json                       # Dependencias del proyecto
+├── 🚀 server.js                          # Servidor Express principal
+├── 🗄️ databasepg.js                      # Conexión a PostgreSQL
+├── 🔐 auth-check.js                      # Validación de autenticación
+├── 📦 package.json                       # Dependencias del proyecto
+├── 🎨 styles.css                         # Estilos globales modernos
+├── 🧭 nav-loader.js                      # Cargador de navegación dinámico
 │
-├── *.html                             # Páginas web (login, registro, etc.)
-├── styles.css                         # Estilos globales
-├── nav-loader.js                      # Cargador de navegación
+├── 🌐 Páginas HTML/
+│   ├── 📄 index.html                     # Página principal
+│   ├── 📄 iniciar-sesion.html            # Login
+│   ├── 📄 registrar-cuenta.html          # Registro
+│   ├── 📄 perfil.html                    # Perfil de usuario
+│   ├── 📄 ver-estado-cuenta.html         # Estado de cuenta (NUEVO)
+│   ├── 📄 productos.html                 # Gestión de productos
+│   ├── 📄 reporte-inventario.html        # Reportes con PDF
+│   ├── 📄 chatbot.html                   # Chatbot inteligente (NUEVO)
+│   └── 📄 servicio.html                  # Servicios
 │
-└── base de datos/
-    ├── base-de-datos.sql              # Creación de tablas
-    └── datos-prueba.sql               # Datos de ejemplo
+└── 🗃️ Base de datos/
+    ├── 📄 base-de-datos.sql              # Creación de tablas
+    ├── 📄 datos-prueba.sql               # Datos de ejemplo
+    └── 📄 update-database-schema.sql     # Actualizaciones de schema
 ```
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Backend
+- **Node.js + Express.js** - Servidor web y API REST
+- **PostgreSQL** - Base de datos relacional
+- **JWT** - Autenticación y autorización
+- **bcrypt** - Encriptación de contraseñas
+- **PDFKit** - Generación de reportes PDF
+
+### Frontend
+- **HTML5 Semántico** - Estructura accesible
+- **CSS3 Moderno** - Gradientes, animaciones, responsive design
+- **JavaScript Vanilla** - Lógica del cliente sin frameworks
+- **Flexbox/Grid** - Layouts modernos y adaptables
+
+### Características Técnicas
+- **RESTful API** con endpoints documentados
+- **Middleware de autenticación** JWT
+- **Validación de inputs** y sanitización
+- **CORS configurado** para desarrollo
+- **Manejo de errores** centralizado
 
 ---
 
@@ -266,10 +356,46 @@ Si encuentras problemas:
 
 - Para desarrollo activo con auto-reinicio: `npx nodemon server.js`
 - Los cambios en `server.js` requieren reiniciar manualmente el servidor
-- Las credenciales de la BD están en `databasepg.js`; cambialas en variables de entorno para producción
+- Las credenciales de la BD están en `databasepg.js`; cámbialas en variables de entorno para producción
+- El chatbot utiliza JavaScript vanilla con manejo de eventos moderno
+- Los estilos usan CSS Grid y Flexbox para diseño responsive
+- Los reportes PDF se generan con PDFKit con plantillas personalizadas
 
 ---
 
-**Última actualización:** 9 de marzo de 2026  
-**Versión:** 1.0.0
+## 🚀 Próximas Actualizaciones (v2.1)
+
+- 🔄 **Dashboard analítico** con gráficos interactivos
+- 🔄 **Notificaciones en tiempo real** con WebSocket
+- 🔄 **Integración con APIs externas** de pago y envíos
+- 🔄 **Módulo de facturación** electrónica
+- 🔄 **Sistema de notificaciones** por email
+- 🔄 **Backup automático** de base de datos
+
+---
+
+## 📞 Soporte y Contacto
+
+Si encuentras problemas:
+
+1. 📋 Revisa los **logs del servidor terminal**
+2. 🔍 Abre las **DevTools** del navegador (F12)
+3. 🗄️ Verifica la conexión a la **base de datos** con `psql`
+4. 📖 Consulta el archivo `INSTRUCCIONES.md` para pasos detallados
+5. 🤖 Prueba el **chatbot** para ayuda contextualizada
+
+**Contacto técnico:**
+- **Email:** soporte@systemsware.com
+- **Teléfono:** +1 (555) 123-4567
+- **Web:** www.systemsware.com
+
+---
+
+**Última actualización:** 12 de marzo de 2026  
+**Versión:** 2.0.0  
+**Estado:** ✅ Producción estable
+
+---
+
+**Systemsware © 2026 - Todos los derechos reservados**
 
