@@ -363,17 +363,6 @@ Si encuentras problemas:
 
 ---
 
-## 🚀 Próximas Actualizaciones (v2.1)
-
-- 🔄 **Dashboard analítico** con gráficos interactivos
-- 🔄 **Notificaciones en tiempo real** con WebSocket
-- 🔄 **Integración con APIs externas** de pago y envíos
-- 🔄 **Módulo de facturación** electrónica
-- 🔄 **Sistema de notificaciones** por email
-- 🔄 **Backup automático** de base de datos
-
----
-
 ## 📞 Soporte y Contacto
 
 Si encuentras problemas:
@@ -385,14 +374,14 @@ Si encuentras problemas:
 5. 🤖 Prueba el **chatbot** para ayuda contextualizada
 
 **Contacto técnico:**
-- **Email:** soporte@systemsware.com
-- **Teléfono:** +1 (555) 123-4567
+- **Email:** fsuan62@uan.edu.co
+- **Teléfono:** 3114317402
 - **Web:** www.systemsware.com
 
 ---
 
-**Última actualización:** 12 de marzo de 2026  
-**Versión:** 2.0.0  
+**Última actualización:** 16 de marzo de 2026  
+**Versión:** 2.0.1  
 **Estado:** ✅ Producción estable
 
 ---
