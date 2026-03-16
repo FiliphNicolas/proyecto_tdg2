@@ -5,6 +5,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('./databasepg');
+const { protectPages, serveProtectedPage } = require('./auth-middleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,26 +15,29 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Aplicar middleware de protección a todas las rutas
+app.use(protectPages);
+
 // Inicializar base de datos al iniciar el servidor
 const initializeServer = async () => {
   try {
     console.log('🔄 Inicializando conexión a PostgreSQL...');
-    
+
     // Probar conexión
     const connected = await db.testConnection();
     if (!connected) {
       console.error('❌ No se pudo conectar a PostgreSQL. Verifica tu configuración.');
       process.exit(1);
-    }
-    
+}
+
     // Inicializar base de datos
     await db.initializeDatabase();
-    
+
     console.log('✅ Servidor inicializado correctamente');
-  } catch (error) {
+} catch (error) {
     console.error('❌ Error al inicializar el servidor:', error);
     process.exit(1);
-  }
+}
 };
 
 // --- API endpoints defined below ---
@@ -56,11 +60,11 @@ app.post('/api/register', async (req, res) => {
     const token = jwt.sign({ id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, JWT_SECRET, { expiresIn: '8h' });
 
     res.json({ ok: true, user, token });
-  } catch (err) {
+} catch (err) {
     console.error('Error /api/register', err);
     if (err.code === '23505') return res.status(409).json({ error: 'El usuario o correo ya existe' });
     res.status(500).json({ error: 'Error al registrar: ' + err.message });
-  }
+}
 });
 
 // Login
@@ -80,10 +84,10 @@ app.post('/api/login', async (req, res) => {
 
     const token = jwt.sign({ id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, JWT_SECRET, { expiresIn: '8h' });
     res.json({ ok: true, user: { id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, token });
-  } catch (err) {
+} catch (err) {
     console.error('Error /api/login', err);
     res.status(500).json({ error: 'Error del servidor: ' + err.message });
-  }
+}
 });
 
 // Middleware para proteger rutas
@@ -97,9 +101,9 @@ function authMiddleware(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = payload;
     next();
-  } catch (err) {
+} catch (err) {
     return res.status(401).json({ error: 'Token inválido' });
-  }
+}
 }
 
 // Endpoint de sincronización: obtener productos
@@ -107,10 +111,10 @@ app.get('/api/sync/products', authMiddleware, async (req, res) => {
   try {
     const result = await db.query('SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock FROM "producto" ORDER BY codigo_producto');
     res.json({ ok: true, products: result.rows });
-  } catch (err) {
+} catch (err) {
     console.error('Error /api/sync/products', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Endpoint de sincronización: actualizar stock (ejemplo simple)
@@ -123,10 +127,10 @@ app.post('/api/sync/update-stock', authMiddleware, async (req, res) => {
     const result = await db.query(update, [cantidad, codigo_producto]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ ok: true, product: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error /api/sync/update-stock', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Obtener datos del usuario autenticado
@@ -137,10 +141,10 @@ app.get('/api/me', authMiddleware, async (req, res) => {
     const result = await db.query(text, [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
     res.json({ ok: true, user: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error /api/me', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Actualizar datos del usuario autenticado (incluye nombre, correo y/o contraseña)
@@ -151,50 +155,50 @@ app.patch('/api/me', authMiddleware, async (req, res) => {
 
     if (!nombre && !correo && !contrasena && !direccion && !numero_cel && !ciudad) {
       return res.status(400).json({ error: 'Nada para actualizar' });
-    }
+}
 
     // Actualizar nombre
     if (nombre) {
       await db.query('UPDATE "usuario" SET nombre_usuario = $1 WHERE id_usuario = $2', [nombre, id]);
-    }
+}
 
     // Actualizar correo
     if (correo) {
       try {
         await db.query('UPDATE "usuario" SET email = $1 WHERE id_usuario = $2', [correo, id]);
-      } catch (err) {
+} catch (err) {
         if (err.code === '23505') return res.status(409).json({ error: 'El correo ya está en uso' });
         throw err;
-      }
-    }
+}
+}
 
     // Actualizar dirección
     if (direccion !== undefined) {
       await db.query('UPDATE "usuario" SET direccion = $1 WHERE id_usuario = $2', [direccion, id]);
-    }
+}
 
     // Actualizar teléfono
     if (numero_cel !== undefined) {
       await db.query('UPDATE "usuario" SET numero_cel = $1 WHERE id_usuario = $2', [numero_cel, id]);
-    }
+}
 
     // Actualizar ciudad
     if (ciudad !== undefined) {
       await db.query('UPDATE "usuario" SET ciudad = $1 WHERE id_usuario = $2', [ciudad, id]);
-    }
+}
 
     // Actualizar contraseña
     if (contrasena) {
       const hashed = await bcrypt.hash(contrasena, 10);
       await db.query('UPDATE "usuario" SET contrasena = $1 WHERE id_usuario = $2', [hashed, id]);
-    }
+}
 
     const result = await db.query('SELECT id_usuario, nombre_usuario, email, rol, activo FROM "usuario" WHERE id_usuario = $1', [id]);
     res.json({ ok: true, user: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error PATCH /api/me', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // endpoint dedicado solo a cambiar contraseña (utilizado por la interfaz actualmente)
@@ -203,23 +207,23 @@ app.post('/api/me/password', authMiddleware, async (req, res) => {
     const id = req.user.id_usuario;
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Contraseña actual y nueva requeridas' });
-    
+
     // Verificar contraseña actual
     const userResult = await db.query('SELECT contrasena FROM "usuario" WHERE id_usuario = $1', [id]);
     if (userResult.rowCount === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
-    
+
     const currentHash = userResult.rows[0].contrasena;
     const isValid = await bcrypt.compare(currentPassword, currentHash);
     if (!isValid) return res.status(401).json({ error: 'Contraseña actual incorrecta' });
-    
+
     // Actualizar contraseña
     const hashed = await bcrypt.hash(newPassword, 10);
     await db.query('UPDATE "usuario" SET contrasena = $1 WHERE id_usuario = $2', [hashed, id]);
     res.json({ ok: true });
-  } catch (err) {
+} catch (err) {
     console.error('Error POST /api/me/password', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // PRODUCTO CRUD
@@ -236,10 +240,10 @@ app.post('/api/productos', authMiddleware, async (req, res) => {
     const values = [final_codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null];
     const result = await db.query(text, values);
     res.status(201).json({ ok: true, product: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error POST /api/productos', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Crear producto (público para pruebas)
@@ -250,15 +254,15 @@ app.post('/api/public/productos', async (req, res) => {
 
     // Generar código de producto único
     const codigo = 'PROD-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    
+
     const text = 'INSERT INTO "producto" (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, fecha_creacion) VALUES ($1,$2,$3,$4,$5,$6,NOW()) RETURNING codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria';
     const values = [codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null];
     const result = await db.query(text, values);
     res.status(201).json({ ok: true, product: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error POST /api/public/productos', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Actualizar producto (público para pruebas)
@@ -274,17 +278,17 @@ app.put('/api/public/productos/:id', async (req, res) => {
     if (cantidad_stock !== undefined) { fields.push('cantidad_stock = $' + (values.length + 1)); values.push(cantidad_stock); }
     if (categoria !== undefined) { fields.push('categoria = $' + (values.length + 1)); values.push(categoria); }
     if (fields.length === 0) return res.status(400).json({ error: 'No hay campos para actualizar' });
-    
+
     fields.push('fecha_actualizacion = NOW()');
     values.push(id);
     const text = 'UPDATE producto SET ' + fields.join(', ') + ' WHERE codigo_producto = $' + values.length + ' RETURNING codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria';
     const result = await db.query(text, values);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ ok: true, product: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error PUT /api/public/productos/:id', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Eliminar producto (público para pruebas)
@@ -294,10 +298,10 @@ app.delete('/api/public/productos/:id', async (req, res) => {
     const result = await db.query('DELETE FROM producto WHERE codigo_producto = $1', [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ ok: true });
-  } catch (err) {
+} catch (err) {
     console.error('Error DELETE /api/public/productos/:id', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Listar productos (público, sin autenticación)
@@ -310,107 +314,272 @@ app.get('/api/public/productos', async (req, res) => {
     if (q) {
       values.push('%' + q + '%');
       clauses.push('(nombre ILIKE $' + values.length + ' OR descripcion ILIKE $' + values.length + ')');
-    }
+}
     if (categoria) {
       values.push(categoria);
       clauses.push('categoria = $' + values.length);
-    }
+}
     if (clauses.length) text += ' WHERE ' + clauses.join(' AND ');
     text += ' ORDER BY codigo_producto';
 
     const result = await db.query(text, values);
     res.json({ ok: true, products: result.rows });
-  } catch (err) {
+} catch (err) {
     console.error('Error GET /api/public/productos', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Obtener movimientos de inventario (público para pruebas)
 app.get('/api/public/inventario', async (req, res) => {
   try {
     const { producto, tipo, fecha_desde, fecha_hasta } = req.query;
-    
+
     let text = `
-      SELECT i.codigo_producto, p.nombre as nombre_producto, i.tipo_movimiento, 
+      SELECT i.codigo_producto, p.nombre as nombre_producto, i.tipo_movimiento,
              i.cantidad, i.descripcion, i.fecha_movimiento
       FROM inventario i
       JOIN producto p ON i.codigo_producto = p.codigo_producto
     `;
-    
+
     const clauses = [];
     const values = [];
-    
+
     if (producto) {
       values.push(producto);
       clauses.push('i.codigo_producto = $' + values.length);
-    }
-    
+}
+
     if (tipo) {
       values.push(tipo);
       clauses.push('i.tipo_movimiento = $' + values.length);
-    }
-    
+}
+
     if (fecha_desde) {
       values.push(fecha_desde);
       clauses.push('i.fecha_movimiento >= $' + values.length);
-    }
-    
+}
+
     if (fecha_hasta) {
       values.push(fecha_hasta);
       clauses.push('i.fecha_movimiento <= $' + values.length);
-    }
-    
+}
+
     if (clauses.length) {
       text += ' WHERE ' + clauses.join(' AND ');
-    }
-    
+}
+
     text += ' ORDER BY i.fecha_movimiento DESC, i.id_movimiento DESC';
 
     const result = await db.query(text, values);
     res.json({ ok: true, movements: result.rows });
-  } catch (err) {
+} catch (err) {
     console.error('Error GET /api/public/inventario', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
+});
+
+// Obtener registros de auditoría (requiere autenticación)
+app.get('/api/auditoria', authMiddleware, async (req, res) => {
+  try {
+    const { tabla, accion, fecha_desde, fecha_hasta, limite = 100 } = req.query;
+
+    let text = `
+      SELECT
+        a.id_auditoria,
+        a.fecha_accion,
+        u.nombre_usuario,
+        a.tabla_afectada,
+        a.accion,
+        a.detalles
+      FROM auditoria a
+      LEFT JOIN usuario u ON a.id_usuario = u.id_usuario
+    `;
+
+    const values = [];
+    const clauses = [];
+
+    if (tabla) {
+      values.push(tabla);
+      clauses.push('a.tabla_afectada = $' + values.length);
+}
+
+    if (accion) {
+      values.push(accion);
+      clauses.push('a.accion = $' + values.length);
+}
+
+    if (fecha_desde) {
+      values.push(fecha_desde);
+      clauses.push('a.fecha_accion >= $' + values.length);
+}
+
+    if (fecha_hasta) {
+      values.push(fecha_hasta);
+      clauses.push('a.fecha_accion <= $' + values.length);
+}
+
+    if (clauses.length) {
+      text += ' WHERE ' + clauses.join(' AND ');
+}
+
+    text += ' ORDER BY a.fecha_accion DESC LIMIT $' + (values.length + 1);
+    values.push(limite);
+
+    const result = await db.query(text, values);
+    res.json({ ok: true, data: result.rows });
+} catch (err) {
+    console.error('Error GET /api/auditoria', err);
+    res.status(500).json({ error: 'Error del servidor' });
+}
+});
+
+// Endpoint mejorado para reporte combinado de auditoría e inventario
+app.get('/api/reporte-completo', authMiddleware, async (req, res) => {
+  try {
+    const { tabla, accion, fecha_desde, fecha_hasta, limite = 50 } = req.query;
+
+    // Consulta principal de auditoría
+    let query = `
+      SELECT
+        a.id_auditoria,
+        a.fecha_accion,
+        u.nombre_usuario,
+        u.email,
+        a.tabla_afectada,
+        a.accion,
+        a.detalles
+      FROM auditoria a
+      LEFT JOIN usuario u ON a.id_usuario = u.id_usuario
+    `;
+
+    const values = [];
+    const clauses = [];
+
+    if (tabla) {
+      values.push(tabla);
+      clauses.push('a.tabla_afectada = $' + values.length);
+}
+
+    if (accion) {
+      values.push(accion);
+      clauses.push('a.accion = $' + values.length);
+}
+
+    if (fecha_desde) {
+      values.push(fecha_desde);
+      clauses.push('a.fecha_accion >= $' + values.length);
+}
+
+    if (fecha_hasta) {
+      values.push(fecha_hasta);
+      clauses.push('a.fecha_accion <= $' + values.length);
+}
+
+    if (clauses.length) {
+      query += ' WHERE ' + clauses.join(' AND ');
+}
+
+    query += ' ORDER BY a.fecha_accion DESC LIMIT $' + (values.length + 1);
+    values.push(limite);
+
+    const result = await db.query(query, values);
+
+    // Estadísticas adicionales
+    const statsQuery = `
+      SELECT
+        a.tabla_afectada,
+        COUNT(*) as total_auditoria,
+        MAX(a.fecha_accion) as ultima_accion,
+        STRING_AGG(DISTINCT u.nombre_usuario, ', ') as usuarios_activos
+      FROM auditoria a
+      LEFT JOIN usuario u ON a.id_usuario = u.id_usuario
+      GROUP BY a.tabla_afectada
+      ORDER BY total_auditoria DESC
+    `;
+
+    const statsResult = await db.query(statsQuery);
+
+    // Timeline combinado
+    const timelineQuery = `
+      SELECT
+        'auditoria' as tipo_evento,
+        a.fecha_accion as fecha,
+        u.nombre_usuario,
+        a.tabla_afectada || ' - ' || a.accion as descripcion
+      FROM auditoria a
+      LEFT JOIN usuario u ON a.id_usuario = u.id_usuario
+
+      UNION ALL
+
+      SELECT
+        'inventario' as tipo_evento,
+        i.fecha_movimiento as fecha,
+        'Sistema' as nombre_usuario,
+        i.codigo_producto || ' - ' || i.tipo_movimiento || ' (' || i.cantidad || ')' as descripcion
+      FROM inventario i
+
+      ORDER BY fecha DESC
+      LIMIT 15
+    `;
+
+    const timelineResult = await db.query(timelineQuery);
+
+    res.json({
+      ok: true,
+      data: {
+        auditoria: result.rows,
+        estadisticas: statsResult.rows,
+        timeline: timelineResult.rows,
+        resumen: {
+          total_registros: result.rowCount,
+          tablas_afectadas: statsResult.rowCount,
+          timeline_eventos: timelineResult.rowCount
+}
+}
+});
+} catch (err) {
+    console.error('Error GET /api/reporte-completo', err);
+    res.status(500).json({ error: 'Error del servidor: ' + err.message });
+}
 });
 
 // Agregar movimiento de inventario (público para pruebas)
 app.post('/api/public/inventario', async (req, res) => {
   try {
     const { codigo_producto, tipo_movimiento, cantidad, descripcion } = req.body;
-    
+
     if (!codigo_producto || !tipo_movimiento || !cantidad) {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
-    }
-    
+}
+
     if (!['entrada', 'salida'].includes(tipo_movimiento)) {
       return res.status(400).json({ error: 'Tipo de movimiento inválido' });
-    }
-    
+}
+
     // Verificar que el producto existe
     const productCheck = await db.query('SELECT codigo_producto FROM producto WHERE codigo_producto = $1', [codigo_producto]);
     if (productCheck.rowCount === 0) {
       return res.status(404).json({ error: 'Producto no encontrado' });
-    }
-    
+}
+
     // Insertar movimiento de inventario
     const text = 'INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento) VALUES ($1, $2, $3, $4, NOW()) RETURNING *';
     const values = [codigo_producto, tipo_movimiento, cantidad, descripcion || null];
     const result = await db.query(text, values);
-    
+
     // Actualizar stock del producto
-    const stockUpdate = tipo_movimiento === 'entrada' 
+    const stockUpdate = tipo_movimiento === 'entrada'
       ? 'UPDATE producto SET cantidad_stock = cantidad_stock + $1 WHERE codigo_producto = $2'
       : 'UPDATE producto SET cantidad_stock = cantidad_stock - $1 WHERE codigo_producto = $2';
-    
+
     await db.query(stockUpdate, [cantidad, codigo_producto]);
-    
+
     res.status(201).json({ ok: true, movement: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error POST /api/public/inventario', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Listar productos (con búsqueda y filtrado opcional)
@@ -423,20 +592,20 @@ app.get('/api/productos', authMiddleware, async (req, res) => {
     if (q) {
       values.push('%' + q + '%');
       clauses.push('(nombre ILIKE $' + values.length + ' OR descripcion ILIKE $' + values.length + ')');
-    }
+}
     if (categoria) {
       values.push(categoria);
       clauses.push('categoria = $' + values.length);
-    }
+}
     if (clauses.length) text += ' WHERE ' + clauses.join(' AND ');
     text += ' ORDER BY codigo_producto';
 
     const result = await db.query(text, values);
     res.json({ ok: true, products: result.rows });
-  } catch (err) {
+} catch (err) {
     console.error('Error GET /api/productos', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Obtener un producto por id
@@ -447,10 +616,10 @@ app.get('/api/productos/:id', authMiddleware, async (req, res) => {
     const result = await db.query('SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria FROM "producto" WHERE codigo_producto = $1', [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ ok: true, product: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error GET /api/productos/:id', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Actualizar producto
@@ -473,10 +642,10 @@ app.put('/api/productos/:id', authMiddleware, async (req, res) => {
     const result = await db.query(text, values);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ ok: true, product: result.rows[0] });
-  } catch (err) {
+} catch (err) {
     console.error('Error PUT /api/productos/:id', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Eliminar producto
@@ -487,17 +656,17 @@ app.delete('/api/productos/:id', authMiddleware, async (req, res) => {
     const result = await db.query('DELETE FROM "producto" WHERE codigo_producto = $1 RETURNING codigo_producto', [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json({ ok: true });
-  } catch (err) {
+} catch (err) {
     console.error('Error DELETE /api/productos/:id', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Generar Reporte de Inventario
 app.get('/api/reporte', authMiddleware, async (req, res) => {
   try {
     const { q, categoria } = req.query;
-    let text = `SELECT 
+    let text = `SELECT
                   codigo_producto as codigo,
                   nombre as producto,
                   categoria,
@@ -507,70 +676,68 @@ app.get('/api/reporte', authMiddleware, async (req, res) => {
                 FROM "producto"`;
     const clauses = [];
     const values = [];
-    
+
     if (q) {
       values.push('%' + q + '%');
       clauses.push('(nombre ILIKE $' + values.length + ' OR codigo_producto ILIKE $' + values.length + ')');
-    }
+}
     if (categoria) {
       values.push(categoria);
       clauses.push('categoria = $' + values.length);
-    }
+}
     if (clauses.length) text += ' WHERE ' + clauses.join(' AND ');
     text += ' ORDER BY codigo_producto';
 
     const result = await db.query(text, values);
     res.json({ ok: true, data: result.rows });
-  } catch (err) {
+} catch (err) {
     console.error('Error GET /api/reporte', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Obtener lista de servicios
 app.get('/api/servicios', async (req, res) => {
   try {
     const servicios = [
-      { 
-        id: 1, 
-        nombre: 'Mantenimiento preventivo', 
+      {
+        id: 1,
+        nombre: 'Mantenimiento preventivo',
         descripcion: 'Mantenimiento regular para prevenir problemas y garantizar disponibilidad',
         enlace: '#'
-      },
-      { 
-        id: 2, 
-        nombre: 'Reparación', 
+},
+      {
+        id: 2,
+        nombre: 'Reparación',
         descripcion: 'Reparación de equipos y sistemas dañados con garantía',
         enlace: '#'
-      },
-      { 
-        id: 3, 
-        nombre: 'Consultoría técnica', 
+},
+      {
+        id: 3,
+        nombre: 'Consultoría técnica',
         descripcion: 'Asesoría especializada en tecnología y optimización',
         enlace: '#'
-      },
-      { 
-        id: 4, 
-        nombre: 'Instalación de sistemas', 
+},
+      {
+        id: 4,
+        nombre: 'Instalación de sistemas',
         descripcion: 'Instalación y configuración de soluciones completas',
         enlace: '#'
-      }
+}
     ];
     res.json({ ok: true, servicios: servicios });
-  } catch (err) {
+} catch (err) {
     console.error('Error GET /api/servicios', err);
     res.status(500).json({ error: 'Error del servidor' });
-  }
+}
 });
 
 // Exportar inventario a Excel
 app.get('/api/inventario/export/excel', authMiddleware, async (req, res) => {
   try {
-    const XLSX = require('xlsx');
-    
-    // Obtener datos de inventario
+        // Obtener datos de inventario
     const result = await db.query(`
-      SELECT 
+      SELECT
         p.codigo_producto,
         p.nombre,
         p.descripcion,
@@ -581,17 +748,17 @@ app.get('/api/inventario/export/excel', authMiddleware, async (req, res) => {
       FROM "producto" p
       ORDER BY p.nombre
     `);
-    
+
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'No hay productos para exportar' });
-    }
-    
+}
+
     // Crear workbook y worksheet
     const wb = XLSX.utils.book_new();
     const wsData = [
       ['Código', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Categoría', 'Fecha Creación']
     ];
-    
+
     result.rows.forEach(row => {
       wsData.push([
         row.codigo_producto,
@@ -602,35 +769,33 @@ app.get('/api/inventario/export/excel', authMiddleware, async (req, res) => {
         row.categoria || '',
         new Date(row.fecha_creacion).toLocaleDateString('es-ES')
       ]);
-    });
-    
+});
+
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
-    
+
     // Generar buffer
     const excelBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-    
+
     // Configurar headers
     const filename = `inventario_${new Date().toISOString().slice(0, 10)}.xlsx`;
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
+
     res.send(excelBuffer);
-  } catch (err) {
+} catch (err) {
     console.error('Error exportando a Excel:', err);
     res.status(500).json({ error: 'Error al exportar a Excel' });
-  }
+}
 });
 
 // Exportar inventario a PDF
 app.get('/api/inventario/export/pdf', authMiddleware, async (req, res) => {
   try {
     const jsPDF = require('jspdf');
-    const autoTable = require('jspdf-autotable');
-    
-    // Obtener datos de inventario
+        // Obtener datos de inventario
     const result = await db.query(`
-      SELECT 
+      SELECT
         p.codigo_producto,
         p.nombre,
         p.descripcion,
@@ -640,22 +805,22 @@ app.get('/api/inventario/export/pdf', authMiddleware, async (req, res) => {
       FROM "producto" p
       ORDER BY p.nombre
     `);
-    
+
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'No hay productos para exportar' });
-    }
-    
+}
+
     // Crear PDF
     const doc = new jsPDF();
-    
+
     // Título
     doc.setFontSize(20);
     doc.text('Reporte de Inventario', 14, 20);
-    
+
     doc.setFontSize(12);
     doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 30);
     doc.text(`Total productos: ${result.rowCount}`, 14, 37);
-    
+
     // Tabla de productos
     const tableData = result.rows.map(row => [
       row.codigo_producto,
@@ -665,7 +830,7 @@ app.get('/api/inventario/export/pdf', authMiddleware, async (req, res) => {
       row.cantidad_stock,
       row.categoria || ''
     ]);
-    
+
     autoTable(doc, {
       head: [['Código', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Categoría']],
       body: tableData,
@@ -673,36 +838,36 @@ app.get('/api/inventario/export/pdf', authMiddleware, async (req, res) => {
       styles: {
         fontSize: 9,
         cellPadding: 2
-      },
+},
       headStyles: {
         fillColor: [66, 139, 202],
         textColor: 255
-      },
+},
       alternateRowStyles: {
         fillColor: [245, 245, 245]
-      }
-    });
-    
+}
+});
+
     // Pie de página
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(10);
       doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.width - 30, doc.internal.pageSize.height - 10);
-    }
-    
+}
+
     // Generar buffer y enviar
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-    
+
     const filename = `inventario_${new Date().toISOString().slice(0, 10)}.pdf`;
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
+
     res.send(pdfBuffer);
-  } catch (err) {
+} catch (err) {
     console.error('Error exportando a PDF:', err);
     res.status(500).json({ error: 'Error al exportar a PDF' });
-  }
+}
 });
 
 // Exportar movimientos de inventario a Excel
@@ -710,10 +875,10 @@ app.get('/api/movimientos/export/excel', authMiddleware, async (req, res) => {
   try {
     const XLSX = require('xlsx');
     const { producto, tipo, fechaDesde, fechaHasta } = req.query;
-    
+
     // Construir consulta con filtros
     let query = `
-      SELECT 
+      SELECT
         m.codigo_producto,
         p.nombre as nombre_producto,
         m.tipo_movimiento,
@@ -726,38 +891,38 @@ app.get('/api/movimientos/export/excel', authMiddleware, async (req, res) => {
     `;
     const params = [];
     let paramIndex = 1;
-    
+
     if (producto) {
       query += ` AND m.codigo_producto = $${paramIndex++}`;
       params.push(producto);
-    }
-    
+}
+
     if (tipo) {
       query += ` AND m.tipo_movimiento = $${paramIndex++}`;
       params.push(tipo);
-    }
-    
+}
+
     if (fechaDesde) {
       query += ` AND m.fecha_movimiento >= $${paramIndex++}`;
       params.push(fechaDesde);
-    }
-    
+}
+
     if (fechaHasta) {
       query += ` AND m.fecha_movimiento <= $${paramIndex++}`;
       params.push(fechaHasta);
-    }
-    
+}
+
     query += ` ORDER BY m.fecha_movimiento DESC`;
-    
+
     // Ejecutar consulta
     const result = await db.query(query, params);
-    
+
     // Crear workbook
     const wb = XLSX.utils.book_new();
     const wsData = [
       ['Fecha', 'Producto', 'Código', 'Tipo', 'Cantidad', 'Descripción']
     ];
-    
+
     result.rows.forEach(row => {
       wsData.push([
         new Date(row.fecha_movimiento).toLocaleDateString('es-ES'),
@@ -767,24 +932,24 @@ app.get('/api/movimientos/export/excel', authMiddleware, async (req, res) => {
         parseInt(row.cantidad),
         row.descripcion || ''
       ]);
-    });
-    
+});
+
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, 'Movimientos');
-    
+
     // Generar buffer
     const excelBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
-    
+
     // Configurar headers
     const filename = `movimientos_${new Date().toISOString().slice(0, 10)}.xlsx`;
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
+
     res.send(excelBuffer);
-  } catch (err) {
+} catch (err) {
     console.error('Error exportando movimientos a Excel:', err);
     res.status(500).json({ error: 'Error al exportar movimientos a Excel' });
-  }
+}
 });
 
 // Exportar movimientos de inventario a PDF
@@ -793,10 +958,10 @@ app.get('/api/movimientos/export/pdf', authMiddleware, async (req, res) => {
     const jsPDF = require('jspdf');
     const autoTable = require('jspdf-autotable');
     const { producto, tipo, fechaDesde, fechaHasta } = req.query;
-    
+
     // Construir consulta con filtros
     let query = `
-      SELECT 
+      SELECT
         m.codigo_producto,
         p.nombre as nombre_producto,
         m.tipo_movimiento,
@@ -809,74 +974,74 @@ app.get('/api/movimientos/export/pdf', authMiddleware, async (req, res) => {
     `;
     const params = [];
     let paramIndex = 1;
-    
+
     if (producto) {
       query += ` AND m.codigo_producto = $${paramIndex++}`;
       params.push(producto);
-    }
-    
+}
+
     if (tipo) {
       query += ` AND m.tipo_movimiento = $${paramIndex++}`;
       params.push(tipo);
-    }
-    
+}
+
     if (fechaDesde) {
       query += ` AND m.fecha_movimiento >= $${paramIndex++}`;
       params.push(fechaDesde);
-    }
-    
+}
+
     if (fechaHasta) {
       query += ` AND m.fecha_movimiento <= $${paramIndex++}`;
       params.push(fechaHasta);
-    }
-    
+}
+
     query += ` ORDER BY m.fecha_movimiento DESC`;
-    
+
     // Ejecutar consulta
     const result = await db.query(query, params);
-    
+
     // Crear PDF
     const doc = new jsPDF();
-    
+
     // Título
     doc.setFontSize(20);
     doc.text('Reporte de Movimientos de Inventario', 14, 20);
-    
+
     doc.setFontSize(12);
     doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 30);
     doc.text(`Total movimientos: ${result.rowCount}`, 14, 37);
-    
+
     // Mostrar filtros aplicados
     let yPos = 44;
     if (producto || tipo || fechaDesde || fechaHasta) {
       doc.text('Filtros aplicados:', 14, yPos);
       yPos += 7;
-      
+
       if (producto) {
         const productResult = await db.query('SELECT nombre FROM "producto" WHERE codigo_producto = $1', [producto]);
         if (productResult.rowCount > 0) {
           doc.text(`- Producto: ${productResult.rows[0].nombre}`, 20, yPos);
           yPos += 5;
-        }
-      }
-      
+}
+}
+
       if (tipo) {
         doc.text(`- Tipo: ${tipo}`, 20, yPos);
         yPos += 5;
-      }
-      
+}
+
       if (fechaDesde) {
         doc.text(`- Desde: ${new Date(fechaDesde).toLocaleDateString('es-ES')}`, 20, yPos);
         yPos += 5;
-      }
-      
+}
+
       if (fechaHasta) {
         doc.text(`- Hasta: ${new Date(fechaHasta).toLocaleDateString('es-ES')}`, 20, yPos);
         yPos += 5;
-      }
+}
       yPos += 5;
-    }
-    
+}
+
     // Tabla de movimientos
     const tableData = result.rows.map(row => [
       new Date(row.fecha_movimiento).toLocaleDateString('es-ES'),
@@ -886,7 +1051,7 @@ app.get('/api/movimientos/export/pdf', authMiddleware, async (req, res) => {
       parseInt(row.cantidad),
       row.descripcion || ''
     ]);
-    
+
     autoTable(doc, {
       head: [['Fecha', 'Producto', 'Código', 'Tipo', 'Cantidad', 'Descripción']],
       body: tableData,
@@ -894,58 +1059,58 @@ app.get('/api/movimientos/export/pdf', authMiddleware, async (req, res) => {
       styles: {
         fontSize: 9,
         cellPadding: 2
-      },
+},
       headStyles: {
         fillColor: [66, 139, 202],
         textColor: 255
-      },
+},
       alternateRowStyles: {
         fillColor: [245, 245, 245]
-      }
-    });
-    
+}
+});
+
     // Pie de página
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(10);
       doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.width - 30, doc.internal.pageSize.height - 10);
-    }
-    
+}
+
     // Generar buffer y enviar
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
-    
+
     const filename = `movimientos_${new Date().toISOString().slice(0, 10)}.pdf`;
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
+
     res.send(pdfBuffer);
-  } catch (err) {
+} catch (err) {
     console.error('Error exportando movimientos a PDF:', err);
     res.status(500).json({ error: 'Error al exportar movimientos a PDF' });
-  }
+}
 });
 
 // Obtener estado de cuenta completo del usuario
 app.get('/api/estado-cuenta', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id_usuario;
-    
+
     // Obtener información del usuario
     const userQuery = `
-      SELECT id_usuario, nombre_usuario, email, rol, activo, direccion, numero_cel, ciudad, 
+      SELECT id_usuario, nombre_usuario, email, rol, activo, direccion, numero_cel, ciudad,
              fecha_creacion, fecha_actualizacion
-      FROM "usuario" 
+      FROM "usuario"
       WHERE id_usuario = $1
     `;
     const userResult = await db.query(userQuery, [userId]);
-    
+
     if (userResult.rowCount === 0) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-    
+}
+
     const usuario = userResult.rows[0];
-    
+
     // Obtener pedidos del usuario
     const pedidosQuery = `
       SELECT p.id_pedido, p.fecha_pedido, p.total, p.estado, p.codigo_detalle,
@@ -958,10 +1123,10 @@ app.get('/api/estado-cuenta', authMiddleware, async (req, res) => {
       LIMIT 10
     `;
     const pedidosResult = await db.query(pedidosQuery, [userId]);
-    
+
     // Obtener estadísticas
     const statsQuery = `
-      SELECT 
+      SELECT
         COUNT(DISTINCT p.id_pedido) as total_pedidos,
         COALESCE(SUM(p.total), 0) as total_gastado,
         COUNT(DISTINCT CASE WHEN p.estado = 'pendiente' THEN p.id_pedido END) as pedidos_pendientes,
@@ -970,12 +1135,12 @@ app.get('/api/estado-cuenta', authMiddleware, async (req, res) => {
       WHERE p.id_usuario = $1
     `;
     const statsResult = await db.query(statsQuery, [userId]);
-    
+
     // Obtener movimientos de inventario recientes (si el usuario tiene rol de empleado)
     let movimientosInventario = [];
     if (usuario.rol === 'empleado' || usuario.rol === 'admin') {
       const inventarioQuery = `
-        SELECT i.codigo_producto, p.nombre as nombre_producto, i.tipo_movimiento, 
+        SELECT i.codigo_producto, p.nombre as nombre_producto, i.tipo_movimiento,
                i.cantidad, i.descripcion, i.fecha_movimiento
         FROM "inventario" i
         JOIN "producto" p ON i.codigo_producto = p.codigo_producto
@@ -984,32 +1149,50 @@ app.get('/api/estado-cuenta', authMiddleware, async (req, res) => {
       `;
       const inventarioResult = await db.query(inventarioQuery);
       movimientosInventario = inventarioResult.rows;
-    }
-    
+}
+
     res.json({
       ok: true,
       usuario: usuario,
       pedidos: pedidosResult.rows,
       estadisticas: statsResult.rows[0],
       movimientos_inventario: movimientosInventario
-    });
-    
-  } catch (err) {
+});
+} catch (err) {
     console.error('Error GET /api/estado-cuenta', err);
     res.status(500).json({ error: 'Error del servidor: ' + err.message });
-  }
+}
 });
 
-// Servir archivos estáticos (HTML/CSS) desde la carpeta del proyecto
-// debe definirse después de las rutas de la API para que solo responda a solicitudes GET/HEAD
-app.use(express.static(path.join(__dirname)));
+// Rutas protegidas específicas (requieren autenticación)
+app.get('/reporte-inventario.html', serveProtectedPage(path.join(__dirname, 'reporte-inventario.html')));
+app.get('/conexion-auditoria.html', serveProtectedPage(path.join(__dirname, 'conexion-auditoria.html')));
+app.get('/productos.html', serveProtectedPage(path.join(__dirname, 'productos.html')));
+app.get('/perfil.html', serveProtectedPage(path.join(__dirname, 'perfil.html')));
+app.get('/ver-estado-cuenta.html', serveProtectedPage(path.join(__dirname, 'ver-estado-cuenta.html')));
+
+// Servir archivos estáticos públicos (CSS, JS, imágenes)
+app.use('/styles.css', express.static(path.join(__dirname, 'styles.css')));
+app.use('/nav-loader.js', express.static(path.join(__dirname, 'nav-loader.js')));
+app.use('/auth-system.js', express.static(path.join(__dirname, 'auth-system.js')));
+app.use('/databasepg.js', express.static(path.join(__dirname, 'databasepg.js')));
+
+// Página principal (redirige a login si no está autenticado)
+app.get('/', (req, res) => {
+  const authHeader = req.headers.authorization || req.headers.cookie;
+  if (authHeader && authHeader.includes('authToken')) {
+    res.sendFile(path.join(__dirname, 'index.html'));
+} else {
+    res.redirect('/iniciar-sesion.html');
+}
+});
 
 // Iniciar servidor después de inicializar la base de datos
 initializeServer().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📱 Open http://localhost:${PORT} in your browser`);
-  });
+});
 }).catch(error => {
   console.error('❌ Error crítico al iniciar el servidor:', error);
   process.exit(1);

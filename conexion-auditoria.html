@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexión PostgreSQL - Auditoría Systemsware</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .connection-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .query-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .query-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .audit-table th {
+            background: #59b4ff;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .audit-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .audit-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .user-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .table-badge {
+            background: #fff3e0;
+            color: #f57c00;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .action-badge {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error-message {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+
+        .export-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>🗄️ Conexión PostgreSQL - Auditoría Systemsware</h1>
+            <p>Consulta directa a la base de datos con SELECT * FROM auditoría</p>
+        </div>
+
+        <div id="connectionStatus" class="connection-status disconnected">
+            🔴 Desconectado - Iniciando conexión...
+        </div>
+
+        <div class="query-section">
+            <h3>📋 Consulta SQL Ejecutada</h3>
+            <div class="query-display">
+SELECT 
+    a.id_auditoria,
+    a.fecha_accion,
+    u.nombre_usuario,
+    u.email,
+    a.tabla_afectada,
+    a.accion,
+    a.detalles
+FROM auditoria a
+LEFT JOIN usuario u ON a.id_usuario = u.id_usuario
+ORDER BY a.fecha_accion DESC
+LIMIT 100;
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalRecords">0</div>
+                <div class="stat-label">Total Registros</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Usuarios Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalTables">0</div>
+                <div class="stat-label">Tablas Afectadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="recentActions">0</div>
+                <div class="stat-label">Acciones Recientes (7 días)</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="refresh-btn" onclick="loadAuditData()">🔄 Actualizar Datos</button>
+            <button class="export-btn" onclick="exportToCSV()">📥 Exportar CSV</button>
+        </div>
+
+        <div id="loadingMessage" class="loading" style="display: none;">
+            <div>⏳ Cargando datos desde PostgreSQL...</div>
+        </div>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div class="table-wrapper">
+            <table class="audit-table" id="auditTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha y Hora</th>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Tabla</th>
+                        <th>Acción</th>
+                        <th>Detalles</th>
+                    </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                            🔍 Cargando datos de auditoría...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let auditData = [];
+
+        // Función principal para cargar datos de auditoría
+        async function loadAuditData() {
+            try {
+                showLoading(true);
+                hideError();
+                
+                // Primero verificar conexión a la base de datos
+                const connectionTest = await testDatabaseConnection();
+                
+                if (!connectionTest) {
+                    showConnectionStatus(false);
+                    showError('No se puede conectar a la base de datos PostgreSQL');
+                    return;
+                }
+                
+                showConnectionStatus(true);
+                
+                // Cargar datos de auditoría
+                const response = await fetch('/api/auditoria', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showError('No autorizado - Inicia sesión primero');
+                        window.location.href = '/iniciar-sesion.html';
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (!result.ok) {
+                    throw new Error(result.error || 'Error en la respuesta del servidor');
+                }
+                
+                auditData = result.data || [];
+                displayAuditData(auditData);
+                updateStatistics(auditData);
+                
+                showLoading(false);
+                
+            } catch (error) {
+                console.error('Error cargando datos de auditoría:', error);
+                showConnectionStatus(false);
+                showError(`Error al cargar datos: ${error.message}`);
+                showLoading(false);
+            }
+        }
+
+        // Probar conexión a la base de datos
+        async function testDatabaseConnection() {
+            try {
+                const response = await fetch('/api/public/inventario');
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Mostrar datos en la tabla
+        function displayAuditData(data) {
+            const tbody = document.getElementById('auditTableBody');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="no-data">
+                            📭 No hay registros de auditoría disponibles
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td><strong>${row.id_auditoria}</strong></td>
+                    <td>${formatDateTime(row.fecha_accion)}</td>
+                    <td>
+                        <span class="user-badge">${row.nombre_usuario || 'N/A'}</span>
+                    </td>
+                    <td>${row.email || 'N/A'}</td>
+                    <td>
+                        <span class="table-badge">${row.tabla_afectada || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <span class="action-badge">${row.accion || 'N/A'}</span>
+                    </td>
+                    <td>${row.detalles || 'Sin detalles'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Actualizar estadísticas
+        function updateStatistics(data) {
+            const totalRecords = data.length;
+            const uniqueUsers = [...new Set(data.map(r => r.nombre_usuario))].length;
+            const uniqueTables = [...new Set(data.map(r => r.tabla_afectada))].length;
+            
+            // Acciones recientes (últimos 7 días)
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+            const recentActions = data.filter(r => new Date(r.fecha_accion) >= sevenDaysAgo).length;
+            
+            document.getElementById('totalRecords').textContent = totalRecords;
+            document.getElementById('totalUsers').textContent = uniqueUsers;
+            document.getElementById('totalTables').textContent = uniqueTables;
+            document.getElementById('recentActions').textContent = recentActions;
+        }
+
+        // Formatear fecha y hora
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // Exportar a CSV
+        function exportToCSV() {
+            if (auditData.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            const headers = ['ID Auditoría', 'Fecha', 'Usuario', 'Email', 'Tabla', 'Acción', 'Detalles'];
+            const csvContent = [
+                headers.join(','),
+                ...auditData.map(row => [
+                    row.id_auditoria,
+                    formatDateTime(row.fecha_accion),
+                    `"${row.nombre_usuario || ''}"`,
+                    `"${row.email || ''}"`,
+                    `"${row.tabla_afectada || ''}"`,
+                    `"${row.accion || ''}"`,
+                    `"${row.detalles || ''}"`
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `auditoria_systemsware_${new Date().getTime()}.csv`;
+            link.click();
+        }
+
+        // Funciones de UI
+        function showConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+            if (connected) {
+                status.className = 'connection-status connected';
+                status.innerHTML = '🟢 Conectado - Base de datos PostgreSQL activa';
+            } else {
+                status.className = 'connection-status disconnected';
+                status.innerHTML = '🔴 Desconectado - Error en la conexión';
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = `❌ ${message}`;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Cargar datos al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar si hay autenticación
+            if (!localStorage.getItem('authToken')) {
+                window.location.href = '/iniciar-sesion.html';
+                return;
+            }
+            
+            loadAuditData();
+        });
+
+        // Auto-refresh cada 30 segundos
+        setInterval(() => {
+            if (document.getElementById('connectionStatus').className.includes('connected')) {
+                loadAuditData();
+            }
+        }, 30000);
+    </script>
+    <script src="auth-system.js"></script>
+    <script src="nav-loader.js"></script>
+</body>
+</html>

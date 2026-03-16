@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Usuario Actual</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .user-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .info-value {
+            color: #666;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #5a67d8;
+        }
+        .btn-primary {
+            background: #28a745;
+        }
+        .btn-primary:hover {
+            background: #218838;
+        }
+        .refresh-indicator {
+            color: #666;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .toggle-code {
+            background: #6c757d;
+            font-size: 12px;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+        .toggle-code:hover {
+            background: #5a6268;
+        }
+        .code-container {
+            display: none;
+            margin-top: 10px;
+        }
+        .code-container.show {
+            display: block;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Información del Usuario Actual</h1>
+        
+        <div>
+            <button class="btn btn-primary" onclick="verUsuarioDesdeAPI()">🔄 Ver desde API /api/me</button>
+            <span class="refresh-indicator" id="refresh-indicator">Auto-refresh cada 30s</span>
+        </div>
+        
+        <button class="btn" onclick="verUsuarioDesdeAuthSystem()">Ver desde AuthSystem</button>
+        <button class="btn" onclick="verLocalStorage()">Ver localStorage</button>
+        
+        <div id="resultado"></div>
+        
+        <div class="user-card">
+            <h2>📋 Resumen del Usuario</h2>
+            <div id="resumen-usuario">
+                <p>Carga uno de los métodos arriba para ver la información</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="nav-loader.js"></script>
+    <script src="auth-system.js"></script>
+    <script>
+        // Método 1: Usando AuthSystem
+        function verUsuarioDesdeAuthSystem() {
+            const resultado = document.getElementById('resultado');
+            
+            if (typeof authSystem !== 'undefined') {
+                const currentUser = authSystem.getCurrentUser();
+                
+                if (currentUser) {
+                    resultado.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Usuario desde AuthSystem</h3>
+                            <button class="btn toggle-code" onclick="toggleCode('authsystem-code')">👁️ Ver/Ocultar código</button>
+                            <div class="code-container" id="authsystem-code">
+                                <pre>${JSON.stringify(currentUser, null, 2)}</pre>
+                            </div>
+                        </div>
+                    `;
+                    actualizarResumen(currentUser);
+                } else {
+                    resultado.innerHTML = `
+                        <div class="error">
+                            ❌ No hay usuario autenticado en AuthSystem
+                        </div>
+                    `;
+                }
+            } else {
+                resultado.innerHTML = `
+                    <div class="error">
+                        ❌ AuthSystem no está disponible
+                    </div>
+                `;
+            }
+        }
+
+        // Método 2: Usando API /api/me
+        async function verUsuarioDesdeAPI() {
+            const resultado = document.getElementById('resultado');
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                resultado.innerHTML = `
+                    <div class="error">
+                        ❌ No hay token en localStorage
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultado.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Usuario desde API /api/me</h3>
+                            <button class="btn toggle-code" onclick="toggleCode('api-code')">👁️ Ver/Ocultar código</button>
+                            <div class="code-container" id="api-code">
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </div>
+                        </div>
+                    `;
+                    if (data.user) {
+                        actualizarResumen(data.user);
+                    }
+                } else {
+                    resultado.innerHTML = `
+                        <div class="error">
+                            ❌ Error ${response.status}: ${response.statusText}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultado.innerHTML = `
+                    <div class="error">
+                        ❌ Error de conexión: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Método 3: Ver localStorage
+        function verLocalStorage() {
+            const resultado = document.getElementById('resultado');
+            
+            const token = localStorage.getItem('authToken');
+            const userName = localStorage.getItem('userName');
+            
+            const localStorageData = {
+                authToken: token ? '***TOKEN***' : null,
+                userName: userName,
+                hasToken: !!token
+            };
+            
+            resultado.innerHTML = `
+                <div class="success">
+                    <h3>✅ Datos en localStorage</h3>
+                    <button class="btn toggle-code" onclick="toggleCode('localstorage-code')">👁️ Ver/Ocultar código</button>
+                    <div class="code-container" id="localstorage-code">
+                        <pre>${JSON.stringify(localStorageData, null, 2)}</pre>
+                    </div>
+                </div>
+            `;
+            
+            if (userName) {
+                actualizarResumen({ nombre_usuario: userName });
+            }
+        }
+
+        // Actualizar resumen del usuario
+        function actualizarResumen(usuario) {
+            const resumen = document.getElementById('resumen-usuario');
+            resumen.innerHTML = `
+                <div class="info-item">
+                    <span class="info-label">ID Usuario:</span>
+                    <span class="info-value">${usuario.id_usuario || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">${usuario.nombre_usuario || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">${usuario.email || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Rol:</span>
+                    <span class="info-value">${usuario.rol || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Activo:</span>
+                    <span class="info-value">${usuario.activo ? 'Sí' : 'No'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Teléfono:</span>
+                    <span class="info-value">${usuario.numero_cel || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Dirección:</span>
+                    <span class="info-value">${usuario.direccion || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Ciudad:</span>
+                    <span class="info-value">${usuario.ciudad || 'N/A'}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Fecha Creación:</span>
+                    <span class="info-value">${usuario.fecha_creacion ? new Date(usuario.fecha_creacion).toLocaleString() : 'N/A'}</span>
+                </div>
+            `;
+        }
+        
+        // Función para mostrar/ocultar código
+        function toggleCode(containerId) {
+            const container = document.getElementById(containerId);
+            container.classList.toggle('show');
+        }
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            verUsuarioDesdeAPI(); // Cargar automáticamente desde API al inicio
+            
+            // Auto-refresh cada 30 segundos con API
+            setInterval(() => {
+                const indicator = document.getElementById('refresh-indicator');
+                indicator.textContent = '🔄 Actualizando...';
+                verUsuarioDesdeAPI().finally(() => {
+                    setTimeout(() => {
+                        indicator.textContent = 'Auto-refresh cada 30s';
+                    }, 1000);
+                });
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

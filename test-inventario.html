@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Conexión Inventario</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Test de Conexión - Sistema de Inventario</h1>
+    
+    <div id="results">
+        <div class="info">Haciendo pruebas de conexión...</div>
+    </div>
+
+    <button onclick="testAPI()">Probar API de Inventario</button>
+    <button onclick="testProducts()">Probar API de Productos</button>
+    <button onclick="addTestMovement()">Agregar Movimiento de Prueba</button>
+    <button onclick="window.location.href='reporte-inventario.html'">Ver Reporte de Inventario</button>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        async function testAPI() {
+            log('🔄 Probando conexión a /api/public/inventario...', 'info');
+            
+            try {
+                const response = await fetch('/api/public/inventario');
+                const data = await response.json();
+                
+                if (response.ok && data.ok) {
+                    log(`✅ API funcionando correctamente! Encontrados ${data.movements.length} movimientos`, 'success');
+                    if (data.movements.length > 0) {
+                        log('<strong>Movimientos encontrados:</strong>', 'info');
+                        log(`<pre>${JSON.stringify(data.movements, null, 2)}</pre>`, 'info');
+                    }
+                } else {
+                    log(`❌ Error en API: ${data.error || 'Respuesta inválida'}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProducts() {
+            log('🔄 Probando conexión a /api/public/productos...', 'info');
+            
+            try {
+                const response = await fetch('/api/public/productos');
+                const data = await response.json();
+                
+                if (response.ok && data.ok) {
+                    log(`✅ API de productos funcionando! Encontrados ${data.products.length} productos`, 'success');
+                } else {
+                    log(`❌ Error en API de productos: ${data.error || 'Respuesta inválida'}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function addTestMovement() {
+            log('🔄 Agregando movimiento de prueba...', 'info');
+            
+            try {
+                const testMovement = {
+                    codigo_producto: 'PROD-001',
+                    tipo_movimiento: 'entrada',
+                    cantidad: 5,
+                    descripcion: 'Movimiento de prueba desde test'
+                };
+
+                const response = await fetch('/api/public/inventario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testMovement)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.ok) {
+                    log(`✅ Movimiento agregado correctamente!`, 'success');
+                    log(`<pre>${JSON.stringify(data.movement, null, 2)}</pre>`, 'info');
+                } else {
+                    log(`❌ Error agregando movimiento: ${data.error || 'Respuesta inválida'}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(testAPI, 500);
+        });
+    </script>
+</body>
+</html>

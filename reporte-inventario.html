@@ -68,7 +68,7 @@
     <div class="report-container">
         <div class="report-header">
             <h1>📊 Systemsware Inventory</h1>
-            <p>Reporte Consolidado de Movimientos</p>
+            <p>Reporte de Movimientos de Inventario</p>
             <small>Generado: <span id="currentDate"></span></small>
         </div>
 
@@ -139,13 +139,14 @@
     <script>
         // Datos de ejemplo basados en tu estructura (Simulando API)
         let allMovements = [
-            { fecha: '2026-03-10', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'entrada', cantidad: 20, desc: 'Compra Inicial' },
-            { fecha: '2026-03-11', codigo: 'PROD-002', nombre: 'Monitor LG 24"', tipo: 'entrada', cantidad: 30, desc: 'Stock Nuevo' },
-            { fecha: '2026-03-11', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'salida', cantidad: 2, desc: 'Venta Directa' },
-            { fecha: '2026-03-12', codigo: 'PROD-003', nombre: 'Teclado Mecánico', tipo: 'entrada', cantidad: 50, desc: 'Proveedor X' },
-            { fecha: '2026-03-12', codigo: 'PROD-002', nombre: 'Monitor LG 24"', tipo: 'salida', cantidad: 5, desc: 'Envío Cliente' }
+            { fecha: '2025-01-15', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'entrada', cantidad: 20, desc: 'Compra inicial de inventario' },
+            { fecha: '2025-01-16', codigo: 'PROD-002', nombre: 'Monitor LG 24 pulgadas', tipo: 'entrada', cantidad: 30, desc: 'Compra a proveedor LG' },
+            { fecha: '2025-01-17', codigo: 'PROD-003', nombre: 'Teclado Mecánico RGB', tipo: 'entrada', cantidad: 50, desc: 'Compra a proveedor mecánico' },
+            { fecha: '2025-01-18', codigo: 'PROD-004', nombre: 'Mouse Logitech MX Master 3', tipo: 'entrada', cantidad: 25, desc: 'Compra a proveedor Logitech' },
+            { fecha: '2025-01-20', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'salida', cantidad: 1, desc: 'Venta pedido PED-001' },
+            { fecha: '2025-01-20', codigo: 'PROD-003', nombre: 'Teclado Mecánico RGB', tipo: 'salida', cantidad: 1, desc: 'Venta pedido PED-001' },
+            { fecha: '2025-01-25', codigo: 'PROD-001', nombre: 'Laptop Dell Inspiron 15', tipo: 'entrada', cantidad: 20, desc: 'Compra a proveedor Dell' }
         ];
-
         let filteredData = [...allMovements];
 
         // Cargar datos desde API

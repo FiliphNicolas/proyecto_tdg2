@@ -6,24 +6,24 @@
 -- Contraseña: "123456" (hasheada con bcrypt, salt 10)
 -- Contraseña: "admin123" (hasheada con bcrypt, salt 10)
 
-INSERT INTO Usuario (nombre_usuario, contrasena, email, rol, activo) VALUES
-('admin', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'admin@systemsware.com', 'admin', true),
-('empleado1', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'empleado1@systemsware.com', 'empleado', true),
-('empleado2', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'empleado2@systemsware.com', 'empleado', true),
-('vendedor', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'vendedor@systemsware.com', 'vendedor', true);
+INSERT INTO usuario (id_usuario, nombre_usuario, contrasena, email, rol, activo) VALUES
+(1,'admin', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'admin@systemsware.com', 'admin', true),
+(2,'empleado1', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'empleado1@systemsware.com', 'empleado', true),
+(3,'empleado2', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'empleado2@systemsware.com', 'empleado', true),
+(4,'vendedor', '$2b$10$YOixghzuPvJLuNvjMZVH3OzDjPm6D2fGM8p8Y9K8G1U4L7Q9M3P8K', 'vendedor@systemsware.com', 'vendedor', true);
 
 -- CLIENTES DE PRUEBA
 
-INSERT INTO Cliente (nombre, apellido, email, telefono, direccion) VALUES
-('Juan', 'García', 'juan.garcia@email.com', '3001234567', 'Calle 1 #123, Bogotá'),
-('María', 'López', 'maria.lopez@email.com', '3107654321', 'Carrera 5 #456, Medellín'),
-('Carlos', 'Rodríguez', 'carlos.r@email.com', '3209876543', 'Avenida 10 #789, Cali'),
-('Ana', 'Martínez', 'ana.m@email.com', '3145678901', 'Calle 20 #101, Barranquilla'),
-('Pedro', 'Sánchez', 'pedro.sanchez@email.com', '3176543210', 'Carrera 15 #202, Santa Marta');
+INSERT INTO cliente (id_cliente, nombre, apellido, email, telefono, direccion) VALUES
+(1,'Juan', 'García', 'juan.garcia@email.com', '3001234567', 'Calle 1 #123, Bogotá'),
+(2,'María', 'López', 'maria.lopez@email.com', '3107654321', 'Carrera 5 #456, Medellín'),
+(3,'Carlos', 'Rodríguez', 'carlos.r@email.com', '3209876543', 'Avenida 10 #789, Cali'),
+(4,'Ana', 'Martínez', 'ana.m@email.com', '3145678901', 'Calle 20 #101, Barranquilla'),
+(5,'Pedro', 'Sánchez', 'pedro.sanchez@email.com', '3176543210', 'Carrera 15 #202, Santa Marta');
 
 -- PRODUCTOS DE PRUEBA
 
-INSERT INTO Producto (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria) VALUES
+INSERT INTO producto (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria) VALUES
 ('PROD-001', 'Laptop Dell Inspiron 15', 'Laptop 15 pulgadas, Intel i5, 8GB RAM, 256GB SSD', 1200000.00, 15, 'Computadores'),
 ('PROD-002', 'Monitor LG 24 pulgadas', 'Monitor Full HD 1920x1080, IPS, 60Hz', 450000.00, 25, 'Monitores'),
 ('PROD-003', 'Teclado Mecánico RGB', 'Teclado mecánico con switches azules, retroiluminación RGB', 180000.00, 40, 'Periféricos'),
@@ -42,14 +42,14 @@ INSERT INTO Producto (codigo_producto, nombre, descripcion, precio, cantidad_sto
 
 -- PEDIDOS DE PRUEBA
 
-INSERT INTO Pedido (id_cliente, id_usuario, total, estado, codigo_detalle) VALUES
-(1, 1, 1650000.00, 'completado', 'PED-001-01'),
-(2, 2, 2200000.00, 'en_proceso', 'PED-002-01'),
-(3, 1, 800000.00, 'pendiente', 'PED-003-01');
+INSERT INTO pedido (id_pedido, id_cliente, id_usuario, total, estado, codigo_detalle) VALUES
+(1,1, 1, 1650000.00, 'completado', 'PED-001-01'),
+(2,2, 2, 2200000.00, 'en_proceso', 'PED-002-01'),
+(3,3, 1, 800000.00, 'pendiente', 'PED-003-01');
 
 -- DETALLES DE PEDIDOS
 
-INSERT INTO Detalle_Pedido (codigo_detalle, id_pedido, codigo_producto, cantidad, precio_unitario) VALUES
+INSERT INTO detalle_pedido (codigo_detalle, id_pedido, codigo_producto, cantidad, precio_unitario) VALUES
 ('PED-001-01', 1, 'PROD-001', 1, 1200000.00),
 ('PED-001-02', 1, 'PROD-003', 1, 180000.00),
 ('PED-001-03', 1, 'PROD-004', 1, 200000.00),
@@ -64,18 +64,33 @@ INSERT INTO Detalle_Pedido (codigo_detalle, id_pedido, codigo_producto, cantidad
 
 -- MOVIMIENTOS DE INVENTARIO
 
-INSERT INTO Inventario (codigo_producto, tipo_movimiento, cantidad, descripcion) VALUES
-('PROD-001', 'entrada', 20, 'Compra a proveedor Dell'),
+INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, descripcion) VALUES
+('PROD-001', 'entrada', 20, 'Compra inicial de inventario'),
 ('PROD-002', 'entrada', 30, 'Compra a proveedor LG'),
 ('PROD-003', 'entrada', 50, 'Compra a proveedor mecánico'),
+('PROD-004', 'entrada', 25, 'Compra a proveedor Logitech'),
 ('PROD-001', 'salida', 1, 'Venta pedido PED-001'),
 ('PROD-003', 'salida', 1, 'Venta pedido PED-001'),
-('PROD-004', 'salida', 1, 'Venta pedido PED-001'),
-('PROD-002', 'salida', 2, 'Venta pedido PED-002'),
-('PROD-005', 'salida', 1, 'Venta pedido PED-002'),
-('PROD-009', 'salida', 1, 'Venta pedido PED-002'),
-('PROD-006', 'salida', 1, 'Venta pedido PED-002'),
-('PROD-001', 'ajuste', 2, 'Devolución de cliente');
+('PROD-001', 'entrada', 20, 'Compra a proveedor Dell');
+
+-- AUDITORÍA DE PRUEBA
+
+INSERT INTO auditoria (id_usuario, tabla_afectada, accion, detalles) VALUES
+(1, 'producto', 'INSERT', 'Se creó el producto Laptop Dell Inspiron 15'),
+(1, 'producto', 'INSERT', 'Se creó el producto Monitor LG 24 pulgadas'),
+(1, 'producto', 'INSERT', 'Se creó el producto Teclado Mecánico RGB'),
+(1, 'producto', 'INSERT', 'Se creó el producto Mouse Logitech MX Master 3'),
+(2, 'inventario', 'INSERT', 'Entrada de 20 unidades de PROD-001 - Laptop Dell'),
+(2, 'inventario', 'INSERT', 'Entrada de 30 unidades de PROD-002 - Monitor LG'),
+(2, 'inventario', 'INSERT', 'Entrada de 50 unidades de PROD-003 - Teclado Mecánico'),
+(2, 'inventario', 'INSERT', 'Entrada de 25 unidades de PROD-004 - Mouse Logitech'),
+(3, 'inventario', 'INSERT', 'Salida de 1 unidad de PROD-001 - Venta PED-001'),
+(3, 'inventario', 'INSERT', 'Salida de 1 unidad de PROD-003 - Venta PED-001'),
+(2, 'inventario', 'INSERT', 'Entrada de 20 unidades de PROD-001 - Compra Dell'),
+(1, 'usuario', 'INSERT', 'Se creó el usuario admin@systemsware.com'),
+(1, 'usuario', 'INSERT', 'Se creó el usuario empleado1@systemsware.com'),
+(1, 'usuario', 'INSERT', 'Se creó el usuario empleado2@systemsware.com'),
+(1, 'usuario', 'INSERT', 'Se creó el usuario vendedor@systemsware.com');
 
 -- ============================================
 -- CREDENCIALES DE PRUEBA
