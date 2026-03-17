@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal Productos - Systemsware</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-result {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { border-color: #28a745; background: #d4edda; }
+        .error { border-color: #dc3545; background: #f8d7da; }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Modal de Productos y Endpoints</h1>
+        
+        <div class="test-section">
+            <h3>1. Modal de Productos</h3>
+            <button class="test-button" onclick="testModalAgregar()">▶️ Probar Modal Agregar</button>
+            <button class="test-button" onclick="testModalEditar()">▶️ Probar Modal Editar</button>
+            <div id="modalTestResult" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Endpoints de Productos</h3>
+            <button class="test-button" onclick="testGetProductos()">📋 GET /api/public/productos</button>
+            <button class="test-button" onclick="testPostProducto()">➕ POST /api/public/productos</button>
+            <button class="test-button" onclick="testPutProducto()">✏️ PUT /api/public/productos</button>
+            <button class="test-button" onclick="testDeleteProducto()">🗑️ DELETE /api/public/productos</button>
+            <div id="productosTestResult" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Endpoint de Información del Inventario</h3>
+            <button class="test-button" onclick="testInventarioInfo()">📊 GET /api/public/inventario/info</button>
+            <div id="inventarioTestResult" class="test-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Navegación Rápida</h3>
+            <button class="test-button" onclick="window.location.href='productos.html'">📦 Ir a Productos</button>
+            <button class="test-button" onclick="window.location.href='gestion-inventario.html'">📊 Ir a Gestión Inventario</button>
+            <button class="test-button" onclick="window.location.href='reporte-inventario.html'">📈 Ir a Reporte Inventario</button>
+        </div>
+    </div>
+
+    <!-- Incluir el modal de productos -->
+    <div id="productoModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Test Modal</h3>
+                <span class="close" onclick="cerrarModal()">&times;</span>
+            </div>
+            <form id="productForm" onsubmit="handleTestSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productCode">Código del Producto:</label>
+                        <input type="text" id="productCode" placeholder="PROD-XXX">
+                        <small>Deja en blanco para generar automáticamente</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="productName">Nombre del Producto:</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productCategory">Categoría:</label>
+                        <select id="productCategory" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="Computadores">Computadores</option>
+                            <option value="Monitores">Monitores</option>
+                            <option value="Periféricos">Periféricos</option>
+                            <option value="Audio">Audio</option>
+                            <option value="Cables">Cables</option>
+                            <option value="Adaptadores">Adaptadores</option>
+                            <option value="Almacenamiento">Almacenamiento</option>
+                            <option value="Accesorios">Accesorios</option>
+                            <option value="Impresoras">Impresoras</option>
+                            <option value="Redes">Redes</option>
+                            <option value="Mobiliario">Mobiliario</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Software">Software</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Electrónica">Electrónica</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Precio:</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productStock">Stock Inicial:</label>
+                        <input type="number" id="productStock" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productImage">URL de la imagen:</label>
+                        <input type="url" id="productImage" placeholder="https://ejemplo.com/imagen.jpg">
+                        <small>Deja en blanco para usar imagen predeterminada</small>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="productDescription">Descripción:</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">💾 Guardar Producto</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function logResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+            
+            element.innerHTML += `
+                <div class="${className}">
+                    <strong>[${timestamp}]</strong> ${message}
+                </div>
+            `;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        function testModalAgregar() {
+            logResult('modalTestResult', '🧪 Abriendo modal para agregar producto...', 'info');
+            
+            document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto (TEST)';
+            document.getElementById('productForm').reset();
+            document.getElementById('productoModal').style.display = 'flex';
+            document.getElementById('productCode').disabled = false;
+            
+            logResult('modalTestResult', '✅ Modal abierto correctamente', 'success');
+        }
+
+        function testModalEditar() {
+            logResult('modalTestResult', '🧪 Abriendo modal para editar producto...', 'info');
+            
+            // Simular datos de un producto
+            document.getElementById('modalTitle').textContent = 'Editar Producto (TEST)';
+            document.getElementById('productCode').value = 'TEST-001';
+            document.getElementById('productCode').disabled = true;
+            document.getElementById('productName').value = 'Producto de Prueba';
+            document.getElementById('productCategory').value = 'Computadores';
+            document.getElementById('productPrice').value = '999.99';
+            document.getElementById('productStock').value = '50';
+            document.getElementById('productDescription').value = 'Este es un producto de prueba';
+            document.getElementById('productoModal').style.display = 'flex';
+            
+            logResult('modalTestResult', '✅ Modal de edición abierto con datos de prueba', 'success');
+        }
+
+        function cerrarModal() {
+            document.getElementById('productoModal').style.display = 'none';
+            document.getElementById('productForm').reset();
+            logResult('modalTestResult', '🔒 Modal cerrado', 'info');
+        }
+
+        async function handleTestSubmit(e) {
+            e.preventDefault();
+            logResult('modalTestResult', '🧪 Enviando formulario de prueba...', 'info');
+            
+            const productCode = document.getElementById('productCode').value;
+            const productData = {
+                codigo_producto: productCode || undefined,
+                nombre: document.getElementById('productName').value,
+                categoria: document.getElementById('productCategory').value,
+                precio: parseFloat(document.getElementById('productPrice').value),
+                cantidad_stock: parseInt(document.getElementById('productStock').value),
+                descripcion: document.getElementById('productDescription').value
+            };
+            
+            try {
+                const isEditing = document.getElementById('productCode').disabled;
+                const url = isEditing ? `/api/public/productos/${productCode}` : '/api/public/productos';
+                const method = isEditing ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    logResult('modalTestResult', `✅ Producto ${isEditing ? 'actualizado' : 'agregado'} exitosamente`, 'success');
+                    logResult('modalTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
+                    cerrarModal();
+                } else {
+                    logResult('modalTestResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logResult('modalTestResult', `❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGetProductos() {
+            logResult('productosTestResult', '🧪 Probando GET /api/public/productos...', 'info');
+            
+            try {
+                const response = await fetch('/api/public/productos');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    logResult('productosTestResult', `✅ Endpoint funcionando! Encontrados ${result.products.length} productos`, 'success');
+                    logResult('productosTestResult', `<pre>${JSON.stringify(result.products.slice(0, 3), null, 2)}</pre>`, 'info');
+                } else {
+                    logResult('productosTestResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logResult('productosTestResult', `❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testPostProducto() {
+            logResult('productosTestResult', '🧪 Probando POST /api/public/productos...', 'info');
+            
+            const testProduct = {
+                nombre: 'Producto Test API',
+                categoria: 'Test',
+                precio: 99.99,
+                cantidad_stock: 10,
+                descripcion: 'Producto creado desde test'
+            };
+            
+            try {
+                const response = await fetch('/api/public/productos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testProduct)
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    logResult('productosTestResult', `✅ Producto creado exitosamente!`, 'success');
+                    logResult('productosTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
+                } else {
+                    logResult('productosTestResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logResult('productosTestResult', `❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testPutProducto() {
+            logResult('productosTestResult', '🧪 Probando PUT /api/public/productos...', 'info');
+            
+            const updateData = {
+                nombre: 'Producto Actualizado Test',
+                categoria: 'Test Actualizado',
+                precio: 149.99,
+                cantidad_stock: 25,
+                descripcion: 'Producto actualizado desde test'
+            };
+            
+            try {
+                const response = await fetch('/api/public/productos/TEST-001', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    logResult('productosTestResult', `✅ Producto actualizado exitosamente!`, 'success');
+                    logResult('productosTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
+                } else {
+                    logResult('productosTestResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logResult('productosTestResult', `❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDeleteProducto() {
+            logResult('productosTestResult', '🧪 Probando DELETE /api/public/productos...', 'info');
+            
+            try {
+                const response = await fetch('/api/public/productos/TEST-001', {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    logResult('productosTestResult', `✅ Producto eliminado exitosamente!`, 'success');
+                    logResult('productosTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
+                } else {
+                    logResult('productosTestResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logResult('productosTestResult', `❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function testInventarioInfo() {
+            logResult('inventarioTestResult', '🧪 Probando GET /api/public/inventario/info...', 'info');
+            
+            try {
+                const response = await fetch('/api/public/inventario/info');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    logResult('inventarioTestResult', `✅ Endpoint de información funcionando!`, 'success');
+                    
+                    const stats = result.data.estadisticas_generales;
+                    logResult('inventarioTestResult', `📊 Estadísticas:`, 'info');
+                    logResult('inventarioTestResult', `   • Total productos: ${stats.total_productos}`, 'info');
+                    logResult('inventarioTestResult', `   • Total stock: ${stats.total_stock}`, 'info');
+                    logResult('inventarioTestResult', `   • Productos agotados: ${stats.productos_agotados}`, 'info');
+                    logResult('inventarioTestResult', `   • Stock bajo: ${stats.stock_bajo}`, 'info');
+                    logResult('inventarioTestResult', `   • Valor total inventario: $${parseFloat(stats.valor_total_inventario).toFixed(2)}`, 'info');
+                    
+                    if (result.data.productos_stock_bajo.length > 0) {
+                        logResult('inventarioTestResult', `⚠️ Productos con stock bajo:`, 'info');
+                        result.data.productos_stock_bajo.forEach(p => {
+                            logResult('inventarioTestResult', `   • ${p.nombre}: ${p.cantidad_stock} unidades`, 'info');
+                        });
+                    }
+                } else {
+                    logResult('inventarioTestResult', `❌ Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                logResult('inventarioTestResult', `❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            logResult('modalTestResult', '🚀 Página de test cargada correctamente', 'success');
+            logResult('productosTestResult', '🚀 Test de endpoints listo', 'success');
+            logResult('inventarioTestResult', '🚀 Test de información del inventario listo', 'success');
+        });
+    </script>
+</body>
+</html>

@@ -432,9 +432,15 @@ Si encuentras problemas:
 
 ---
 
-**Última actualización:** 12 de marzo de 2026  
-**Versión:** 2.0.0  
+<<<<<<< HEAD
+**Última actualización:** 17 de junio de 2025  
+**Versión:** 3.0.0  
+**Estado:** ✅ Producción estable - Sistema de Inventario Completo
+=======
+**Última actualización:** 16 de marzo de 2026  
+**Versión:** 2.0.1  
 **Estado:** ✅ Producción estable
+>>>>>>> 13fa2b3d98bf93aab264e5fbfba7dccff46182f3
 
 ---
 

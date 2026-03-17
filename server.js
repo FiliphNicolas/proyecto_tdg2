@@ -379,6 +379,110 @@ app.get('/api/public/inventario', async (req, res) => {
 }
 });
 
+// Obtener información completa del inventario (público)
+app.get('/api/public/inventario/info', async (req, res) => {
+  try {
+    // Estadísticas generales
+    const statsQuery = `
+      SELECT 
+        COUNT(*) as total_productos,
+        SUM(cantidad_stock) as total_stock,
+        COUNT(CASE WHEN cantidad_stock = 0 THEN 1 END) as productos_agotados,
+        COUNT(CASE WHEN cantidad_stock <= 5 THEN 1 END) as stock_bajo,
+        AVG(precio) as precio_promedio,
+        SUM(cantidad_stock * precio) as valor_total_inventario
+      FROM producto
+    `;
+    
+    const statsResult = await db.query(statsQuery);
+    
+    // Productos con stock bajo
+    const lowStockQuery = `
+      SELECT codigo_producto, nombre, cantidad_stock, categoria
+      FROM producto
+      WHERE cantidad_stock <= 5 AND cantidad_stock > 0
+      ORDER BY cantidad_stock ASC
+      LIMIT 10
+    `;
+    
+    const lowStockResult = await db.query(lowStockQuery);
+    
+    // Productos agotados
+    const outOfStockQuery = `
+      SELECT codigo_producto, nombre, categoria, precio
+      FROM producto
+      WHERE cantidad_stock = 0
+      ORDER BY nombre
+    `;
+    
+    const outOfStockResult = await db.query(outOfStockQuery);
+    
+    // Movimientos recientes
+    const recentMovementsQuery = `
+      SELECT 
+        i.codigo_producto,
+        p.nombre as nombre_producto,
+        i.tipo_movimiento,
+        i.cantidad,
+        i.descripcion,
+        i.fecha_movimiento
+      FROM inventario i
+      JOIN producto p ON i.codigo_producto = p.codigo_producto
+      ORDER BY i.fecha_movimiento DESC
+      LIMIT 10
+    `;
+    
+    const recentMovementsResult = await db.query(recentMovementsQuery);
+    
+    // Productos por categoría
+    const categoryQuery = `
+      SELECT 
+        categoria,
+        COUNT(*) as total_productos,
+        SUM(cantidad_stock) as total_stock,
+        AVG(precio) as precio_promedio
+      FROM producto
+      WHERE categoria IS NOT NULL
+      GROUP BY categoria
+      ORDER BY total_stock DESC
+    `;
+    
+    const categoryResult = await db.query(categoryQuery);
+    
+    // Top 10 productos más valiosos
+    const valuableProductsQuery = `
+      SELECT 
+        codigo_producto,
+        nombre,
+        cantidad_stock,
+        precio,
+        (cantidad_stock * precio) as valor_total,
+        categoria
+      FROM producto
+      ORDER BY valor_total DESC
+      LIMIT 10
+    `;
+    
+    const valuableProductsResult = await db.query(valuableProductsQuery);
+    
+    res.json({
+      ok: true,
+      data: {
+        estadisticas_generales: statsResult.rows[0],
+        productos_stock_bajo: lowStockResult.rows,
+        productos_agotados: outOfStockResult.rows,
+        movimientos_recientes: recentMovementsResult.rows,
+        productos_por_categoria: categoryResult.rows,
+        productos_mas_valiosos: valuableProductsResult.rows
+      }
+    });
+    
+  } catch (err) {
+    console.error('Error GET /api/public/inventario/info', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 // Obtener registros de auditoría (requiere autenticación)
 app.get('/api/auditoria', authMiddleware, async (req, res) => {
   try {
@@ -580,6 +684,119 @@ app.post('/api/public/inventario', async (req, res) => {
     console.error('Error POST /api/public/inventario', err);
     res.status(500).json({ error: 'Error del servidor' });
 }
+});
+
+// Crear nuevo producto (público)
+app.post('/api/public/productos', async (req, res) => {
+  try {
+    const { codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+
+    if (!nombre || !precio || !cantidad_stock || !categoria) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    // Generar código automático si no se proporciona
+    let finalCode = codigo_producto;
+    if (!finalCode) {
+      const prefix = 'PROD';
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+      finalCode = `${prefix}-${random}`;
+    }
+
+    // Verificar si el código ya existe
+    const existingProduct = await db.query(
+      'SELECT codigo_producto FROM producto WHERE codigo_producto = $1',
+      [finalCode]
+    );
+
+    if (existingProduct.rowCount > 0) {
+      return res.status(400).json({ error: 'El código de producto ya existe' });
+    }
+
+    const text = `
+      INSERT INTO producto (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `;
+    const values = [finalCode, nombre, descripcion || null, precio, cantidad_stock, categoria];
+    
+    const result = await db.query(text, values);
+    
+    res.status(201).json({ 
+      ok: true, 
+      producto: result.rows[0],
+      message: 'Producto creado exitosamente'
+    });
+
+  } catch (err) {
+    console.error('Error POST /api/public/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Actualizar producto (público)
+app.put('/api/public/productos/:codigo', async (req, res) => {
+  try {
+    const { codigo } = req.params;
+    const { nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+
+    if (!nombre || !precio || !cantidad_stock || !categoria) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    const text = `
+      UPDATE producto 
+      SET nombre = $1, descripcion = $2, precio = $3, cantidad_stock = $4, categoria = $5
+      WHERE codigo_producto = $6
+      RETURNING *
+    `;
+    const values = [nombre, descripcion || null, precio, cantidad_stock, categoria, codigo];
+    
+    const result = await db.query(text, values);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.json({ 
+      ok: true, 
+      producto: result.rows[0],
+      message: 'Producto actualizado exitosamente'
+    });
+
+  } catch (err) {
+    console.error('Error PUT /api/public/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Eliminar producto (público)
+app.delete('/api/public/productos/:codigo', async (req, res) => {
+  try {
+    const { codigo } = req.params;
+
+    // Verificar si el producto existe
+    const exists = await db.query(
+      'SELECT codigo_producto FROM producto WHERE codigo_producto = $1',
+      [codigo]
+    );
+
+    if (exists.rowCount === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    // Eliminar el producto
+    await db.query('DELETE FROM producto WHERE codigo_producto = $1', [codigo]);
+
+    res.json({ 
+      ok: true, 
+      message: 'Producto eliminado exitosamente'
+    });
+
+  } catch (err) {
+    console.error('Error DELETE /api/public/productos', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
 });
 
 // Listar productos (con búsqueda y filtrado opcional)
@@ -1166,16 +1383,34 @@ app.get('/api/estado-cuenta', authMiddleware, async (req, res) => {
 
 // Rutas protegidas específicas (requieren autenticación)
 app.get('/reporte-inventario.html', serveProtectedPage(path.join(__dirname, 'reporte-inventario.html')));
-app.get('/conexion-auditoria.html', serveProtectedPage(path.join(__dirname, 'conexion-auditoria.html')));
-app.get('/productos.html', serveProtectedPage(path.join(__dirname, 'productos.html')));
-app.get('/perfil.html', serveProtectedPage(path.join(__dirname, 'perfil.html')));
-app.get('/ver-estado-cuenta.html', serveProtectedPage(path.join(__dirname, 'ver-estado-cuenta.html')));
 
-// Servir archivos estáticos públicos (CSS, JS, imágenes)
-app.use('/styles.css', express.static(path.join(__dirname, 'styles.css')));
-app.use('/nav-loader.js', express.static(path.join(__dirname, 'nav-loader.js')));
-app.use('/auth-system.js', express.static(path.join(__dirname, 'auth-system.js')));
-app.use('/databasepg.js', express.static(path.join(__dirname, 'databasepg.js')));
+// Servir páginas HTML públicas
+app.get('/iniciar-sesion.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'iniciar-sesion.html'));
+});
+
+app.get('/registrar-cuenta.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'registrar-cuenta.html'));
+});
+
+app.get('/servicio.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'servicio.html'));
+});
+
+app.get('/chatbot.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'chatbot.html'));
+});
+
+app.get('/test-inventario.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'test-inventario.html'));
+});
+
+app.get('/test-modal-productos.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'test-modal-productos.html'));
+});
+
+// Servir archivos estáticos públicos (CSS, JS, imágenes, HTML)
+app.use(express.static(path.join(__dirname)));
 
 // Página principal (redirige a login si no está autenticado)
 app.get('/', (req, res) => {

@@ -12,7 +12,7 @@
             <h1>Nuestros Productos</h1>
             <div class="productos-info">
                 <span class="productos-count">Total de productos: <strong id="totalProductos">0</strong></span>
-                <button class="btn-agregar" onclick="mostrarFormularioAgregar()">+ Agregar Producto</button>
+                <button class="btn-agregar" onclick="mostrarModalAgregar()">+ Agregar Producto</button>
             </div>
         </div>
 
@@ -39,57 +39,73 @@
             <button onclick="loadProducts()">Actualizar</button>
         </div>
 
-        <!-- Formulario para agregar nuevo producto -->
-        <div id="formularioProducto" class="formulario-producto" style="display: none;">
-            <h3>Agregar Nuevo Producto</h3>
-            <form id="productForm">
-                <div class="form-group">
-                    <label for="productName">Nombre del Producto:</label>
-                    <input type="text" id="productName" required>
+        <!-- Modal para agregar/editar producto -->
+        <div id="productoModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Agregar Nuevo Producto</h3>
+                    <span class="close" onclick="cerrarModal()">&times;</span>
                 </div>
-                <div class="form-group">
-                    <label for="productCategory">Categoría:</label>
-                    <select id="productCategory" required>
-                        <option value="">Seleccionar categoría</option>
-                        <option value="Computadores">Computadores</option>
-                        <option value="Monitores">Monitores</option>
-                        <option value="Periféricos">Periféricos</option>
-                        <option value="Audio">Audio</option>
-                        <option value="Cables">Cables</option>
-                        <option value="Adaptadores">Adaptadores</option>
-                        <option value="Almacenamiento">Almacenamiento</option>
-                        <option value="Accesorios">Accesorios</option>
-                        <option value="Impresoras">Impresoras</option>
-                        <option value="Redes">Redes</option>
-                        <option value="Mobiliario">Mobiliario</option>
-                        <option value="Hardware">Hardware</option>
-                        <option value="Software">Software</option>
-                        <option value="Oficina">Oficina</option>
-                        <option value="Electrónica">Electrónica</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="productPrice">Precio:</label>
-                    <input type="number" id="productPrice" step="0.01" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="productStock">Stock:</label>
-                    <input type="number" id="productStock" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="productDescription">Descripción:</label>
-                    <textarea id="productDescription" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="productImage">URL de la imagen:</label>
-                    <input type="url" id="productImage" placeholder="https://ejemplo.com/imagen.jpg">
-                    <small>Deja en blanco para usar imagen predeterminada</small>
-                </div>
-                <div class="form-buttons">
-                    <button type="submit">Guardar Producto</button>
-                    <button type="button" onclick="ocultarFormularioAgregar()">Cancelar</button>
-                </div>
-            </form>
+                <form id="productForm" onsubmit="handleProductSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCode">Código del Producto:</label>
+                            <input type="text" id="productCode" placeholder="PROD-XXX" required>
+                            <small>Deja en blanco para generar automáticamente</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="productName">Nombre del Producto:</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCategory">Categoría:</label>
+                            <select id="productCategory" required>
+                                <option value="">Seleccionar categoría</option>
+                                <option value="Computadores">Computadores</option>
+                                <option value="Monitores">Monitores</option>
+                                <option value="Periféricos">Periféricos</option>
+                                <option value="Audio">Audio</option>
+                                <option value="Cables">Cables</option>
+                                <option value="Adaptadores">Adaptadores</option>
+                                <option value="Almacenamiento">Almacenamiento</option>
+                                <option value="Accesorios">Accesorios</option>
+                                <option value="Impresoras">Impresoras</option>
+                                <option value="Redes">Redes</option>
+                                <option value="Mobiliario">Mobiliario</option>
+                                <option value="Hardware">Hardware</option>
+                                <option value="Software">Software</option>
+                                <option value="Oficina">Oficina</option>
+                                <option value="Electrónica">Electrónica</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Precio:</label>
+                            <input type="number" id="productPrice" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productStock">Stock Inicial:</label>
+                            <input type="number" id="productStock" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">URL de la imagen:</label>
+                            <input type="url" id="productImage" placeholder="https://ejemplo.com/imagen.jpg">
+                            <small>Deja en blanco para usar imagen predeterminada</small>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="productDescription">Descripción:</label>
+                        <textarea id="productDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-primary">💾 Guardar Producto</button>
+                        <button type="button" class="btn-secondary" onclick="cerrarModal()">❌ Cancelar</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div id="loadingMessage" style="display:none; text-align:center; padding:40px;">
@@ -236,29 +252,53 @@
             return div.innerHTML;
         }
 
-        function mostrarFormularioAgregar() {
-            document.getElementById('formularioProducto').style.display = 'block';
+        function mostrarModalAgregar() {
+            document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto';
             document.getElementById('productForm').reset();
+            document.getElementById('productoModal').style.display = 'flex';
+            document.getElementById('productCode').disabled = false;
         }
 
-        function ocultarFormularioAgregar() {
-            document.getElementById('formularioProducto').style.display = 'none';
+        function mostrarModalEditar(id) {
+            const producto = allProducts.find(p => p.id === id);
+            if (producto) {
+                document.getElementById('modalTitle').textContent = 'Editar Producto';
+                document.getElementById('productCode').value = producto.id;
+                document.getElementById('productCode').disabled = true;
+                document.getElementById('productName').value = producto.nombre;
+                document.getElementById('productCategory').value = producto.categoria;
+                document.getElementById('productPrice').value = producto.precio;
+                document.getElementById('productStock').value = producto.stock;
+                document.getElementById('productDescription').value = producto.descripcion;
+                document.getElementById('productoModal').style.display = 'flex';
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('productoModal').style.display = 'none';
+            document.getElementById('productForm').reset();
         }
 
         async function handleProductSubmit(e) {
             e.preventDefault();
             
+            const productCode = document.getElementById('productCode').value;
             const productData = {
+                codigo_producto: productCode || undefined,
                 nombre: document.getElementById('productName').value,
                 categoria: document.getElementById('productCategory').value,
                 precio: parseFloat(document.getElementById('productPrice').value),
                 cantidad_stock: parseInt(document.getElementById('productStock').value),
                 descripcion: document.getElementById('productDescription').value
             };
-
+            
             try {
-                const response = await fetch('/api/public/productos', {
-                    method: 'POST',
+                const isEditing = document.getElementById('productCode').disabled;
+                const url = isEditing ? `/api/public/productos/${productCode}` : '/api/public/productos';
+                const method = isEditing ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -269,10 +309,10 @@
                 
                 if (result.ok) {
                     await loadProducts(); // Recargar desde la base de datos
-                    ocultarFormularioAgregar();
-                    alert('Producto agregado exitosamente a la base de datos');
+                    cerrarModal();
+                    alert(isEditing ? 'Producto actualizado exitosamente' : 'Producto agregado exitosamente');
                 } else {
-                    alert('Error al agregar producto: ' + result.error);
+                    alert('Error: ' + result.error);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -281,55 +321,7 @@
         }
 
         async function editarProducto(id) {
-            const producto = allProducts.find(p => p.id === id);
-            if (producto) {
-                // Llenar el formulario con los datos del producto
-                document.getElementById('productName').value = producto.nombre;
-                document.getElementById('productCategory').value = producto.categoria;
-                document.getElementById('productPrice').value = producto.precio;
-                document.getElementById('productStock').value = producto.stock;
-                document.getElementById('productDescription').value = producto.descripcion;
-                document.getElementById('productImage').value = producto.imagen || '';
-                
-                // Mostrar el formulario
-                mostrarFormularioAgregar();
-                
-                // Cambiar el comportamiento del formulario para editar
-                document.getElementById('productForm').onsubmit = async function(e) {
-                    e.preventDefault();
-                    
-                    const productData = {
-                        nombre: document.getElementById('productName').value,
-                        categoria: document.getElementById('productCategory').value,
-                        precio: parseFloat(document.getElementById('productPrice').value),
-                        cantidad_stock: parseInt(document.getElementById('productStock').value),
-                        descripcion: document.getElementById('productDescription').value
-                    };
-                    
-                    try {
-                        const response = await fetch(`/api/public/productos/${id}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(productData)
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if (result.ok) {
-                            await loadProducts(); // Recargar desde la base de datos
-                            ocultarFormularioAgregar();
-                            alert('Producto actualizado exitosamente en la base de datos');
-                        } else {
-                            alert('Error al actualizar producto: ' + result.error);
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert('Error al actualizar producto');
-                    }
-                };
-            }
+            mostrarModalEditar(id);
         }
 
         async function eliminarProducto(id) {
