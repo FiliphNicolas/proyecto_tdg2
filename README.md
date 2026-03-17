@@ -426,15 +426,15 @@ Si encuentras problemas:
 5. 🤖 Prueba el **chatbot** para ayuda contextualizada
 
 **Contacto técnico:**
-- **Email:** soporte@systemsware.com
-- **Teléfono:** +1 (555) 123-4567
+- **Email:** fsuan62@uan.edu.co
+- **Teléfono:** 3114317402
 - **Web:** www.systemsware.com
 
 ---
 
-**Última actualización:** 17 de junio de 2025  
-**Versión:** 3.0.0  
-**Estado:** ✅ Producción estable - Sistema de Inventario Completo
+**Última actualización:** 12 de marzo de 2026  
+**Versión:** 2.0.0  
+**Estado:** ✅ Producción estable
 
 ---
 
