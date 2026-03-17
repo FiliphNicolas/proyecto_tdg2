@@ -6,13 +6,13 @@
 
 ### Características principales
 
+- ✅ **Gestión de Inventario Completa** - Movimientos, stock, reportes con exportación Excel/PDF
 - ✅ **Autenticación avanzada** con JWT y roles (admin, empleado, vendedor)
 - ✅ **Estado de cuenta completo** con estadísticas en tiempo real
 - ✅ **Chatbot inteligente** con respuestas contextuales
 - ✅ **Gestión de productos**: alta, baja, modificación, categorías
-- ✅ **Control de inventario** y movimientos (entradas/salidas/ajustes)
 - ✅ **Sistema de pedidos** con seguimiento completo
-- ✅ **Reportes PDF** con filtros avanzados y exportación
+- ✅ **Reportes avanzados** con filtros y exportación múltiple (Excel, PDF)
 - ✅ **Soporte/chat integrado** con asistente virtual
 - ✅ **Administración de perfiles** y usuarios
 - ✅ **Base de datos PostgreSQL** con trazabilidad completa
@@ -27,10 +27,31 @@ Antes de instalar Systemsware, asegúrate de tener:
 - **Node.js** (v14 o superior) — [descargar](https://nodejs.org/)
 - **PostgreSQL** (v12 o superior) — [descargar](https://www.postgresql.org/download/)
 - **npm** (incluido con Node.js)
+- **Git** (para clonar el repositorio) — [descargar](https://git-scm.com/)
 
 ---
 
-## 🆕 Nuevas Funcionalidades (v2.0)
+## 🔗 Repositorio GitHub
+
+**Repository:** [https://github.com/FiliphNicolas/proyecto_tdg2](https://github.com/FiliphNicolas/proyecto_tdg2)
+
+Puedes:
+- ⭐ **Dar estrella** al proyecto si te gusta
+- 🍴 **Hacer fork** para contribuir
+- 🐛 **Reportar issues** en el repositorio
+- 📥 **Descargar** la última versión estable
+
+---
+
+## 🆕 Funcionalidades Principales (v3.0)
+
+### 📦 Sistema de Inventario Completo
+- **Gestión de movimientos** (entradas/salidas) con actualización automática de stock
+- **Reportes avanzados** con filtros por producto, tipo, fecha
+- **Exportación múltiple** a Excel y PDF con diseño profesional
+- **Estadísticas en tiempo real**: totales, entradas, salidas
+- **Interfaz intuitiva** para agregar movimientos rápidamente
+- **Integración completa** con sistema de productos
 
 ### 🤖 Chatbot Inteligente
 - **Asistente virtual 24/7** con respuestas contextuales
@@ -56,13 +77,22 @@ Antes de instalar Systemsware, asegúrate de tener:
 
 ---
 
-## 🚀 Instalación y configuración
+## � Instalación y configuración
 
 ### 1. Clonar o descargar el proyecto
 
+#### Opción A: Clonar desde GitHub (recomendado)
+
 ```bash
-cd c:\Users\pc\Desktop\systemsware\ sistema\ de\ invetario\proyecto_tdg2
+git clone https://github.com/FiliphNicolas/proyecto_tdg2.git
+cd proyecto_tdg2
 ```
+
+#### Opción B: Descargar directamente
+
+1. Ve a [https://github.com/FiliphNicolas/proyecto_tdg2](https://github.com/FiliphNicolas/proyecto_tdg2)
+2. Haz clic en **"Code"** → **"Download ZIP"**
+3. Descomprime el archivo y navega a la carpeta del proyecto
 
 ### 2. Instalar dependencias
 
@@ -89,13 +119,13 @@ CREATE DATABASE Systemsware;
 #### b) Ejecutar el script de creación de tablas
 
 ```bash
-psql -U postgres -d Systemsware -f "base de datos/base-de-datos.sql"
+psql -U postgres -d Systemsware -f "base-de-datos.sql"
 ```
 
 #### c) Llenar con datos de prueba (opcional)
 
 ```bash
-psql -U postgres -d Systemsware -f "base de datos/datos-prueba.sql"
+psql -U postgres -d Systemsware -f "datos-prueba.sql"
 ```
 
 ### 4. Configurar variables de entorno (opcional)
@@ -180,12 +210,14 @@ Si ejecutaste `datos-prueba.sql`, puedes ingresar con:
 
 Encontrarás acceso a:
 
-- **📦 Inventario** — Ver, agregar, editar productos y movimientos
-- **📊 Reportes** — Generar reportes de stock y ventas con exportación PDF
+- **📦 Gestión Inventario** — Agregar movimientos (entradas/salidas) y gestionar stock
+- **📊 Reporte Inventario** — Ver movimientos, filtros avanzados y exportación Excel/PDF
+- **📦 Productos** — Ver, agregar, editar productos y categorías
 - **👤 Mi perfil** — Editar datos personales y cambiar contraseña
-- **� Ver estado de cuenta** — Dashboard completo con estadísticas
+- **📊 Ver estado de cuenta** — Dashboard completo con estadísticas
 - **💬 Chatbot** — Asistente virtual inteligente 24/7
-- **⚙️ Configuración** — Opciones del sistema
+- **🔍 Auditoría** — Ver registros de actividad del sistema
+- **🛠️ Servicios** — Información sobre servicios disponibles
 
 ### 🤖 Usar el Chatbot
 
@@ -212,24 +244,34 @@ Encontrarás acceso a:
 4. Revisa tu **historial de pedidos** reciente
 5. Si tienes rol autorizado, verás **movimientos de inventario**
 
-### Gestión de productos
+### 📦 Gestión de Inventario
 
-1. Abre **Inventario**
+1. Ve a **Gestión Inventario** desde el menú
+2. **Selecciona un producto** del dropdown (se carga información automáticamente)
+3. **Elige tipo de movimiento**: Entrada o Salida
+4. **Ingresa cantidad** y descripción (opcional)
+5. **Click en "Guardar Movimiento"** - el stock se actualiza automáticamente
+6. **Ver movimientos recientes** en la parte inferior de la página
+
+### 📊 Reportes de Inventario
+
+1. Ve a **Reporte Inventario** desde el menú
+2. **Usa filtros avanzados**:
+   - Producto específico
+   - Tipo de movimiento (entrada/salida)
+   - Rango de fechas
+3. **Ver estadísticas** en tiempo real: totales, entradas, salidas
+4. **Exporta a Excel/PDF** con diseño profesional
+5. **Imprime** directamente desde el navegador
+
+### 📦 Gestión de productos
+
+1. Abre **Productos** desde el menú
 2. Para **agregar un producto**:
-   - Haz clic en "Nuevo producto"
    - Completa: nombre, descripción, precio, stock, categoría
    - Guarda
 3. Para **editar**: haz clic en el producto y modifica los datos
 4. Para **eliminar**: selecciona y confirma
-
-### Generar reportes
-
-1. Ve a **Reportes**
-2. Puedes filtrar por:
-   - Categoría de productos
-   - Rango de fechas
-   - Rango de precios
-3. Haz clic en **"Descargar"** para exportar a CSV o PDF
 
 ### Editar perfil
 
@@ -284,26 +326,36 @@ Encontrarás acceso a:
 proyecto_tdg2/
 ├── 🚀 server.js                          # Servidor Express principal
 ├── 🗄️ databasepg.js                      # Conexión a PostgreSQL
-├── 🔐 auth-check.js                      # Validación de autenticación
+├── 🔐 auth-middleware.js                 # Middleware de autenticación JWT
 ├── 📦 package.json                       # Dependencias del proyecto
 ├── 🎨 styles.css                         # Estilos globales modernos
 ├── 🧭 nav-loader.js                      # Cargador de navegación dinámico
+├── 📄 nav.html                           # Componente de navegación
 │
 ├── 🌐 Páginas HTML/
 │   ├── 📄 index.html                     # Página principal
 │   ├── 📄 iniciar-sesion.html            # Login
 │   ├── 📄 registrar-cuenta.html          # Registro
 │   ├── 📄 perfil.html                    # Perfil de usuario
-│   ├── 📄 ver-estado-cuenta.html         # Estado de cuenta (NUEVO)
+│   ├── 📄 ver-usuario-actual.html        # Ver/editar perfil
+│   ├── 📄 informacion-personal.html      # Información personal
 │   ├── 📄 productos.html                 # Gestión de productos
-│   ├── 📄 reporte-inventario.html        # Reportes con PDF
-│   ├── 📄 chatbot.html                   # Chatbot inteligente (NUEVO)
-│   └── 📄 servicio.html                  # Servicios
+│   ├── 📄 gestion-inventario.html        # Gestión de inventario (NUEVO)
+│   ├── 📄 reporte-inventario.html        # Reportes de inventario
+│   ├── 📄 conexion-auditoria.html        # Auditoría del sistema
+│   ├── 📄 chatbot.html                   # Chatbot inteligente
+│   ├── 📄 servicio.html                  # Servicios
+│   └── 📄 test-inventario.html           # Pruebas de conexión (NUEVO)
 │
-└── 🗃️ Base de datos/
-    ├── 📄 base-de-datos.sql              # Creación de tablas
-    ├── 📄 datos-prueba.sql               # Datos de ejemplo
-    └── 📄 update-database-schema.sql     # Actualizaciones de schema
+├── 🗃️ Base de datos/
+│   ├── 📄 base-de-datos.sql              # Creación de tablas
+│   └── 📄 datos-prueba.sql               # Datos de ejemplo
+│
+└── 📚 Documentación/
+    ├── 📄 README.md                      # Documentación principal
+    ├── 📄 INVENTORY_CONNECTION_GUIDE.md # Guía de conexión inventario
+    ├── 📄 INSTRUCCIONES.md               # Instrucciones detalladas
+    └── 📄 QUICK_START.md                 # Inicio rápido
 ```
 
 ---
@@ -363,17 +415,6 @@ Si encuentras problemas:
 
 ---
 
-## 🚀 Próximas Actualizaciones (v2.1)
-
-- 🔄 **Dashboard analítico** con gráficos interactivos
-- 🔄 **Notificaciones en tiempo real** con WebSocket
-- 🔄 **Integración con APIs externas** de pago y envíos
-- 🔄 **Módulo de facturación** electrónica
-- 🔄 **Sistema de notificaciones** por email
-- 🔄 **Backup automático** de base de datos
-
----
-
 ## 📞 Soporte y Contacto
 
 Si encuentras problemas:
@@ -391,11 +432,11 @@ Si encuentras problemas:
 
 ---
 
-**Última actualización:** 12 de marzo de 2026  
-**Versión:** 2.0.0  
-**Estado:** ✅ Producción estable
+**Última actualización:** 17 de junio de 2025  
+**Versión:** 3.0.0  
+**Estado:** ✅ Producción estable - Sistema de Inventario Completo
 
 ---
 
-**Systemsware © 2026 - Todos los derechos reservados**
+**Systemsware © 2025 - Todos los derechos reservados**
 
