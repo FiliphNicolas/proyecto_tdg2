@@ -43,7 +43,7 @@ async function initializeDatabase() {
     `);
     
     if (result.rows.length === 0) {
-      console.log('⚠️ Tables not found. Please run base-de-datos.sql first');
+      console.log('⚠️ Tables not found. Please run sql/base-de-datos.sql first');
       return false;
     }
     
@@ -80,20 +80,21 @@ async function closePool() {
   console.log('🔒 Database pool closed');
 }
 
-// Inicialización automática
+// Inicialización automática unificada para el servidor
 async function initializeServer() {
-  console.log('🔧 Initializing database connection...');
+  console.log('🔧 Inicializando conexión a base de datos...');
   
   const connected = await testConnection();
   if (!connected) {
-    throw new Error('Failed to connect to database');
+    throw new Error('❌ No se pudo conectar a PostgreSQL. Verifica tu configuración.');
   }
   
   const initialized = await initializeDatabase();
   if (!initialized) {
-    throw new Error('Failed to initialize database');
+    throw new Error('❌ Error al inicializar tablas de la base de datos');
   }
   
+  console.log('✅ Base de datos lista y conectada');
   return true;
 }
 

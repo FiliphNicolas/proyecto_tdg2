@@ -9,11 +9,10 @@
     <span id="userGreeting" style="margin-left: auto; color: white; font-size: 14px; display: none;"></span>
   </div>
   <div class="nav-link">
-    <a href="index.html" id="nav-inicio">Inicio</a>
+    <a href="inicio.html" id="nav-inicio">Inicio</a>
     <a href="servicio.html" id="nav-servicios">Servicios</a>
     <a href="productos.html" id="nav-productos">Productos</a>
-    <a href="chatbot.html" id="nav-chatbot">Chatbot</a>
-    <a href="gestion-inventario.html" id="nav-gestion-inventario">Gestión Inventario</a>
+    <a href="pedidos-crud.html" id="nav-pedidos-crud">Pedidos CRUD</a>
     <a href="reporte-inventario.html" id="nav-inventario">Reporte Inventario</a>
     <a href="conexion-auditoria.html" id="nav-auditoria">Auditoría</a>
   </div>
@@ -41,16 +40,14 @@ function setupNav() {
 
 // Marcar link activo según la página actual
 function highlightNavLink() {
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPage = window.location.pathname.split('/').pop() || 'inicio.html';
   const links = {
-    'index.html': 'nav-inicio',
+    'inicio.html': 'nav-inicio',
     'servicio.html': 'nav-servicios',
     'productos.html': 'nav-productos',
-    'chatbot.html': 'nav-chatbot',
-    'gestion-inventario.html': 'nav-gestion-inventario',
+    'pedidos-crud.html': 'nav-pedidos-crud',
     'reporte-inventario.html': 'nav-inventario',
     'conexion-auditoria.html': 'nav-auditoria',
-    'nuevo-chat.html': 'nav-chatbot',
     'informacion-personal.html': 'perfilNav',
     'editar-informacion-personal.html': 'perfilNav',
     'ver-estado-cuenta.html': 'perfilNav',

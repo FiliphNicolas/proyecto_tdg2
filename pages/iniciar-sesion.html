@@ -9,7 +9,7 @@
 <body>
   <div class="container-seccion">
     <div class="titulo">
-      <h1>🔐 Systemsware</h1>
+      <h1>Systemsware: Sistema de gestión de inventario</h1>
     </div>
     <form class="cuadro-azul" id="loginForm">
       <div class="login-header">
@@ -142,7 +142,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     setLoading(true);
     const errorElement = document.getElementById('errorConexion');
 
-    fetch('/api/login', {
+    fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ correo, contrasena, rememberMe }),
@@ -156,9 +156,12 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
       setLoading(false);
       errorElement.style.display = 'none';
       
+      console.log('Respuesta del servidor:', data);
+      
       if (data.ok) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userName', data.user.nombre_usuario);
+        localStorage.setItem('loginTime', Date.now().toString());
         
         // Mostrar mensaje de éxito
         const successDiv = document.createElement('div');
@@ -168,12 +171,27 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
         
         setTimeout(() => {
-          window.location.href = 'index.html';
+          window.location.href = 'inicio.html';
         }, 1500);
       } else {
-        showError(errorElement, data.error || '❌ Correo o contraseña incorrectos');
+        // Asegurar que el mensaje de error siempre se muestre
+        const errorMessage = data.error || '❌ Correo o contraseña incorrectos';
+        console.log('Mostrando error:', errorMessage);
+        
+        errorElement.textContent = errorMessage;
+        errorElement.style.display = 'block';
+        errorElement.style.background = '#fee';
+        errorElement.style.border = '1px solid #f99';
+        errorElement.style.padding = '12px';
+        errorElement.style.borderRadius = '8px';
+        errorElement.style.marginTop = '15px';
+        errorElement.style.color = '#c00';
+        errorElement.style.fontSize = '13px';
+        errorElement.style.whiteSpace = 'pre-wrap';
+        errorElement.style.lineHeight = '1.6';
+        
         errorCorreo.textContent = '';
-      }
+      } 
     })
     .catch(err => {
       console.error('Error:', err);
@@ -185,11 +203,12 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
       } else if (err.message.includes('timeout')) {
         mensaje = '⏱️ El servidor tardó demasiado en responder. Intenta nuevamente.';
       } else {
-        mensaje = 'Error de red: ' + err.message;
+        mensaje = '❌ Error de red';
       }
       showError(errorElement, mensaje);
       errorCorreo.textContent = '';
     });
+
   }
 });
 

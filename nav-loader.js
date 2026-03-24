@@ -17,8 +17,31 @@ async function loadSharedNav() {
       newScript.textContent = script.textContent;
       document.head.appendChild(newScript);
     });
+
+    // Cargar script de timeout de sesión
+    loadSessionTimeout();
   } catch (err) {
     console.error('Error cargando navegación:', err);
+  }
+}
+
+// Cargar script de timeout de sesión
+function loadSessionTimeout() {
+  // Solo cargar en páginas protegidas (no en login o registro)
+  const protectedPages = ['/', '/inicio.html', '/perfil.html', '/productos.html', '/pedidos-crud.html', 
+                           '/reporte-inventario.html', '/servicio.html'];
+  const currentPath = window.location.pathname;
+  
+  const isProtected = protectedPages.some(page => 
+    currentPath === page || currentPath.endsWith(page)
+  );
+
+  if (isProtected) {
+    const script = document.createElement('script');
+    script.src = 'session-timeout.js';
+    script.onload = () => console.log('Session timeout script loaded');
+    script.onerror = () => console.error('Failed to load session timeout script');
+    document.head.appendChild(script);
   }
 }
 

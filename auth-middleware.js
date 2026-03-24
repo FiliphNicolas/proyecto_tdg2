@@ -74,8 +74,11 @@ function serveProtectedPage(filePath) {
     return (req, res) => {
         const fs = require('fs');
         
+        // Construir la ruta completa a la carpeta pages
+        const fullPath = path.join(__dirname, 'pages', path.basename(filePath));
+        
         // Verificar si el archivo existe
-        fs.readFile(filePath, 'utf8', (err, content) => {
+        fs.readFile(fullPath, 'utf8', (err, content) => {
             if (err) {
                 return res.status(404).send('Página no encontrada');
             }

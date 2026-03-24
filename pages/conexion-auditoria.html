@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conexión PostgreSQL - Auditoría Systemsware</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="conexion">
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Auditoría de Base de Datos</h1>
+            <p>Monitoreo de conexión y consultas en tiempo real</p>
+        </div>
+
+        <div id="connectionStatus" class="connection-status disconnected">
+            <div class="status-indicator">🔴 Desconectado</div>
+            <div class="status-message">Verificando conexión...</div>
+        </div>
+
+        <div class="query-section">
+            <h3>Estado de Conexión</h3>
+            <div id="queryDisplay" class="query-display">
+                Cargando datos...
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalQueries">0</div>
+                <div class="stat-label">Total de Consultas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeConnections">0</div>
+                <div class="stat-label">Conexiones Activas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avgResponseTime">0ms</div>
+                <div class="stat-label">Tiempo de Respuesta</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="errorRate">0%</div>
+                <div class="stat-label">Tasa de Error</div>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+
+        <div class="audit-table-container">
+            <h3>Registro de Auditoría</h3>
+            <table class="audit-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Tabla</th>
+                        <th>Acción</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Detalles</th>
+                    </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 20px;">Cargando datos...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let auditData = [];
+        let isConnected = false;
+
+        async function loadAuditData() {
+            try {
+                showLoading(true);
+                hideError();
+                
+                // Consulta directa a la tabla auditoria de Systemsware
+                const response = await fetch('/api/auditoria/direct', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showError('No autorizado - Inicia sesión primero');
+                        window.location.href = '/iniciar-sesion.html';
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    updateConnectionStatus(true);
+                    showAuditData(result.data);
+                    updateStats(result.stats);
+                } else {
+                    updateConnectionStatus(false);
+                    showError(result.error || 'Error al cargar datos');
+                }
+                
+                showLoading(false);
+                
+            } catch (err) {
+                console.error('Error:', err);
+                updateConnectionStatus(false);
+                showError('Error de conexión al servidor: ' + err.message);
+                showLoading(false);
+            }
+        }
+
+        async function testDatabaseConnection() {
+            try {
+                const response = await fetch('/api/auth/test-connection', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+                return response.ok;
+            } catch (err) {
+                return false;
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            const statusDiv = document.getElementById('connectionStatus');
+            const indicator = statusDiv.querySelector('.status-indicator');
+            const message = statusDiv.querySelector('.status-message');
+
+            if (connected) {
+                statusDiv.className = 'connection-status connected';
+                indicator.textContent = '🟢 Systemsware Conectado';
+                message.textContent = 'Conexión establecida correctamente';
+            } else {
+                statusDiv.className = 'connection-status disconnected';
+                indicator.textContent = '🔴 Desconectado';
+                message.textContent = 'Error de conexión';
+            }
+        }
+
+        function updateStats(data) {
+            document.getElementById('totalQueries').textContent = data.total_registros || 0;
+            document.getElementById('activeConnections').textContent = data.usuarios_unicos || 0;
+            document.getElementById('avgResponseTime').textContent = '25ms'; // Simulado
+            document.getElementById('errorRate').textContent = data.total_registros > 0 ? Math.round((data.errores / data.total_registros) * 100) : 0 + '%';
+        }
+
+        function showAuditData(data) {
+            const queryDisplay = document.getElementById('queryDisplay');
+            
+            if (!data || data.length === 0) {
+                queryDisplay.innerHTML = '<div>No hay registros en la tabla auditoria</div>';
+                return;
+            }
+            
+            // Mostrar información de conexión
+            queryDisplay.innerHTML = `
+                <div><strong>🟢 Conectado a:</strong> Systemsware DB</div>
+                <div><strong>📊 Total registros:</strong> ${data.length}</div>
+                <div><strong>🕐 Último registro:</strong> ${data[0] ? new Date(data[0].fecha_accion).toLocaleString() : 'N/A'}</div>
+                <div><strong>📋 Consulta SQL:</strong> <code>SELECT * FROM auditoria ORDER BY fecha_accion DESC</code></div>
+            `;
+            
+            // Actualizar tabla de auditoría
+            updateAuditTable(data);
+        }
+
+        function updateAuditTable(logs) {
+            const tbody = document.getElementById('auditTableBody');
+            
+            if (!logs || logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No hay registros de auditoría</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logs.map(log => `
+                <tr>
+                    <td>${log.id_auditoria || 'N/A'}</td>
+                    <td>${log.id_usuario || 'Sistema'}</td>
+                    <td>${log.tabla_afectada || 'N/A'}</td>
+                    <td>${log.accion || 'N/A'}</td>
+                    <td>${log.fecha_accion ? new Date(log.fecha_accion).toLocaleString() : 'N/A'}</td>
+                    <td><span class="status-badge ${log.estado === 'exitoso' ? 'success' : 'error'}">${log.estado || 'N/A'}</span></td>
+                    <td>${log.descripcion || 'Sin detalles'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = `❌ ${message}`;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            const queryDisplay = document.getElementById('queryDisplay');
+            if (show) {
+                queryDisplay.innerHTML = '⏳ Verificando conexión...';
+            }
+        }
+
+        // Cargar datos al iniciar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar si hay autenticación
+            if (!localStorage.getItem('authToken')) {
+                window.location.href = '/iniciar-sesion.html';
+                return;
+            }
+            
+            loadAuditData();
+        });
+
+        // Auto-refresh cada 30 segundos
+        setInterval(() => {
+            if (document.getElementById('connectionStatus').className.includes('connected')) {
+                loadAuditData();
+            }
+        }, 30000);
+    </script>
+    <script src="nav-loader.js"></script>
+</body>
+</html>

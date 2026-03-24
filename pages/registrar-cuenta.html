@@ -9,7 +9,7 @@
 <body>
   <div class="container-seccion">
     <div class="titulo">
-      <h1>📝 Systemsware</h1>
+      <h1>Systemsware: Sistema de gestión de inventario</h1>
     </div>
     <form class="cuadro-azul" id="registroForm">
       <div class="login-header">
@@ -248,7 +248,7 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     setLoading(true);
     const errorElement = document.getElementById('errorConexion');
 
-    fetch('/api/register', {
+    fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

@@ -45,14 +45,27 @@ CREATE TABLE producto (
 
 -- Tabla Pedido
 CREATE TABLE pedido (
-    id_pedido       INT PRIMARY KEY NOT NULL,
-    id_cliente      INT          NOT NULL REFERENCES Cliente(id_cliente),
-    id_usuario      INT          NOT NULL REFERENCES Usuario(id_usuario),
-    fecha_pedido    TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-    total           NUMERIC(10,2),
-    estado          VARCHAR(50)  DEFAULT 'pendiente',
-    codigo_detalle  VARCHAR(10)  NOT NULL
+    id_pedido       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    numero_pedido   VARCHAR(50)  UNIQUE NOT NULL,
+    nombre_cliente  VARCHAR(255) NOT NULL,
+    email_cliente   VARCHAR(255) NOT NULL,
+    telefono_cliente VARCHAR(50),
+    estado_pedido   VARCHAR(50)  NOT NULL DEFAULT 'pending',
+    fecha_pedido    DATE         NOT NULL,
+    monto_total     DECIMAL(10,2) NOT NULL,
+    direccion_envio TEXT,
+    notas_pedido    TEXT,
+    fecha_creacion  TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Insertar datos de ejemplo para pedidos
+INSERT INTO pedido (numero_pedido, nombre_cliente, email_cliente, telefono_cliente, estado_pedido, fecha_pedido, monto_total, direccion_envio, notas_pedido) VALUES
+('PED-001', 'Juan Pérez', 'juan.perez@email.com', '123-456-7890', 'delivered', '2026-03-15', 1500.00, 'Calle Principal 123, Ciudad', 'Entregar en horario laboral'),
+('PED-002', 'María García', 'maria.garcia@email.com', '987-654-3210', 'processing', '2026-03-16', 2800.50, 'Avenida Secundaria 456, Pueblo', 'Cliente prefiere contacto por email'),
+('PED-003', 'Carlos Rodríguez', 'carlos.rodriguez@email.com', '555-123-4567', 'shipped', '2026-03-17', 950.75, 'Plaza Central 789, Villa', 'Urgente - cumpleaños'),
+('PED-004', 'Ana Martínez', 'ana.martinez@email.com', '333-999-8888', 'pending', '2026-03-18', 3200.00, 'Bulevar Nuevo 321, Ciudad Nueva', 'Requiere factura fiscal'),
+('PED-005', 'Luis Sánchez', 'luis.sanchez@email.com', '777-555-3333', 'cancelled', '2026-03-19', 750.25, 'Calle Antigua 654, Pueblo Viejo', 'Cancelado por cliente');
 
 -- Tabla Detalle_Pedido  ✅ corregido "INT VARCHAR(50)" → solo INT
 CREATE TABLE detalle_pedido (

@@ -51,25 +51,10 @@ Ejecuta `npm install` nuevamente
 ### Error: "Port 3000 already in use"
 Cambia el puerto en `server.js`:
 ```javascript
-const PORT = process.env.PORT || 3001; // Cambia 3001 por otro número
+const PORT = process.env.PORT || 3000; // Cambia 3001 por otro número
 ```
 
-## Estructura del proyecto
 
-```
-📁 systemsware sistema de invetario/
-├── 📄 server.js           (Servidor Node.js)
-├── 📄 databasepg.js       (Configuración de BD)
-├── 📄 package.json        (Dependencias)
-├── 📁 base de datos/
-│   └── 📄 base-de-datos.sql  (Script SQL)
-├── 📄 index.html          (Página de inicio)
-├── 📄 iniciar sesion.html (Login)
-├── 📄 registrar cuenta.html (Registro)
-├── 📄 servicio.html       (Servicios)
-├── 📄 generar-reporte.html (Reportes)
-├── 📄 perfil.html         (Perfil del usuario)
-└── 📄 chatbot.html        (Chatbot)
 ```
 
 ## Funcionalidades principales

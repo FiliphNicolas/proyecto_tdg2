@@ -7,6 +7,8 @@
 body, html{
   background-color: white;
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 /* Estilos específicos para páginas de cuenta */
@@ -17,7 +19,8 @@ body, html{
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-top: 0;
+  padding: 20px 15px;
+  margin: 0;
 }
 
 .cuenta-html .container-seccion {
@@ -32,9 +35,9 @@ body, html{
   backdrop-filter: blur(10px);
   border: none;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  min-width: 500px;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 30px 25px;
+  padding: 20px 25px;
   color: #242424;
   border-radius: 14px;
 }
@@ -49,6 +52,10 @@ body, html{
 .cuenta-html .subtitulo {
   color: #333;
   text-align: center;
+  margin-top: 5px;
+  font-size: 24px;
+  font-weight: 500;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .cuenta-html .descripcion {
@@ -202,6 +209,569 @@ body, html{
   display: block;
 }
 
+/* CSS Variables para consistencia */
+:root {
+  --primary: #667eea;
+  --secondary: #764ba2;
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+  --light: #f8f9fa;
+  --dark: #343a40;
+}
+
+/* Estilos para gestión de inventario */
+.container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  color: #242424;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 15px;
+  padding: 15px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f9f9f9;
+  width: 100%;
+  box-sizing: border-box;
+  transition: 0.3s;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.btn {
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success) 0%, #20c997 100%);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.alert {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.product-info {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-info h3 {
+  margin: 0 0 10px 0;
+  color: var(--dark);
+  font-size: 18px;
+}
+
+/* Estilos para navegación */
+.barra-menu {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+.barra-menu h1 {
+  color: white;
+  font-size: 24px;
+  margin: 0;
+  text-align: center;
+}
+
+.nav-link {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.nav-link a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: 0.3s;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.nav-link a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.perfil-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-decoration: none;
+}
+
+.perfil-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.perfil-nombre {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Estilos para conexión auditoría */
+.connection-status {
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.connected {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.disconnected {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.query-section {
+  background: var(--light);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.query-display {
+  background: #2d3748;
+  color: #e2e8f0;
+  padding: 15px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--dark);
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Estilos para páginas de perfil e información personal */
+.profile-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: none;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 14px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px 25px;
+  color: #242424;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.avatar-ring {
+  display: inline-block;
+  padding: 15px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-bottom: 15px;
+}
+
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667eea;
+}
+
+.avatar-placeholder svg {
+  width: 40px;
+  height: 40px;
+}
+
+.user-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.card-body {
+  margin-top: 20px;
+}
+
+.section-label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.info-input {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #f9f9f9;
+  width: 100%;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+.info-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsividad general para todas las páginas */
+@media (max-width: 768px) {
+  /* Estilos generales */
+  body, html {
+    font-size: 14px;
+  }
+  
+  /* Páginas de cuenta */
+  .cuenta-html .cuadro-azul {
+    max-width: 95%;
+    padding: 25px 20px;
+  }
+  
+  .cuenta-html .titulo h1 {
+    font-size: 24px;
+  }
+  
+  .cuenta-html .subtitulo {
+    font-size: 20px;
+  }
+  
+  /* Página de inicio */
+  .inicio-html .cuadro-azul {
+    width: 90%;
+    padding: 25px 20px;
+  }
+  
+  .inicio-html .titulo-inicio h1 {
+    font-size: 28px;
+  }
+  
+  /* Páginas de perfil */
+  .profile-card {
+    max-width: 95%;
+    padding: 25px 20px;
+  }
+  
+  .card-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+  
+  .avatar-ring {
+    padding: 10px;
+  }
+  
+  .avatar-placeholder {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .avatar-placeholder svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .user-name {
+    font-size: 20px;
+  }
+  
+  .user-email {
+    font-size: 12px;
+  }
+  
+  .section-label {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .info-input {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  /* Gestión de inventario */
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  
+  .btn-group {
+    gap: 8px;
+  }
+  
+  .product-info {
+    padding: 15px;
+  }
+  
+  .product-info h3 {
+    font-size: 16px;
+  }
+  
+  /* Navegación */
+  .barra-menu {
+    padding: 12px 15px;
+  }
+  
+  .barra-menu h1 {
+    font-size: 20px;
+  }
+  
+  .nav-link {
+    gap: 10px;
+  }
+  
+  .nav-link a {
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+  
+  .perfil-avatar {
+    width: 25px;
+    height: 25px;
+  }
+  
+  .perfil-nombre {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Estilos generales */
+  body, html {
+    font-size: 13px;
+  }
+  
+  /* Páginas de cuenta */
+  .cuenta-html body {
+    padding: 10px 5px;
+  }
+  
+  .cuenta-html .cuadro-azul {
+    max-width: 90%;
+    padding: 20px 15px;
+  }
+  
+  .cuenta-html .titulo h1 {
+    font-size: 20px;
+    padding-bottom: 15px;
+  }
+  
+  .cuenta-html .subtitulo {
+    font-size: 18px;
+  }
+  
+  .cuenta-html .descripcion {
+    font-size: 14px;
+  }
+  
+  /* Página de inicio */
+  .inicio-html body {
+    padding: 10px 5px;
+  }
+  
+  .inicio-html .cuadro-azul {
+    width: 95%;
+    padding: 20px 15px;
+  }
+  
+  .inicio-html .titulo-inicio h1 {
+    font-size: 24px;
+  }
+  
+  .inicio-html .subtitulo {
+    font-size: 16px;
+  }
+  
+  .inicio-html .boton-inicio button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
 /* Responsividad */
 @media (max-width: 600px) {
   .inicio-html .titulo-inicio h1 {
@@ -243,12 +813,7 @@ h1, h2, h3, h4, h5, h6, p, a {
   padding: 0;
 }
 
-.cuenta-html .subtitulo {
-  margin: 5px 0;
-  font-size: 24px;
-  font-weight: 500;
-  font-family: Arial, Helvetica, sans-serif;
-}
+
 
 .cuenta-html .descripcion {
   margin: 0;
