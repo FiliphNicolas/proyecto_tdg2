@@ -381,10 +381,9 @@
                     <label for="filterStatus">Estado</label>
                     <select id="filterStatus" onchange="filterOrders()">
                         <option value="">Todos los estados</option>
-                        <option value="pending">Pendiente</option>
-                        <option value="processing">En Proceso</option>
-                        <option value="shipped">Enviado</option>
-                        <option value="delivered">Entregado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En Proceso</option>
+                        <option value="completado">Entregado</option>
                         <option value="cancelled">Cancelado</option>
                     </select>
                 </div>
@@ -437,10 +436,9 @@
                         <label for="orderStatus">Estado Pedido *</label>
                         <select id="orderStatus" required>
                             <option value="">Seleccionar estado...</option>
-                            <option value="pending">Pendiente</option>
-                            <option value="processing">En Proceso</option>
-                            <option value="shipped">Enviado</option>
-                            <option value="delivered">Entregado</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="en_proceso">En Proceso</option>
+                            <option value="completado">Entregado</option>
                             <option value="cancelled">Cancelado</option>
                         </select>
                     </div>
@@ -631,9 +629,12 @@
         function getStatusText(status) {
             const statusMap = {
                 'pending': 'Pendiente',
+                'pendiente': 'Pendiente',
+                'en_proceso': 'En Proceso',
                 'processing': 'En Proceso',
                 'shipped': 'Enviado',
                 'delivered': 'Entregado',
+                'completado': 'Entregado',
                 'cancelled': 'Cancelado'
             };
             return statusMap[status] || status;
