@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
       FROM pedido p
       LEFT JOIN cliente c ON p.id_cliente = c.id_cliente
       LEFT JOIN usuario u ON p.id_usuario = u.id_usuario
-      ORDER BY p.id_pedido DESC
+      ORDER BY p.fecha_pedido DESC
     `;
     
     const result = await db.query(query);
