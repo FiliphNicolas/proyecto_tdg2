@@ -65,10 +65,10 @@
                 } else {
                     // Si no hay API, usar servicios predeterminados
                     allServices = [
-                        { id: 1, nombre: 'Mantenimiento preventivo', descripcion: 'Mantenimiento regular para prevenir problemas', enlace: '#', imagen: 'https://via.placeholder.com/300x200/28A745/FFFFFF?text=Mantenimiento+Preventivo' },
-                        { id: 2, nombre: 'Reparación', descripcion: 'Reparación de equipos y sistemas', enlace: '#', imagen: 'https://via.placeholder.com/300x200/DC3545/FFFFFF?text=Reparación' },
-                        { id: 3, nombre: 'Consultoría técnica', descripcion: 'Asesoría especializada en tecnología', enlace: '#', imagen: 'https://via.placeholder.com/300x200/007BFF/FFFFFF?text=Consultoría+Técnica' },
-                        { id: 4, nombre: 'Instalación de sistemas', descripcion: 'Instalación y configuración de soluciones', enlace: '#', imagen: 'https://via.placeholder.com/300x200/6F42C1/FFFFFF?text=Instalación+de+Sistemas' }
+                        { id: 1, nombre: 'Mantenimiento', descripcion: 'Mantenimiento regular para prevenir problemas', enlace: '#', imagen: 'imagenes/mantenimiento.png' },
+                        { id: 2, nombre: 'Reparación', descripcion: 'Reparación de equipos y sistemas', enlace: '#', imagen: 'imagenes/reparacion.png' },
+                        { id: 3, nombre: 'Consulta Técnica', descripcion: 'Asesoría especializada en tecnología', enlace: '#', imagen: 'imagenes/consulta.png' },
+                        { id: 4, nombre: 'Configuración', descripcion: 'Configuración de sistemas y equipos', enlace: '#', imagen: 'imagenes/configuracion.png' }
                     ];
                 }
                 
@@ -79,10 +79,10 @@
                 console.error('Error:', error);
                 // Usar servicios predeterminados si hay error
                 allServices = [
-                    { id: 1, nombre: 'Mantenimiento preventivo', descripcion: 'Mantenimiento regular para prevenir problemas', enlace: '#', imagen: 'https://via.placeholder.com/300x200/28A745/FFFFFF?text=Mantenimiento+Preventivo' },
-                    { id: 2, nombre: 'Reparación', descripcion: 'Reparación de equipos y sistemas', enlace: '#', imagen: 'https://via.placeholder.com/300x200/DC3545/FFFFFF?text=Reparación' },
-                    { id: 3, nombre: 'Consultoría técnica', descripcion: 'Asesoría especializada en tecnología', enlace: '#', imagen: 'https://via.placeholder.com/300x200/007BFF/FFFFFF?text=Consultoría+Técnica' },
-                    { id: 4, nombre: 'Instalación de sistemas', descripcion: 'Instalación y configuración de soluciones', enlace: '#', imagen: 'https://via.placeholder.com/300x200/6F42C1/FFFFFF?text=Instalación+de+Sistemas' }
+                    { id: 1, nombre: 'Mantenimiento', descripcion: 'Mantenimiento regular para prevenir problemas', enlace: '#', imagen: 'imagenes/mantenimiento.png' },
+                    { id: 2, nombre: 'Reparación', descripcion: 'Reparación de equipos y sistemas', enlace: '#', imagen: 'imagenes/reparacion.png' },
+                    { id: 3, nombre: 'Consulta Técnica', descripcion: 'Asesoría especializada en tecnología', enlace: '#', imagen: 'imagenes/consulta.png' },
+                    { id: 4, nombre: 'Configuración', descripcion: 'Configuración de sistemas y equipos', enlace: '#', imagen: 'imagenes/configuracion.png' }
                 ];
                 document.getElementById('loadingMessage').style.display = 'none';
                 displayServices(allServices);
