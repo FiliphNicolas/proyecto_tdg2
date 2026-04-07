@@ -9,12 +9,12 @@
 <body class="conexion">
     <div class="container">
         <div class="header">
-            <h1>ðŸ” AuditorÃ­a de Base de Datos</h1>
+            <h1>” AuditorÃ­a de Base de Datos</h1>
             <p>Monitoreo de conexiÃ³n y consultas en tiempo real</p>
         </div>
 
         <div id="connectionStatus" class="connection-status disconnected">
-            <div class="status-indicator">ðŸ”´ Desconectado</div>
+            <div class="status-indicator">”´ Desconectado</div>
             <div class="status-message">Verificando conexiÃ³n...</div>
         </div>
 
@@ -136,11 +136,11 @@
 
             if (connected) {
                 statusDiv.className = 'connection-status connected';
-                indicator.textContent = 'ðŸŸ¢ Systemsware Conectado';
+                indicator.textContent = 'Ÿ¢ Systemsware Conectado';
                 message.textContent = 'ConexiÃ³n establecida correctamente';
             } else {
                 statusDiv.className = 'connection-status disconnected';
-                indicator.textContent = 'ðŸ”´ Desconectado';
+                indicator.textContent = '”´ Desconectado';
                 message.textContent = 'Error de conexiÃ³n';
             }
         }
@@ -162,10 +162,10 @@
             
             // Mostrar informaciÃ³n de conexiÃ³n
             queryDisplay.innerHTML = `
-                <div><strong>ðŸŸ¢ Conectado a:</strong> Systemsware DB</div>
-                <div><strong>ðŸ“Š Total registros:</strong> ${data.length}</div>
-                <div><strong>ðŸ• Ãšltimo registro:</strong> ${data[0] ? new Date(data[0].fecha_accion).toLocaleString() : 'N/A'}</div>
-                <div><strong>ðŸ“‹ Consulta SQL:</strong> <code>SELECT * FROM auditoria ORDER BY fecha_accion DESC</code></div>
+                <div><strong>Ÿ¢ Conectado a:</strong> Systemsware DB</div>
+                <div><strong>“Š Total registros:</strong> ${data.length}</div>
+                <div><strong>• Ãšltimo registro:</strong> ${data[0] ? new Date(data[0].fecha_accion).toLocaleString() : 'N/A'}</div>
+                <div><strong>“‹ Consulta SQL:</strong> <code>SELECT * FROM auditoria ORDER BY fecha_accion DESC</code></div>
             `;
             
             // Actualizar tabla de auditorÃ­a

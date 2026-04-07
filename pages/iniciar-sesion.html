@@ -18,17 +18,17 @@
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="correo">📧 Correo electrónico</label>
+        <label class="etiqueta" for="correo"> Correo electrónico</label>
         <input type="email" id="correo" placeholder="correo@ejemplo.com" required autocomplete="email">
         <span class="error" id="error-correo"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="contrasena">🔒 Contraseña</label>
+        <label class="etiqueta" for="contrasena"> Contraseña</label>
         <div class="password-input-container">
           <input type="password" id="contrasena" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
           <button type="button" class="password-toggle" onclick="togglePassword()">
-            <span id="eyeIcon">👁️</span>
+            <span id="eyeIcon"></span>
           </button>
         </div>
         <span class="error" id="error-contrasena"></span>
@@ -47,7 +47,7 @@
       <div class="boton-cuenta">
         <button type="submit" id="loginButton">
           <span class="button-text">Iniciar Sesión</span>
-          <span class="button-loader" style="display: none;">⏳</span>
+          <span class="button-loader" style="display: none;"></span>
         </button>
       </div>
       
@@ -64,10 +64,10 @@ function togglePassword() {
   
   if (passwordInput.type === 'password') {
     passwordInput.type = 'text';
-    eyeIcon.textContent = '🙈';
+    eyeIcon.textContent = '';
   } else {
     passwordInput.type = 'password';
-    eyeIcon.textContent = '👁️';
+    eyeIcon.textContent = '';
   }
 }
 
@@ -166,7 +166,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         // Mostrar mensaje de éxito
         const successDiv = document.createElement('div');
         successDiv.className = 'success-message';
-        successDiv.textContent = '✅ ¡Inicio de sesión exitoso! Redirigiendo...';
+        successDiv.textContent = ' ¡Inicio de sesión exitoso! Redirigiendo...';
         successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
         document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
         
@@ -175,7 +175,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         }, 1500);
       } else {
         // Asegurar que el mensaje de error siempre se muestre
-        const errorMessage = data.error || '❌ Correo o contraseña incorrectos';
+        const errorMessage = data.error || ' Correo o contraseña incorrectos';
         console.log('Mostrando error:', errorMessage);
         
         errorElement.textContent = errorMessage;
@@ -197,13 +197,13 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
       console.error('Error:', err);
       setLoading(false);
       
-      let mensaje = '❌ Error de conexión';
+      let mensaje = ' Error de conexión';
       if (err.message.includes('Failed to fetch')) {
-        mensaje = '❌ No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
+        mensaje = ' No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
       } else if (err.message.includes('timeout')) {
-        mensaje = '⏱️ El servidor tardó demasiado en responder. Intenta nuevamente.';
+        mensaje = ' El servidor tardó demasiado en responder. Intenta nuevamente.';
       } else {
-        mensaje = '❌ Error de red';
+        mensaje = ' Error de red';
       }
       showError(errorElement, mensaje);
       errorCorreo.textContent = '';

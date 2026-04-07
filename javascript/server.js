@@ -33,14 +33,14 @@ app.use('/api/pedidos', pedidosRouter);
 // Inicializar base de datos al iniciar el servidor
 const initializeServer = async () => {
   try {
-    console.log('🔄 Inicializando servidor con PostgreSQL...');
+    console.log(' Inicializando servidor con PostgreSQL...');
     
     // Usar la inicialización unificada de databasepg.js
     await db.initializeServer();
     
-    console.log('✅ Servidor inicializado correctamente');
+    console.log(' Servidor inicializado correctamente');
   } catch (error) {
-    console.error('❌ Error al inicializar el servidor:', error);
+    console.error(' Error al inicializar el servidor:', error);
     process.exit(1);
   }
 };
@@ -70,8 +70,8 @@ app.get(['/inicio.html', '/registrar-cuenta.html', '/perfil.html', '/productos.h
 // Iniciar servidor
 initializeServer().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📱 Open http://localhost:${PORT} in your browser`);
+    console.log(` Server running on port ${PORT}`);
+    console.log(` Open http://localhost:${PORT} in your browser`);
   });
 }).catch(err => {
   console.error('Failed to start server:', err);

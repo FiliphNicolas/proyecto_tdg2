@@ -52,35 +52,35 @@
 </head>
 <body>
     <div class="test-container">
-        <h1>ðŸ§ª Test Modal de Productos y Endpoints</h1>
+        <h1> Test Modal de Productos y Endpoints</h1>
         
         <div class="test-section">
             <h3>1. Modal de Productos</h3>
-            <button class="test-button" onclick="testModalAgregar()">â–¶ï¸ Probar Modal Agregar</button>
-            <button class="test-button" onclick="testModalEditar()">â–¶ï¸ Probar Modal Editar</button>
+            <button class="test-button" onclick="testModalAgregar()">â–¶ Probar Modal Agregar</button>
+            <button class="test-button" onclick="testModalEditar()">â–¶ Probar Modal Editar</button>
             <div id="modalTestResult" class="test-result"></div>
         </div>
 
         <div class="test-section">
             <h3>2. Endpoints de Productos</h3>
-            <button class="test-button" onclick="testGetProductos()">ðŸ“‹ GET /api/public/productos</button>
+            <button class="test-button" onclick="testGetProductos()">“‹ GET /api/public/productos</button>
             <button class="test-button" onclick="testPostProducto()">âž• POST /api/public/productos</button>
-            <button class="test-button" onclick="testPutProducto()">âœï¸ PUT /api/public/productos</button>
-            <button class="test-button" onclick="testDeleteProducto()">ðŸ—‘ï¸ DELETE /api/public/productos</button>
+            <button class="test-button" onclick="testPutProducto()">âœ PUT /api/public/productos</button>
+            <button class="test-button" onclick="testDeleteProducto()">—‘ DELETE /api/public/productos</button>
             <div id="productosTestResult" class="test-result"></div>
         </div>
 
         <div class="test-section">
             <h3>3. Endpoint de InformaciÃ³n del Inventario</h3>
-            <button class="test-button" onclick="testInventarioInfo()">ðŸ“Š GET /api/public/inventario/info</button>
+            <button class="test-button" onclick="testInventarioInfo()">“Š GET /api/public/inventario/info</button>
             <div id="inventarioTestResult" class="test-result"></div>
         </div>
 
         <div class="test-section">
             <h3>4. NavegaciÃ³n RÃ¡pida</h3>
-            <button class="test-button" onclick="window.location.href='productos.html'">ðŸ“¦ Ir a Productos</button>
-            <button class="test-button" onclick="window.location.href='gestion-inventario.html'">ðŸ“Š Ir a GestiÃ³n Inventario</button>
-            <button class="test-button" onclick="window.location.href='reporte-inventario.html'">ðŸ“ˆ Ir a Reporte Inventario</button>
+            <button class="test-button" onclick="window.location.href='productos.html'">“¦ Ir a Productos</button>
+            <button class="test-button" onclick="window.location.href='gestion-inventario.html'">“Š Ir a GestiÃ³n Inventario</button>
+            <button class="test-button" onclick="window.location.href='reporte-inventario.html'">“ˆ Ir a Reporte Inventario</button>
         </div>
     </div>
 
@@ -146,7 +146,7 @@
                     <textarea id="productDescription" rows="3"></textarea>
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="btn-primary">ðŸ’¾ Guardar Producto</button>
+                    <button type="submit" class="btn-primary">’¾ Guardar Producto</button>
                     <button type="button" class="btn-secondary" onclick="cerrarModal()">âŒ Cancelar</button>
                 </div>
             </form>
@@ -168,7 +168,7 @@
         }
 
         function testModalAgregar() {
-            logResult('modalTestResult', 'ðŸ§ª Abriendo modal para agregar producto...', 'info');
+            logResult('modalTestResult', ' Abriendo modal para agregar producto...', 'info');
             
             document.getElementById('modalTitle').textContent = 'Agregar Nuevo Producto (TEST)';
             document.getElementById('productForm').reset();
@@ -179,7 +179,7 @@
         }
 
         function testModalEditar() {
-            logResult('modalTestResult', 'ðŸ§ª Abriendo modal para editar producto...', 'info');
+            logResult('modalTestResult', ' Abriendo modal para editar producto...', 'info');
             
             // Simular datos de un producto
             document.getElementById('modalTitle').textContent = 'Editar Producto (TEST)';
@@ -198,12 +198,12 @@
         function cerrarModal() {
             document.getElementById('productoModal').style.display = 'none';
             document.getElementById('productForm').reset();
-            logResult('modalTestResult', 'ðŸ”’ Modal cerrado', 'info');
+            logResult('modalTestResult', '”’ Modal cerrado', 'info');
         }
 
         async function handleTestSubmit(e) {
             e.preventDefault();
-            logResult('modalTestResult', 'ðŸ§ª Enviando formulario de prueba...', 'info');
+            logResult('modalTestResult', ' Enviando formulario de prueba...', 'info');
             
             const productCode = document.getElementById('productCode').value;
             const productData = {
@@ -243,7 +243,7 @@
         }
 
         async function testGetProductos() {
-            logResult('productosTestResult', 'ðŸ§ª Probando GET /api/public/productos...', 'info');
+            logResult('productosTestResult', ' Probando GET /api/public/productos...', 'info');
             
             try {
                 const response = await fetch('/api/public/productos');
@@ -261,7 +261,7 @@
         }
 
         async function testPostProducto() {
-            logResult('productosTestResult', 'ðŸ§ª Probando POST /api/public/productos...', 'info');
+            logResult('productosTestResult', ' Probando POST /api/public/productos...', 'info');
             
             const testProduct = {
                 nombre: 'Producto Test API',
@@ -294,7 +294,7 @@
         }
 
         async function testPutProducto() {
-            logResult('productosTestResult', 'ðŸ§ª Probando PUT /api/public/productos...', 'info');
+            logResult('productosTestResult', ' Probando PUT /api/public/productos...', 'info');
             
             const updateData = {
                 nombre: 'Producto Actualizado Test',
@@ -327,7 +327,7 @@
         }
 
         async function testDeleteProducto() {
-            logResult('productosTestResult', 'ðŸ§ª Probando DELETE /api/public/productos...', 'info');
+            logResult('productosTestResult', ' Probando DELETE /api/public/productos...', 'info');
             
             try {
                 const response = await fetch('/api/public/productos/TEST-001', {
@@ -348,7 +348,7 @@
         }
 
         async function testInventarioInfo() {
-            logResult('inventarioTestResult', 'ðŸ§ª Probando GET /api/public/inventario/info...', 'info');
+            logResult('inventarioTestResult', ' Probando GET /api/public/inventario/info...', 'info');
             
             try {
                 const response = await fetch('/api/public/inventario/info');
@@ -358,7 +358,7 @@
                     logResult('inventarioTestResult', `âœ… Endpoint de informaciÃ³n funcionando!`, 'success');
                     
                     const stats = result.data.estadisticas_generales;
-                    logResult('inventarioTestResult', `ðŸ“Š EstadÃ­sticas:`, 'info');
+                    logResult('inventarioTestResult', `“Š EstadÃ­sticas:`, 'info');
                     logResult('inventarioTestResult', `   â€¢ Total productos: ${stats.total_productos}`, 'info');
                     logResult('inventarioTestResult', `   â€¢ Total stock: ${stats.total_stock}`, 'info');
                     logResult('inventarioTestResult', `   â€¢ Productos agotados: ${stats.productos_agotados}`, 'info');
@@ -366,7 +366,7 @@
                     logResult('inventarioTestResult', `   â€¢ Valor total inventario: $${parseFloat(stats.valor_total_inventario).toFixed(2)}`, 'info');
                     
                     if (result.data.productos_stock_bajo.length > 0) {
-                        logResult('inventarioTestResult', `âš ï¸ Productos con stock bajo:`, 'info');
+                        logResult('inventarioTestResult', `âš  Productos con stock bajo:`, 'info');
                         result.data.productos_stock_bajo.forEach(p => {
                             logResult('inventarioTestResult', `   â€¢ ${p.nombre}: ${p.cantidad_stock} unidades`, 'info');
                         });
@@ -381,9 +381,9 @@
 
         // Auto-test al cargar la pÃ¡gina
         document.addEventListener('DOMContentLoaded', () => {
-            logResult('modalTestResult', 'ðŸš€ PÃ¡gina de test cargada correctamente', 'success');
-            logResult('productosTestResult', 'ðŸš€ Test de endpoints listo', 'success');
-            logResult('inventarioTestResult', 'ðŸš€ Test de informaciÃ³n del inventario listo', 'success');
+            logResult('modalTestResult', 'š€ PÃ¡gina de test cargada correctamente', 'success');
+            logResult('productosTestResult', 'š€ Test de endpoints listo', 'success');
+            logResult('inventarioTestResult', 'š€ Test de informaciÃ³n del inventario listo', 'success');
         });
     </script>
 </body>

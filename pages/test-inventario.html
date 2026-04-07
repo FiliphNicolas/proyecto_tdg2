@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <h1>🔍 Test de Conexión - Sistema de Inventario</h1>
+    <h1> Test de Conexión - Sistema de Inventario</h1>
     
     <div id="results">
         <div class="info">Haciendo pruebas de conexión...</div>
@@ -38,45 +38,45 @@
         }
 
         async function testAPI() {
-            log('🔄 Probando conexión a /api/public/inventario...', 'info');
+            log(' Probando conexión a /api/public/inventario...', 'info');
             
             try {
                 const response = await fetch('/api/public/inventario');
                 const data = await response.json();
                 
                 if (response.ok && data.ok) {
-                    log(`✅ API funcionando correctamente! Encontrados ${data.movements.length} movimientos`, 'success');
+                    log(` API funcionando correctamente! Encontrados ${data.movements.length} movimientos`, 'success');
                     if (data.movements.length > 0) {
                         log('<strong>Movimientos encontrados:</strong>', 'info');
                         log(`<pre>${JSON.stringify(data.movements, null, 2)}</pre>`, 'info');
                     }
                 } else {
-                    log(`❌ Error en API: ${data.error || 'Respuesta inválida'}`, 'error');
+                    log(` Error en API: ${data.error || 'Respuesta inválida'}`, 'error');
                 }
             } catch (error) {
-                log(`❌ Error de conexión: ${error.message}`, 'error');
+                log(` Error de conexión: ${error.message}`, 'error');
             }
         }
 
         async function testProducts() {
-            log('🔄 Probando conexión a /api/public/productos...', 'info');
+            log(' Probando conexión a /api/public/productos...', 'info');
             
             try {
                 const response = await fetch('/api/public/productos');
                 const data = await response.json();
                 
                 if (response.ok && data.ok) {
-                    log(`✅ API de productos funcionando! Encontrados ${data.products.length} productos`, 'success');
+                    log(` API de productos funcionando! Encontrados ${data.products.length} productos`, 'success');
                 } else {
-                    log(`❌ Error en API de productos: ${data.error || 'Respuesta inválida'}`, 'error');
+                    log(` Error en API de productos: ${data.error || 'Respuesta inválida'}`, 'error');
                 }
             } catch (error) {
-                log(`❌ Error de conexión: ${error.message}`, 'error');
+                log(` Error de conexión: ${error.message}`, 'error');
             }
         }
 
         async function addTestMovement() {
-            log('🔄 Agregando movimiento de prueba...', 'info');
+            log(' Agregando movimiento de prueba...', 'info');
             
             try {
                 const testMovement = {
@@ -97,13 +97,13 @@
                 const data = await response.json();
                 
                 if (response.ok && data.ok) {
-                    log(`✅ Movimiento agregado correctamente!`, 'success');
+                    log(` Movimiento agregado correctamente!`, 'success');
                     log(`<pre>${JSON.stringify(data.movement, null, 2)}</pre>`, 'info');
                 } else {
-                    log(`❌ Error agregando movimiento: ${data.error || 'Respuesta inválida'}`, 'error');
+                    log(` Error agregando movimiento: ${data.error || 'Respuesta inválida'}`, 'error');
                 }
             } catch (error) {
-                log(`❌ Error de conexión: ${error.message}`, 'error');
+                log(` Error de conexión: ${error.message}`, 'error');
             }
         }
 

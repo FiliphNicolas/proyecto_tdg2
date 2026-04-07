@@ -87,10 +87,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>ðŸ” InformaciÃ³n del Usuario Actual</h1>
+        <h1>” InformaciÃ³n del Usuario Actual</h1>
         
         <div>
-            <button class="btn btn-primary" onclick="verUsuarioDesdeAPI()">ðŸ”„ Ver desde API /api/me</button>
+            <button class="btn btn-primary" onclick="verUsuarioDesdeAPI()">”„ Ver desde API /api/me</button>
             <span class="refresh-indicator" id="refresh-indicator">Auto-refresh cada 30s</span>
         </div>
         
@@ -100,7 +100,7 @@
         <div id="resultado"></div>
         
         <div class="user-card">
-            <h2>ðŸ“‹ Resumen del Usuario</h2>
+            <h2>“‹ Resumen del Usuario</h2>
             <div id="resumen-usuario">
                 <p>Carga uno de los mÃ©todos arriba para ver la informaciÃ³n</p>
             </div>
@@ -121,7 +121,7 @@
                     resultado.innerHTML = `
                         <div class="success">
                             <h3>âœ… Usuario desde AuthSystem</h3>
-                            <button class="btn toggle-code" onclick="toggleCode('authsystem-code')">ðŸ‘ï¸ Ver/Ocultar cÃ³digo</button>
+                            <button class="btn toggle-code" onclick="toggleCode('authsystem-code')">‘ Ver/Ocultar cÃ³digo</button>
                             <div class="code-container" id="authsystem-code">
                                 <pre>${JSON.stringify(currentUser, null, 2)}</pre>
                             </div>
@@ -170,7 +170,7 @@
                     resultado.innerHTML = `
                         <div class="success">
                             <h3>âœ… Usuario desde API /api/me</h3>
-                            <button class="btn toggle-code" onclick="toggleCode('api-code')">ðŸ‘ï¸ Ver/Ocultar cÃ³digo</button>
+                            <button class="btn toggle-code" onclick="toggleCode('api-code')">‘ Ver/Ocultar cÃ³digo</button>
                             <div class="code-container" id="api-code">
                                 <pre>${JSON.stringify(data, null, 2)}</pre>
                             </div>
@@ -211,7 +211,7 @@
             resultado.innerHTML = `
                 <div class="success">
                     <h3>âœ… Datos en localStorage</h3>
-                    <button class="btn toggle-code" onclick="toggleCode('localstorage-code')">ðŸ‘ï¸ Ver/Ocultar cÃ³digo</button>
+                    <button class="btn toggle-code" onclick="toggleCode('localstorage-code')">‘ Ver/Ocultar cÃ³digo</button>
                     <div class="code-container" id="localstorage-code">
                         <pre>${JSON.stringify(localStorageData, null, 2)}</pre>
                     </div>
@@ -279,7 +279,7 @@
             // Auto-refresh cada 30 segundos con API
             setInterval(() => {
                 const indicator = document.getElementById('refresh-indicator');
-                indicator.textContent = 'ðŸ”„ Actualizando...';
+                indicator.textContent = '”„ Actualizando...';
                 verUsuarioDesdeAPI().finally(() => {
                     setTimeout(() => {
                         indicator.textContent = 'Auto-refresh cada 30s';

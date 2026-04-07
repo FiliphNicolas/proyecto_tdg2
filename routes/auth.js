@@ -104,11 +104,11 @@ router.post('/login', async (req, res) => {
     const text = 'SELECT id_usuario, nombre_usuario, contrasena FROM "usuario" WHERE email = $1 LIMIT 1';
     const values = [correo];
     const result = await db.query(text, values);
-    if (result.rowCount === 0) return res.status(401).json({ error: '❌ Correo electrónico no registrado' });
+    if (result.rowCount === 0) return res.status(401).json({ error: ' Correo electrónico no registrado' });
 
     const user = result.rows[0];
     const match = await bcrypt.compare(contrasena, user.contrasena);
-    if (!match) return res.status(401).json({ error: '❌ Contraseña incorrecta' });
+    if (!match) return res.status(401).json({ error: ' Contraseña incorrecta' });
 
     const token = jwt.sign({ 
       id_usuario: user.id_usuario, 

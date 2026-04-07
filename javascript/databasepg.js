@@ -24,10 +24,10 @@ async function testConnection() {
     const client = await pool.connect();
     await client.query('SELECT NOW()');
     client.release();
-    console.log('✅ Database connection successful');
+    console.log(' Database connection successful');
     return true;
   } catch (err) {
-    console.error('❌ Database connection failed:', err.message);
+    console.error(' Database connection failed:', err.message);
     return false;
   }
 }
@@ -43,14 +43,14 @@ async function initializeDatabase() {
     `);
     
     if (result.rows.length === 0) {
-      console.log('⚠️ Tables not found. Please run sql/base-de-datos.sql first');
+      console.log(' Tables not found. Please run sql/base-de-datos.sql first');
       return false;
     }
     
-    console.log('✅ Database tables verified');
+    console.log(' Database tables verified');
     return true;
   } catch (err) {
-    console.error('❌ Error initializing database:', err.message);
+    console.error(' Error initializing database:', err.message);
     return false;
   }
 }
@@ -61,10 +61,10 @@ async function query(text, params) {
   try {
     const result = await pool.query(text, params);
     const duration = Date.now() - start;
-    console.log('📊 Query executed', { text, duration, rows: result.rowCount });
+    console.log(' Query executed', { text, duration, rows: result.rowCount });
     return result;
   } catch (err) {
-    console.error('❌ Query error', { text, params, error: err.message });
+    console.error(' Query error', { text, params, error: err.message });
     throw err;
   }
 }
@@ -77,24 +77,24 @@ function getClient() {
 // Función para cerrar el pool
 async function closePool() {
   await pool.end();
-  console.log('🔒 Database pool closed');
+  console.log(' Database pool closed');
 }
 
 // Inicialización automática unificada para el servidor
 async function initializeServer() {
-  console.log('🔧 Inicializando conexión a base de datos...');
+  console.log(' Inicializando conexión a base de datos...');
   
   const connected = await testConnection();
   if (!connected) {
-    throw new Error('❌ No se pudo conectar a PostgreSQL. Verifica tu configuración.');
+    throw new Error(' No se pudo conectar a PostgreSQL. Verifica tu configuración.');
   }
   
   const initialized = await initializeDatabase();
   if (!initialized) {
-    throw new Error('❌ Error al inicializar tablas de la base de datos');
+    throw new Error(' Error al inicializar tablas de la base de datos');
   }
   
-  console.log('✅ Base de datos lista y conectada');
+  console.log(' Base de datos lista y conectada');
   return true;
 }
 
