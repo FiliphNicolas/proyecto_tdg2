@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('../databasepg');
+const db = require('../javascript/databasepg');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'systemsware_secret_change_this';

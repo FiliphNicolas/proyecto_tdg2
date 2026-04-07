@@ -4,9 +4,9 @@
   "description": "Servidor para autenticación y sincronización con PostgreSQL",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node javascript/server.js",
     "verify": "node verificar-config.js",
-    "dev": "node server.js",
+    "dev": "node javascript/server.js",
     "lint:js": "eslint .",
     "lint:css": "stylelint '**/*.css'",
     "lint": "npm run lint:js && npm run lint:css"

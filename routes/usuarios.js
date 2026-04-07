@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('../databasepg');
+const db = require('../javascript/databasepg');
 const { authMiddleware } = require('./auth');
 
 const router = express.Router();
