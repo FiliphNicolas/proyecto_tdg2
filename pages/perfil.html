@@ -1,30 +1,36 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi perfil - Systemsware</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
     <div class="container">
         <h1 class="titulo-perfil">Mi perfil</h1>
-        <div class="perfil-flex">
-            <div class="contenedor-perfil">
-                <button class="carta-perfil" onclick="window.location.href='ver-usuario-actual.html'" title="Ver y editar información personal">
-                    📋 Ver estado de usuario
+        <div class="perfil-flex">            <div class="perfil">
+                <div class="avatar-ring">
+                    <div class="avatar-placeholder">
+                        <img id="perfilFoto" src="imagenes/perfil-default.png" alt="Foto de perfil" class="perfil-photo">
+                    </div>
+                </div>
+                <div class="user-name" id="perfilNombrePerfil">Usuario</div>
+            </div>            <div class="contenedor-perfil">
+                <button class="carta-perfil" onclick="window.location.href='ver-usuario-actual.html'" title="Ver y editar informaciÃ³n personal">
+                    ðŸ“‹ Ver estado de usuario
                 </button>
                 <button class="carta-perfil cerrar-seccion" onclick="cerrarSesion()">
-                    🚪 Cerrar sesión
+                    ðŸšª Cerrar sesión
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="nav-loader.js"></script>
+    <script src="../javascript/nav-loader.js"></script>
     <script>
         function cerrarSesion() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+            if (confirm('Â¿EstÃ¡s seguro de que quieres cerrar sesiÃ³n?')) {
                 // Limpiar localStorage/sessionStorage
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('userName');
@@ -41,7 +47,7 @@
             try {
                 const token = localStorage.getItem('authToken');
                 if (!token) {
-                    alert('No tienes sesión activa');
+                    alert('No tienes sesiÃ³n activa');
                     window.location.href = 'iniciar-sesion.html';
                     return;
                 }
@@ -55,38 +61,52 @@
                 });
 
                 if (response.ok) {
-                    alert('✅ Tu cuenta ha sido eliminada permanentemente.\n\nSerás redirigido a la página principal.');
+                    alert('âœ… Tu cuenta ha sido eliminada permanentemente.\n\nSerÃ¡s redirigido a la pÃ¡gina principal.');
                     
                     // Limpiar datos locales
                     localStorage.clear();
                     sessionStorage.clear();
                     
-                    // Redirigir a página principal
+                    // Redirigir a pÃ¡gina principal
                     window.location.href = 'index.html';
                 } else {
                     const error = await response.json();
-                    alert('❌ Error al eliminar la cuenta: ' + (error.error || 'Error desconocido'));
+                    alert('âŒ Error al eliminar la cuenta: ' + (error.error || 'Error desconocido'));
                 }
             } catch (error) {
                 console.error('Error al eliminar cuenta:', error);
-                alert('❌ Error de conexión al eliminar la cuenta. Por favor intenta nuevamente.');
+                alert('âŒ Error de conexiÃ³n al eliminar la cuenta. Por favor intenta nuevamente.');
             }
         }
 
-        // Verificar si el usuario está logueado
+        // Verificar si el usuario estÃ¡ logueado
         document.addEventListener('DOMContentLoaded', function() {
             const userToken = localStorage.getItem('authToken') || localStorage.getItem('userToken');
             if (!userToken) {
-                alert('Debes iniciar sesión para acceder a tu perfil');
+                alert('Debes iniciar sesiÃ³n para acceder a tu perfil');
                 window.location.href = 'iniciar-sesion.html';
                 return;
             }
 
-            // Cargar la navegación
+            // Cargar la navegaciÃ³n
             if (typeof loadNavigation === 'function') {
                 loadNavigation();
+            }
+
+            const profileName = document.getElementById('perfilNombrePerfil');
+            const avatarImg = document.getElementById('perfilFoto');
+            const userName = localStorage.getItem('userName');
+            const userAvatarUrl = localStorage.getItem('userAvatarUrl');
+
+            if (profileName) {
+                profileName.textContent = userName || 'Usuario';
+            }
+            if (avatarImg && userAvatarUrl) {
+                avatarImg.src = userAvatarUrl;
             }
         });
     </script>
 </body>
 </html>
+
+

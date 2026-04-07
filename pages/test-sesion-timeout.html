@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Timeout de Sesión - Systemsware</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Test de Timeout de SesiÃ³n - Systemsware</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <style>
         .test-container {
             max-width: 800px;
@@ -65,46 +65,46 @@
 </head>
 <body>
     <div class="test-container">
-        <h1>🧪 Test de Timeout de Sesión</h1>
+        <h1>ðŸ§ª Test de Timeout de SesiÃ³n</h1>
         
         <div class="timer-display" id="timerDisplay">
             <div class="status-indicator status-active"></div>
-            Sesión Activa - Tiempo restante: <span id="timeRemaining">10:00</span>
+            SesiÃ³n Activa - Tiempo restante: <span id="timeRemaining">10:00</span>
         </div>
 
         <div class="info-box">
-            <h3>ℹ️ Información de Prueba</h3>
-            <p><strong>Configuración:</strong> Timeout de 10 minutos con advertencia a los 9 minutos</p>
+            <h3>â„¹ï¸ InformaciÃ³n de Prueba</h3>
+            <p><strong>ConfiguraciÃ³n:</strong> Timeout de 10 minutos con advertencia a los 9 minutos</p>
             <p><strong>Estado actual:</strong> <span id="sessionStatus">Activa</span></p>
-            <p><strong>Última actividad:</strong> <span id="lastActivity">Ahora</span></p>
+            <p><strong>Ãšltima actividad:</strong> <span id="lastActivity">Ahora</span></p>
         </div>
 
         <div class="activity-section">
-            <h3>🎮 Simular Actividad</h3>
-            <p>Usa estos botones para simular actividad del usuario y extender la sesión:</p>
-            <button class="activity-button" onclick="simulateActivity()">🖱️ Simular Click</button>
-            <button class="activity-button" onclick="simulateKeyPress()">⌨️ Simular Teclado</button>
-            <button class="activity-button" onclick="simulateScroll()">📜 Simular Scroll</button>
+            <h3>ðŸŽ® Simular Actividad</h3>
+            <p>Usa estos botones para simular actividad del usuario y extender la sesiÃ³n:</p>
+            <button class="activity-button" onclick="simulateActivity()">ðŸ–±ï¸ Simular Click</button>
+            <button class="activity-button" onclick="simulateKeyPress()">âŒ¨ï¸ Simular Teclado</button>
+            <button class="activity-button" onclick="simulateScroll()">ðŸ“œ Simular Scroll</button>
         </div>
 
         <div class="info-box">
-            <h3>📋 Pasos para Probar</h3>
+            <h3>ðŸ“‹ Pasos para Probar</h3>
             <ol>
-                <li>Inicia sesión en <a href="/iniciar-sesion.html">/iniciar-sesion.html</a></li>
-                <li>Vuelve a esta página para ver el contador</li>
+                <li>Inicia sesiÃ³n en <a href="/iniciar-sesion.html">/iniciar-sesion.html</a></li>
+                <li>Vuelve a esta pÃ¡gina para ver el contador</li>
                 <li>No realices ninguna actividad durante 10 minutos</li>
-                <li>Deberías ver una advertencia a los 9 minutos</li>
-                <li>La sesión debería cerrarse automáticamente a los 10 minutos</li>
-                <li>Usa los botones de actividad para extender la sesión</li>
+                <li>DeberÃ­as ver una advertencia a los 9 minutos</li>
+                <li>La sesiÃ³n deberÃ­a cerrarse automÃ¡ticamente a los 10 minutos</li>
+                <li>Usa los botones de actividad para extender la sesiÃ³n</li>
             </ol>
         </div>
 
         <div class="info-box">
-            <h3>🔍 Resultados Esperados</h3>
+            <h3>ðŸ” Resultados Esperados</h3>
             <ul>
-                <li><strong>9 minutos:</strong> Advertencia naranja con botón "Extender sesión"</li>
-                <li><strong>10 minutos:</strong> Cierre automático y redirección a login</li>
-                <li><strong>Actividad:</strong> El contador se reinicia con cualquier interacción</li>
+                <li><strong>9 minutos:</strong> Advertencia naranja con botÃ³n "Extender sesiÃ³n"</li>
+                <li><strong>10 minutos:</strong> Cierre automÃ¡tico y redirecciÃ³n a login</li>
+                <li><strong>Actividad:</strong> El contador se reinicia con cualquier interacciÃ³n</li>
             </ul>
         </div>
     </div>
@@ -132,7 +132,7 @@
                 document.getElementById('sessionStatus').textContent = 'Expirada';
                 statusIndicator.className = 'status-indicator status-expired';
                 timerDisplay.style.background = 'linear-gradient(135deg, #f44336 0%, #e91e63 100%)';
-            } else if (remaining <= 60000) { // Último minuto
+            } else if (remaining <= 60000) { // Ãšltimo minuto
                 document.getElementById('sessionStatus').textContent = 'Por Expirar';
                 statusIndicator.className = 'status-indicator status-warning';
                 timerDisplay.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
@@ -194,3 +194,4 @@
     </script>
 </body>
 </html>
+

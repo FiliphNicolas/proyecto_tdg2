@@ -47,19 +47,19 @@ const initializeServer = async () => {
 
 
 // Servir archivos estáticos
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, '..')));
 
 // Servir páginas HTML desde carpeta pages
-app.use(express.static(path.join(__dirname, 'pages')));
+app.use(express.static(path.join(__dirname, '..', 'pages')));
 
 // Servir página principal (login) - sin protección
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'pages', 'iniciar-sesion.html'));
+  res.sendFile(path.join(__dirname, '..', 'pages', 'iniciar-sesion.html'));
 });
 
 // También permitir acceso directo a iniciar-sesion.html - sin protección
 app.get('/iniciar-sesion.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'pages', 'iniciar-sesion.html'));
+  res.sendFile(path.join(__dirname, '..', 'pages', 'iniciar-sesion.html'));
 });
 
 

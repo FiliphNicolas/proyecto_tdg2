@@ -1,25 +1,25 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conexión PostgreSQL - Auditoría Systemsware</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>ConexiÃ³n PostgreSQL - AuditorÃ­a Systemsware</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="conexion">
     <div class="container">
         <div class="header">
-            <h1>🔍 Auditoría de Base de Datos</h1>
-            <p>Monitoreo de conexión y consultas en tiempo real</p>
+            <h1>ðŸ” AuditorÃ­a de Base de Datos</h1>
+            <p>Monitoreo de conexiÃ³n y consultas en tiempo real</p>
         </div>
 
         <div id="connectionStatus" class="connection-status disconnected">
-            <div class="status-indicator">🔴 Desconectado</div>
-            <div class="status-message">Verificando conexión...</div>
+            <div class="status-indicator">ðŸ”´ Desconectado</div>
+            <div class="status-message">Verificando conexiÃ³n...</div>
         </div>
 
         <div class="query-section">
-            <h3>Estado de Conexión</h3>
+            <h3>Estado de ConexiÃ³n</h3>
             <div id="queryDisplay" class="query-display">
                 Cargando datos...
             </div>
@@ -47,14 +47,14 @@
         <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
 
         <div class="audit-table-container">
-            <h3>Registro de Auditoría</h3>
+            <h3>Registro de AuditorÃ­a</h3>
             <table class="audit-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Usuario</th>
                         <th>Tabla</th>
-                        <th>Acción</th>
+                        <th>AcciÃ³n</th>
                         <th>Fecha</th>
                         <th>Estado</th>
                         <th>Detalles</th>
@@ -87,7 +87,7 @@
                 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        showError('No autorizado - Inicia sesión primero');
+                        showError('No autorizado - Inicia sesiÃ³n primero');
                         window.location.href = '/iniciar-sesion.html';
                         return;
                     }
@@ -110,7 +110,7 @@
             } catch (err) {
                 console.error('Error:', err);
                 updateConnectionStatus(false);
-                showError('Error de conexión al servidor: ' + err.message);
+                showError('Error de conexiÃ³n al servidor: ' + err.message);
                 showLoading(false);
             }
         }
@@ -136,12 +136,12 @@
 
             if (connected) {
                 statusDiv.className = 'connection-status connected';
-                indicator.textContent = '🟢 Systemsware Conectado';
-                message.textContent = 'Conexión establecida correctamente';
+                indicator.textContent = 'ðŸŸ¢ Systemsware Conectado';
+                message.textContent = 'ConexiÃ³n establecida correctamente';
             } else {
                 statusDiv.className = 'connection-status disconnected';
-                indicator.textContent = '🔴 Desconectado';
-                message.textContent = 'Error de conexión';
+                indicator.textContent = 'ðŸ”´ Desconectado';
+                message.textContent = 'Error de conexiÃ³n';
             }
         }
 
@@ -160,15 +160,15 @@
                 return;
             }
             
-            // Mostrar información de conexión
+            // Mostrar informaciÃ³n de conexiÃ³n
             queryDisplay.innerHTML = `
-                <div><strong>🟢 Conectado a:</strong> Systemsware DB</div>
-                <div><strong>📊 Total registros:</strong> ${data.length}</div>
-                <div><strong>🕐 Último registro:</strong> ${data[0] ? new Date(data[0].fecha_accion).toLocaleString() : 'N/A'}</div>
-                <div><strong>📋 Consulta SQL:</strong> <code>SELECT * FROM auditoria ORDER BY fecha_accion DESC</code></div>
+                <div><strong>ðŸŸ¢ Conectado a:</strong> Systemsware DB</div>
+                <div><strong>ðŸ“Š Total registros:</strong> ${data.length}</div>
+                <div><strong>ðŸ• Ãšltimo registro:</strong> ${data[0] ? new Date(data[0].fecha_accion).toLocaleString() : 'N/A'}</div>
+                <div><strong>ðŸ“‹ Consulta SQL:</strong> <code>SELECT * FROM auditoria ORDER BY fecha_accion DESC</code></div>
             `;
             
-            // Actualizar tabla de auditoría
+            // Actualizar tabla de auditorÃ­a
             updateAuditTable(data);
         }
 
@@ -176,7 +176,7 @@
             const tbody = document.getElementById('auditTableBody');
             
             if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No hay registros de auditoría</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No hay registros de auditorÃ­a</td></tr>';
                 return;
             }
 
@@ -195,7 +195,7 @@
 
         function showError(message) {
             const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = `❌ ${message}`;
+            errorDiv.textContent = `âŒ ${message}`;
             errorDiv.style.display = 'block';
         }
 
@@ -206,13 +206,13 @@
         function showLoading(show) {
             const queryDisplay = document.getElementById('queryDisplay');
             if (show) {
-                queryDisplay.innerHTML = '⏳ Verificando conexión...';
+                queryDisplay.innerHTML = 'â³ Verificando conexiÃ³n...';
             }
         }
 
-        // Cargar datos al iniciar la página
+        // Cargar datos al iniciar la pÃ¡gina
         document.addEventListener('DOMContentLoaded', () => {
-            // Verificar si hay autenticación
+            // Verificar si hay autenticaciÃ³n
             if (!localStorage.getItem('authToken')) {
                 window.location.href = '/iniciar-sesion.html';
                 return;
@@ -228,6 +228,8 @@
             }
         }, 30000);
     </script>
-    <script src="nav-loader.js"></script>
+    <script src="../javascript/nav-loader.js"></script>
 </body>
 </html>
+
+

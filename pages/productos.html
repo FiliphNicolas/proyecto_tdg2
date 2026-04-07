@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Productos - Systemsware</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
     <div class="container-productos">
@@ -19,10 +19,10 @@
         <div class="productos-filtros">
             <input type="text" id="searchProduct" placeholder="Buscar producto...">
             <select id="filterCategory">
-                <option value="">Todas las categorías</option>
+                <option value="">Todas las categorÃ­as</option>
                 <option value="Computadores">Computadores</option>
                 <option value="Monitores">Monitores</option>
-                <option value="Periféricos">Periféricos</option>
+                <option value="PerifÃ©ricos">PerifÃ©ricos</option>
                 <option value="Audio">Audio</option>
                 <option value="Cables">Cables</option>
                 <option value="Adaptadores">Adaptadores</option>
@@ -34,7 +34,7 @@
                 <option value="Hardware">Hardware</option>
                 <option value="Software">Software</option>
                 <option value="Oficina">Oficina</option>
-                <option value="Electrónica">Electrónica</option>
+                <option value="ElectrÃ³nica">ElectrÃ³nica</option>
             </select>
             <button onclick="loadProducts()">Actualizar</button>
         </div>
@@ -49,9 +49,9 @@
                 <form id="productForm" onsubmit="handleProductSubmit(event)">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productCode">Código del Producto:</label>
+                            <label for="productCode">CÃ³digo del Producto:</label>
                             <input type="text" id="productCode" placeholder="PROD-XXX" required>
-                            <small>Deja en blanco para generar automáticamente</small>
+                            <small>Deja en blanco para generar automÃ¡ticamente</small>
                         </div>
                         <div class="form-group">
                             <label for="productName">Nombre del Producto:</label>
@@ -60,12 +60,12 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productCategory">Categoría:</label>
+                            <label for="productCategory">CategorÃ­a:</label>
                             <select id="productCategory" required>
-                                <option value="">Seleccionar categoría</option>
+                                <option value="">Seleccionar categorÃ­a</option>
                                 <option value="Computadores">Computadores</option>
                                 <option value="Monitores">Monitores</option>
-                                <option value="Periféricos">Periféricos</option>
+                                <option value="PerifÃ©ricos">PerifÃ©ricos</option>
                                 <option value="Audio">Audio</option>
                                 <option value="Cables">Cables</option>
                                 <option value="Adaptadores">Adaptadores</option>
@@ -77,7 +77,7 @@
                                 <option value="Hardware">Hardware</option>
                                 <option value="Software">Software</option>
                                 <option value="Oficina">Oficina</option>
-                                <option value="Electrónica">Electrónica</option>
+                                <option value="ElectrÃ³nica">ElectrÃ³nica</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -97,12 +97,12 @@
                         </div>
                     </div>
                     <div class="form-group full-width">
-                        <label for="productDescription">Descripción:</label>
+                        <label for="productDescription">DescripciÃ³n:</label>
                         <textarea id="productDescription" rows="3"></textarea>
                     </div>
                     <div class="form-buttons">
-                        <button type="submit" class="btn-primary">💾 Guardar Producto</button>
-                        <button type="button" class="btn-secondary" onclick="cerrarModal()">❌ Cancelar</button>
+                        <button type="submit" class="btn-primary">ðŸ’¾ Guardar Producto</button>
+                        <button type="button" class="btn-secondary" onclick="cerrarModal()">âŒ Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -113,7 +113,7 @@
         </div>
 
         <div class="producto-grid" id="productosContainer">
-            <!-- Los productos se cargarán aquí dinámicamente -->
+            <!-- Los productos se cargarÃ¡n aquÃ­ dinÃ¡micamente -->
         </div>
     </div>
 
@@ -154,7 +154,7 @@
                     allProducts = result.products.map(product => ({
                         id: product.codigo_producto,
                         nombre: product.nombre,
-                        categoria: product.categoria || 'Sin categoría',
+                        categoria: product.categoria || 'Sin categorÃ­a',
                         precio: Number(product.precio),
                         stock: product.cantidad_stock,
                         descripcion: product.descripcion || '',
@@ -236,7 +236,7 @@
             const categorySelect = document.getElementById('filterCategory');
             const categories = [...new Set(allProducts.map(p => p.categoria))].sort();
             
-            categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
+            categorySelect.innerHTML = '<option value="">Todas las categorÃ­as</option>';
             categories.forEach(cat => {
                 categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
             });
@@ -325,7 +325,7 @@
         }
 
         async function eliminarProducto(id) {
-            if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+            if (confirm('Â¿EstÃ¡s seguro de que quieres eliminar este producto?')) {
                 try {
                     const response = await fetch(`/api/public/productos/${id}`, {
                         method: 'DELETE'
@@ -351,6 +351,8 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
     </script>
-    <script src="nav-loader.js"></script>
+    <script src="../javascript/nav-loader.js"></script>
 </body>
 </html>
+
+

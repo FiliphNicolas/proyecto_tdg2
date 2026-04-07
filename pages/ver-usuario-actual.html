@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información del Usuario Actual</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>InformaciÃ³n del Usuario Actual</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <style>
         .container {
             max-width: 800px;
@@ -87,10 +87,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔍 Información del Usuario Actual</h1>
+        <h1>ðŸ” InformaciÃ³n del Usuario Actual</h1>
         
         <div>
-            <button class="btn btn-primary" onclick="verUsuarioDesdeAPI()">🔄 Ver desde API /api/me</button>
+            <button class="btn btn-primary" onclick="verUsuarioDesdeAPI()">ðŸ”„ Ver desde API /api/me</button>
             <span class="refresh-indicator" id="refresh-indicator">Auto-refresh cada 30s</span>
         </div>
         
@@ -100,17 +100,17 @@
         <div id="resultado"></div>
         
         <div class="user-card">
-            <h2>📋 Resumen del Usuario</h2>
+            <h2>ðŸ“‹ Resumen del Usuario</h2>
             <div id="resumen-usuario">
-                <p>Carga uno de los métodos arriba para ver la información</p>
+                <p>Carga uno de los mÃ©todos arriba para ver la informaciÃ³n</p>
             </div>
         </div>
     </div>
 
-    <script src="nav-loader.js"></script>
-    <script src="auth-system.js"></script>
+    <script src="../javascript/nav-loader.js"></script>
+    <script src="../javascript/auth-system.js"></script>
     <script>
-        // Método 1: Usando AuthSystem
+        // MÃ©todo 1: Usando AuthSystem
         function verUsuarioDesdeAuthSystem() {
             const resultado = document.getElementById('resultado');
             
@@ -120,8 +120,8 @@
                 if (currentUser) {
                     resultado.innerHTML = `
                         <div class="success">
-                            <h3>✅ Usuario desde AuthSystem</h3>
-                            <button class="btn toggle-code" onclick="toggleCode('authsystem-code')">👁️ Ver/Ocultar código</button>
+                            <h3>âœ… Usuario desde AuthSystem</h3>
+                            <button class="btn toggle-code" onclick="toggleCode('authsystem-code')">ðŸ‘ï¸ Ver/Ocultar cÃ³digo</button>
                             <div class="code-container" id="authsystem-code">
                                 <pre>${JSON.stringify(currentUser, null, 2)}</pre>
                             </div>
@@ -131,20 +131,20 @@
                 } else {
                     resultado.innerHTML = `
                         <div class="error">
-                            ❌ No hay usuario autenticado en AuthSystem
+                            âŒ No hay usuario autenticado en AuthSystem
                         </div>
                     `;
                 }
             } else {
                 resultado.innerHTML = `
                     <div class="error">
-                        ❌ AuthSystem no está disponible
+                        âŒ AuthSystem no estÃ¡ disponible
                     </div>
                 `;
             }
         }
 
-        // Método 2: Usando API /api/me
+        // MÃ©todo 2: Usando API /api/me
         async function verUsuarioDesdeAPI() {
             const resultado = document.getElementById('resultado');
             const token = localStorage.getItem('authToken');
@@ -152,7 +152,7 @@
             if (!token) {
                 resultado.innerHTML = `
                     <div class="error">
-                        ❌ No hay token en localStorage
+                        âŒ No hay token en localStorage
                     </div>
                 `;
                 return;
@@ -169,8 +169,8 @@
                     const data = await response.json();
                     resultado.innerHTML = `
                         <div class="success">
-                            <h3>✅ Usuario desde API /api/me</h3>
-                            <button class="btn toggle-code" onclick="toggleCode('api-code')">👁️ Ver/Ocultar código</button>
+                            <h3>âœ… Usuario desde API /api/me</h3>
+                            <button class="btn toggle-code" onclick="toggleCode('api-code')">ðŸ‘ï¸ Ver/Ocultar cÃ³digo</button>
                             <div class="code-container" id="api-code">
                                 <pre>${JSON.stringify(data, null, 2)}</pre>
                             </div>
@@ -182,20 +182,20 @@
                 } else {
                     resultado.innerHTML = `
                         <div class="error">
-                            ❌ Error ${response.status}: ${response.statusText}
+                            âŒ Error ${response.status}: ${response.statusText}
                         </div>
                     `;
                 }
             } catch (error) {
                 resultado.innerHTML = `
                     <div class="error">
-                        ❌ Error de conexión: ${error.message}
+                        âŒ Error de conexiÃ³n: ${error.message}
                     </div>
                 `;
             }
         }
 
-        // Método 3: Ver localStorage
+        // MÃ©todo 3: Ver localStorage
         function verLocalStorage() {
             const resultado = document.getElementById('resultado');
             
@@ -210,8 +210,8 @@
             
             resultado.innerHTML = `
                 <div class="success">
-                    <h3>✅ Datos en localStorage</h3>
-                    <button class="btn toggle-code" onclick="toggleCode('localstorage-code')">👁️ Ver/Ocultar código</button>
+                    <h3>âœ… Datos en localStorage</h3>
+                    <button class="btn toggle-code" onclick="toggleCode('localstorage-code')">ðŸ‘ï¸ Ver/Ocultar cÃ³digo</button>
                     <div class="code-container" id="localstorage-code">
                         <pre>${JSON.stringify(localStorageData, null, 2)}</pre>
                     </div>
@@ -245,14 +245,14 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Activo:</span>
-                    <span class="info-value">${usuario.activo ? 'Sí' : 'No'}</span>
+                    <span class="info-value">${usuario.activo ? 'SÃ­' : 'No'}</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Teléfono:</span>
+                    <span class="info-label">TelÃ©fono:</span>
                     <span class="info-value">${usuario.numero_cel || 'N/A'}</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Dirección:</span>
+                    <span class="info-label">DirecciÃ³n:</span>
                     <span class="info-value">${usuario.direccion || 'N/A'}</span>
                 </div>
                 <div class="info-item">
@@ -260,13 +260,13 @@
                     <span class="info-value">${usuario.ciudad || 'N/A'}</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Fecha Creación:</span>
+                    <span class="info-label">Fecha CreaciÃ³n:</span>
                     <span class="info-value">${usuario.fecha_creacion ? new Date(usuario.fecha_creacion).toLocaleString() : 'N/A'}</span>
                 </div>
             `;
         }
         
-        // Función para mostrar/ocultar código
+        // FunciÃ³n para mostrar/ocultar cÃ³digo
         function toggleCode(containerId) {
             const container = document.getElementById(containerId);
             container.classList.toggle('show');
@@ -274,12 +274,12 @@
 
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', () => {
-            verUsuarioDesdeAPI(); // Cargar automáticamente desde API al inicio
+            verUsuarioDesdeAPI(); // Cargar automÃ¡ticamente desde API al inicio
             
             // Auto-refresh cada 30 segundos con API
             setInterval(() => {
                 const indicator = document.getElementById('refresh-indicator');
-                indicator.textContent = '🔄 Actualizando...';
+                indicator.textContent = 'ðŸ”„ Actualizando...';
                 verUsuarioDesdeAPI().finally(() => {
                     setTimeout(() => {
                         indicator.textContent = 'Auto-refresh cada 30s';
@@ -290,3 +290,5 @@
     </script>
 </body>
 </html>
+
+

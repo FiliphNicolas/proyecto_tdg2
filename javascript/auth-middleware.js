@@ -34,7 +34,7 @@ function protectPages(req, res, next) {
 // Función para servir páginas protegidas
 function serveProtectedPage(req, res) {
   const page = req.path;
-  const filePath = path.join(__dirname, 'pages', page);
+  const filePath = path.join(__dirname, '..', 'pages', page);
   res.sendFile(filePath);
 }
 

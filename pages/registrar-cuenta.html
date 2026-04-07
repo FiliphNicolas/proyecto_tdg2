@@ -1,15 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" class="cuenta-html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrarse - Systemsware</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
   <div class="container-seccion">
     <div class="titulo">
-      <h1>Systemsware: Sistema de gestión de inventario</h1>
+      <h1>Systemsware: Sistema de gestiÃ³n de inventario</h1>
     </div>
     <form class="cuadro-azul" id="registroForm">
       <div class="login-header">
@@ -18,52 +18,52 @@
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="nombre">👤 Nombre completo</label>
-        <input type="text" id="nombre" placeholder="Juan Pérez" required autocomplete="name">
+        <label class="etiqueta" for="nombre">ðŸ‘¤ Nombre completo</label>
+        <input type="text" id="nombre" placeholder="Juan PÃ©rez" required autocomplete="name">
         <span class="error" id="error-nombre"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="direccion">🏠 Dirección</label>
+        <label class="etiqueta" for="direccion">ðŸ  DirecciÃ³n</label>
         <input type="text" id="direccion" placeholder="Calle Principal #123" required autocomplete="street-address">
         <span class="error" id="error-direccion"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="numero_cel">📱 Número de celular</label>
+        <label class="etiqueta" for="numero_cel">ðŸ“± NÃºmero de celular</label>
         <input type="tel" id="numero_cel" placeholder="3001234567" required autocomplete="tel">
         <span class="error" id="error-numero_cel"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="ciudad">🏙️ Ciudad</label>
-        <input type="text" id="ciudad" placeholder="Bogotá" required autocomplete="address-level2">
+        <label class="etiqueta" for="ciudad">ðŸ™ï¸ Ciudad</label>
+        <input type="text" id="ciudad" placeholder="BogotÃ¡" required autocomplete="address-level2">
         <span class="error" id="error-ciudad"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="correo">📧 Correo electrónico</label>
+        <label class="etiqueta" for="correo">ðŸ“§ Correo electrÃ³nico</label>
         <input type="email" id="correo" placeholder="correo@ejemplo.com" required autocomplete="email">
         <span class="error" id="error-correo"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="contrasena">🔒 Contraseña</label>
+        <label class="etiqueta" for="contrasena">ðŸ”’ ContraseÃ±a</label>
         <div class="password-input-container">
-          <input type="password" id="contrasena" placeholder="Crea una contraseña segura" required autocomplete="new-password">
+          <input type="password" id="contrasena" placeholder="Crea una contraseÃ±a segura" required autocomplete="new-password">
           <button type="button" class="password-toggle" onclick="togglePassword('contrasena')">
-            <span id="eyeIcon1">👁️</span>
+            <span id="eyeIcon1">ðŸ‘ï¸</span>
           </button>
         </div>
         <span class="error" id="error-contrasena"></span>
       </div>
       
       <div class="barra">
-        <label class="etiqueta" for="contrasena_nuevo">🔒 Confirmar contraseña</label>
+        <label class="etiqueta" for="contrasena_nuevo">ðŸ”’ Confirmar contraseÃ±a</label>
         <div class="password-input-container">
-          <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseña" required autocomplete="new-password">
+          <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseÃ±a" required autocomplete="new-password">
           <button type="button" class="password-toggle" onclick="togglePassword('contrasena_nuevo')">
-            <span id="eyeIcon2">👁️</span>
+            <span id="eyeIcon2">ðŸ‘ï¸</span>
           </button>
         </div>
         <span class="error" id="error-contrasena_nuevo"></span>
@@ -73,7 +73,7 @@
         <label class="remember-me">
           <input type="checkbox" id="acceptTerms">
           <span class="checkmark"></span>
-          Acepto los términos y condiciones
+          Acepto los tÃ©rminos y condiciones
         </label>
       </div>
       
@@ -82,12 +82,12 @@
       <div class="boton-cuenta">
         <button type="submit" id="registerButton">
           <span class="button-text">Crear cuenta</span>
-          <span class="button-loader" style="display: none;">⏳</span>
+          <span class="button-loader" style="display: none;">â³</span>
         </button>
       </div>
       
       <div class="register-link">
-        <p>¿Ya tienes cuenta? <a href="iniciar-sesion.html" class="olvidar">Inicia sesión</a></p>
+        <p>Â¿Ya tienes cuenta? <a href="iniciar-sesion.html" class="olvidar">Inicia sesiÃ³n</a></p>
       </div>
     </form>
   </div>
@@ -99,10 +99,10 @@ function togglePassword(fieldId) {
   
   if (passwordInput.type === 'password') {
     passwordInput.type = 'text';
-    eyeIcon.textContent = '🙈';
+    eyeIcon.textContent = 'ðŸ™ˆ';
   } else {
     passwordInput.type = 'password';
-    eyeIcon.textContent = '👁️';
+    eyeIcon.textContent = 'ðŸ‘ï¸';
   }
 }
 
@@ -167,9 +167,9 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
 
   let valido = true;
 
-  // Validar términos y condiciones
+  // Validar tÃ©rminos y condiciones
   if (!acceptTerms) {
-    showError(document.getElementById('errorConexion'), '❌ Debes aceptar los términos y condiciones para continuar.');
+    showError(document.getElementById('errorConexion'), 'âŒ Debes aceptar los tÃ©rminos y condiciones para continuar.');
     valido = false;
   }
 
@@ -191,26 +191,26 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     errores.correo.textContent = "El correo es obligatorio.";
     valido = false;
   } else if (!regexCorreo.test(correo)) {
-    errores.correo.textContent = "Por favor, ingresa un correo válido.";
+    errores.correo.textContent = "Por favor, ingresa un correo vÃ¡lido.";
     valido = false;
   }
 
-  // Dirección
+  // DirecciÃ³n
   if (direccion === "") {
-    errores.direccion.textContent = "La dirección es obligatoria.";
+    errores.direccion.textContent = "La direcciÃ³n es obligatoria.";
     valido = false;
   } else if (direccion.length < 5) {
-    errores.direccion.textContent = "La dirección debe tener al menos 5 caracteres.";
+    errores.direccion.textContent = "La direcciÃ³n debe tener al menos 5 caracteres.";
     valido = false;
   }
 
-  // Número celular
+  // NÃºmero celular
   const regexCel = /^\d{7,10}$/;
   if (numero_cel === "") {
-    errores.numero_cel.textContent = "El número es obligatorio.";
+    errores.numero_cel.textContent = "El nÃºmero es obligatorio.";
     valido = false;
   } else if (!regexCel.test(numero_cel)) {
-    errores.numero_cel.textContent = "Debe tener entre 7 y 10 dígitos.";
+    errores.numero_cel.textContent = "Debe tener entre 7 y 10 dÃ­gitos.";
     valido = false;
   }
 
@@ -223,24 +223,24 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     valido = false;
   }
 
-  // Contraseña
+  // ContraseÃ±a
   if (contrasena === "") {
-    errores.contrasena.textContent = "La contraseña es obligatoria.";
+    errores.contrasena.textContent = "La contraseÃ±a es obligatoria.";
     valido = false;
   } else if (contrasena.length < 6) {
-    errores.contrasena.textContent = "La contraseña debe tener al menos 6 caracteres.";
+    errores.contrasena.textContent = "La contraseÃ±a debe tener al menos 6 caracteres.";
     valido = false;
   } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(contrasena)) {
-    errores.contrasena.textContent = "La contraseña debe incluir mayúsculas, minúsculas y números.";
+    errores.contrasena.textContent = "La contraseÃ±a debe incluir mayÃºsculas, minÃºsculas y nÃºmeros.";
     valido = false;
   }
 
-  // Confirmar contraseña
+  // Confirmar contraseÃ±a
   if (contrasena_nuevo === "") {
-    errores.contrasena_nuevo.textContent = "Debes repetir la contraseña.";
+    errores.contrasena_nuevo.textContent = "Debes repetir la contraseÃ±a.";
     valido = false;
   } else if (contrasena !== contrasena_nuevo) {
-    errores.contrasena_nuevo.textContent = "Las contraseñas no coinciden.";
+    errores.contrasena_nuevo.textContent = "Las contraseÃ±as no coinciden.";
     valido = false;
   }
 
@@ -262,7 +262,7 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
       timeout: 5000
     })
     .then(r => {
-      if (!r.ok) throw new Error(`Servidor respondió con error: ${r.status}`);
+      if (!r.ok) throw new Error(`Servidor respondiÃ³ con error: ${r.status}`);
       return r.json();
     })
     .then(data => {
@@ -273,10 +273,10 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('userName', data.user.nombre_usuario);
         
-        // Mostrar mensaje de éxito
+        // Mostrar mensaje de Ã©xito
         const successDiv = document.createElement('div');
         successDiv.className = 'success-message';
-        successDiv.textContent = '✅ ¡Cuenta creada exitosamente! Redirigiendo...';
+        successDiv.textContent = 'âœ… Â¡Cuenta creada exitosamente! Redirigiendo...';
         successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
         document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
         
@@ -284,18 +284,18 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
           window.location.href = 'index.html';
         }, 2000);
       } else {
-        showError(errorElement, data.error || '❌ Error al registrar la cuenta');
+        showError(errorElement, data.error || 'âŒ Error al registrar la cuenta');
       }
     })
     .catch(err => {
       console.error('Error:', err);
       setLoading(false);
       
-      let mensaje = '❌ Error de conexión';
+      let mensaje = 'âŒ Error de conexiÃ³n';
       if (err.message.includes('Failed to fetch')) {
-        mensaje = '❌ No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
+        mensaje = 'âŒ No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
       } else if (err.message.includes('timeout')) {
-        mensaje = '⏱️ El servidor tardó demasiado en responder. Intenta nuevamente.';
+        mensaje = 'â±ï¸ El servidor tardÃ³ demasiado en responder. Intenta nuevamente.';
       } else {
         mensaje = 'Error de red: ' + err.message;
       }

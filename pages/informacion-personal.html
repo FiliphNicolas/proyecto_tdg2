@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información Personal</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>InformaciÃ³n Personal</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
 
@@ -24,7 +24,7 @@
       </div>
 
       <div class="card-body">
-        <div class="section-label">Editar información</div>
+        <div class="section-label">Editar informaciÃ³n</div>
         <form id="updateProfileForm" class="info-list">
           <div class="info-row">
             <label class="info-label" for="nombre">Nombre</label>
@@ -42,22 +42,22 @@
 
         <hr style="margin:18px 0;">
 
-        <div class="section-label">Cambiar contraseña</div>
+        <div class="section-label">Cambiar contraseÃ±a</div>
         <form id="updatePasswordForm" class="info-list">
           <div class="info-row">
-            <label class="info-label" for="contrasena_actual">Contraseña actual</label>
+            <label class="info-label" for="contrasena_actual">ContraseÃ±a actual</label>
             <input class="info-value" id="contrasena_actual" type="password" />
           </div>
           <div class="info-row">
-            <label class="info-label" for="contrasena_nueva">Nueva contraseña</label>
+            <label class="info-label" for="contrasena_nueva">Nueva contraseÃ±a</label>
             <input class="info-value" id="contrasena_nueva" type="password" />
           </div>
           <div class="info-row">
-            <label class="info-label" for="contrasena_confirm">Repetir nueva contraseña</label>
+            <label class="info-label" for="contrasena_confirm">Repetir nueva contraseÃ±a</label>
             <input class="info-value" id="contrasena_confirm" type="password" />
           </div>
           <div class="info-row">
-            <button type="submit">Cambiar contraseña</button>
+            <button type="submit">Cambiar contraseÃ±a</button>
           </div>
           <div id="update-password-msg" style="color:green;margin-top:8px"></div>
         </form>
@@ -87,7 +87,7 @@ async function loadProfile(){
     document.getElementById('correo').value = user.email || '';
   }catch(err){
     console.error(err);
-    document.getElementById('update-profile-msg').textContent = 'Debe iniciar sesión para editar.';
+    document.getElementById('update-profile-msg').textContent = 'Debe iniciar sesiÃ³n para editar.';
   }
 }
 
@@ -129,19 +129,19 @@ document.getElementById('updatePasswordForm').addEventListener('submit', async f
   msg.style.color = 'red';
   msg.textContent = '';
 
-  if (!current){ msg.textContent = 'Ingrese su contraseña actual.'; return; }
-  if (nueva.length < 6){ msg.textContent = 'La nueva contraseña debe tener al menos 6 caracteres.'; return; }
-  if (nueva !== confirm){ msg.textContent = 'Las nuevas contraseñas no coinciden.'; return; }
+  if (!current){ msg.textContent = 'Ingrese su contraseÃ±a actual.'; return; }
+  if (nueva.length < 6){ msg.textContent = 'La nueva contraseÃ±a debe tener al menos 6 caracteres.'; return; }
+  if (nueva !== confirm){ msg.textContent = 'Las nuevas contraseÃ±as no coinciden.'; return; }
 
   try{
     const body = { currentPassword: current, newPassword: nueva };
-    // Usamos endpoint separado para contraseña. Ajustar en backend si es necesario.
+    // Usamos endpoint separado para contraseÃ±a. Ajustar en backend si es necesario.
     const res = await apiFetch('/api/me/password', { method: 'POST', body: JSON.stringify(body) });
     let data;
     try{ data = await res.json(); }catch(e){ data = {}; }
-    if (!res.ok) { msg.textContent = data.error || 'Error al cambiar contraseña'; return; }
+    if (!res.ok) { msg.textContent = data.error || 'Error al cambiar contraseÃ±a'; return; }
     msg.style.color = 'green';
-    msg.textContent = 'Contraseña actualizada.';
+    msg.textContent = 'ContraseÃ±a actualizada.';
     document.getElementById('contrasena_actual').value = '';
     document.getElementById('contrasena_nueva').value = '';
     document.getElementById('contrasena_confirm').value = '';
@@ -153,6 +153,7 @@ document.getElementById('updatePasswordForm').addEventListener('submit', async f
 
 loadProfile();
 </script>
-<script src="nav-loader.js"></script>
+<script src="../javascript/nav-loader.js"></script>
 </body>
 </html>
+
