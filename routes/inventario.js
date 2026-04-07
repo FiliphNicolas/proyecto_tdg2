@@ -21,16 +21,18 @@ router.get('/info', async (req, res) => {
     
     const productosResult = await db.query(productosQuery);
     
-    // Obtener movimientos de inventario con información de productos y usuarios
+    // Obtener movimientos de inventario con información de producto
     const movimientosQuery = `
       SELECT 
         i.id_movimiento,
         i.codigo_producto,
+        p.nombre AS nombre_producto,
         i.tipo_movimiento,
         i.cantidad,
         i.fecha_movimiento,
         i.descripcion
       FROM inventario i
+      LEFT JOIN producto p ON p.codigo_producto = i.codigo_producto
       ORDER BY i.fecha_movimiento DESC, i.id_movimiento DESC
       LIMIT 200
     `;
@@ -166,18 +168,16 @@ router.post('/movimientos', authMiddleware, async (req, res) => {
     // Verificar si el producto existe
     const productCheck = await db.query('SELECT codigo_producto FROM producto WHERE codigo_producto = $1', [codigo_producto]);
     if (productCheck.rowCount === 0) {
-      return res.status(404).json({ error: 'Producto no encontrado' });
+      return res.status(404).json({ error: 'Código de producto inexistente' });
     }
     
-    // Insertar movimiento con usuario que lo registra
     const insertQuery = `
-      INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento, id_usuario_registro)
-      VALUES ($1, $2, $3, $4, NOW(), $5)
-      RETURNING id_movimiento, codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento, id_usuario_registro
+      INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento)
+      VALUES ($1, $2, $3, $4, NOW())
+      RETURNING id_movimiento, codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento
     `;
     
-    const userId = req.user.id_usuario; // Obtenido del token JWT
-    const result = await db.query(insertQuery, [codigo_producto, tipo_movimiento, cantidad, descripcion || null, userId]);
+    const result = await db.query(insertQuery, [codigo_producto, tipo_movimiento, cantidad, descripcion || null]);
     
     // Actualizar stock del producto
     let updateQuery = '';

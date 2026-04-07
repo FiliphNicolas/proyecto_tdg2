@@ -15,7 +15,9 @@ router.get('/', async (req, res) => {
         p.fecha_pedido,
         p.total,
         p.estado,
-        p.codigo_detalle,
+        p.numero_pedido,
+        p.direccion_envio,
+        p.notas_pedido,
         c.nombre as nombre_cliente,
         c.email as email_cliente,
         c.telefono as telefono_cliente,
@@ -31,15 +33,15 @@ router.get('/', async (req, res) => {
     // Transformar datos para que coincidan con el frontend
     const pedidosTransformados = result.rows.map(row => ({
       id_pedido: row.id_pedido,
-      numero_pedido: row.codigo_detalle,
+      numero_pedido: row.numero_pedido,
       nombre_cliente: row.nombre_cliente || 'Cliente ' + row.id_cliente,
       email_cliente: row.email_cliente || 'N/A',
       telefono_cliente: row.telefono_cliente || 'N/A',
       estado_pedido: row.estado,
       fecha_pedido: row.fecha_pedido,
       monto_total: parseFloat(row.total),
-      direccion_envio: 'N/A', // No existe en la tabla actual
-      notas_pedido: 'N/A', // No existe en la tabla actual
+      direccion_envio: row.direccion_envio || 'N/A',
+      notas_pedido: row.notas_pedido || 'N/A',
       id_usuario: row.id_usuario,
       nombre_usuario: row.nombre_usuario
     }));
@@ -91,14 +93,14 @@ router.post('/', async (req, res) => {
     // Obtener usuario (por defecto id 1)
     const id_usuario = 1;
     
-    // Generar código de detalle único
-    const codigo_detalle = numero_pedido || `PED-${Date.now()}`;
+    // Generar número de pedido único si no se proporciona
+    const numeroPedido = numero_pedido || `PED-${Date.now()}`;
     
     // Insertar pedido con la estructura existente
     const query = `
       INSERT INTO pedido (
-        id_cliente, id_usuario, fecha_pedido, total, estado, codigo_detalle
-      ) VALUES ($1, $2, $3, $4, $5, $6)
+        id_cliente, id_usuario, fecha_pedido, total, estado, numero_pedido, direccion_envio, notas_pedido
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
     
@@ -108,7 +110,9 @@ router.post('/', async (req, res) => {
       fecha_pedido || new Date().toISOString(),
       monto_total,
       estado_pedido || 'pendiente',
-      codigo_detalle
+      numeroPedido,
+      direccion_envio || null,
+      notas_pedido || null
     ];
     
     const result = await db.query(query, values);
@@ -122,7 +126,9 @@ router.post('/', async (req, res) => {
         p.fecha_pedido,
         p.total,
         p.estado,
-        p.codigo_detalle,
+        p.numero_pedido,
+        p.direccion_envio,
+        p.notas_pedido,
         c.nombre as nombre_cliente,
         c.email as email_cliente,
         c.telefono as telefono_cliente
@@ -134,7 +140,7 @@ router.post('/', async (req, res) => {
     // Transformar para el frontend
     const pedidoTransformado = {
       id_pedido: pedidoCompleto.rows[0].id_pedido,
-      numero_pedido: pedidoCompleto.rows[0].codigo_detalle,
+      numero_pedido: pedidoCompleto.rows[0].numero_pedido,
       nombre_cliente: pedidoCompleto.rows[0].nombre_cliente,
       email_cliente: pedidoCompleto.rows[0].email_cliente,
       telefono_cliente: pedidoCompleto.rows[0].telefono_cliente,

@@ -10,6 +10,7 @@ const productosRouter = require('../routes/productos');
 const inventarioRouter = require('../routes/inventario');
 const auditoriaRouter = require('../routes/auditoria');
 const pedidosRouter = require('../routes/pedidos');
+const sedesRouter = require('../routes/sedes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +30,7 @@ app.use('/api/inventario', inventarioRouter);
 app.use('/api', productosRouter);
 app.use('/api/auditoria', auditoriaRouter);
 app.use('/api/pedidos', pedidosRouter);
+app.use('/api/sedes', sedesRouter);
 
 // Inicializar base de datos al iniciar el servidor
 const initializeServer = async () => {
