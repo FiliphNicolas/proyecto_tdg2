@@ -357,18 +357,18 @@
     
     <div class="container">
         <div class="header">
-            <h1>›’ CRUD Pedidos</h1>
-            <p>GestiÃ³n completa de pedidos del sistema</p>
+            <h1>CRUD Pedidos</h1>
+            <p>Gestión completa de pedidos del sistema</p>
         </div>
 
         <div id="alertContainer"></div>
 
         <!-- Filtros de Pedidos -->
         <div class="filters-section">
-            <h3>” Filtros de Pedidos</h3>
+            <h3>🔍 Filtros de Pedidos</h3>
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label for="filterOrderNumber">NÃºmero Pedido</label>
+                    <label for="filterOrderNumber">Número Pedido</label>
                     <input type="text" id="filterOrderNumber" placeholder="Ej: PED-001" onkeyup="filterOrders()">
                 </div>
                 
@@ -405,62 +405,120 @@
             </div>
         </div>
 
+        <!-- Lista de Clientes -->
+        <div class="table-container">
+            <h3>👥 Lista de Clientes</h3>
+            
+            <!-- Formulario de Clientes -->
+            <div class="form-container" style="margin-bottom: 20px;">
+                <h3>📝 Crear/Editar Cliente</h3>
+                <form id="clienteForm">
+                    <input type="hidden" id="clienteId" value="">
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre">Nombre *</label>
+                            <input type="text" id="nombre" required placeholder="Nombre del cliente">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="apellido">Apellido *</label>
+                            <input type="text" id="apellido" required placeholder="Apellido del cliente">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="cliente@ejemplo.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="telefono">Teléfono</label>
+                            <input type="tel" id="telefono" placeholder="123-456-7890">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="direccion">Dirección</label>
+                            <input type="text" id="direccion" placeholder="Calle, Ciudad, País">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary" id="submitClienteBtn">
+                            <span id="submitClienteText">Crear Cliente</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetClienteForm()">Limpiar</button>
+                        <button type="button" class="btn btn-success" onclick="loadClientes()">Refrescar</button>
+                    </div>
+                </form>
+            </div>
+
+            <table class="orders-table" id="clientesTable">
+                <thead>
+                    <tr>
+                        <th>ID Cliente</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                        <th>Fecha Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="clientesBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px;">Cargando clientes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- Formulario de Pedidos -->
         <div class="form-container">
-            <h3>“ Crear/Editar Pedido</h3>
+            <h3>📝 Crear/Editar Pedido</h3>
             <form id="orderForm">
                 <input type="hidden" id="orderId" value="">
                 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="orderNumber">NÃºmero Pedido *</label>
-                        <input type="text" id="orderNumber" required placeholder="Ej: PED-001">
+                        <label for="idPedido">ID Pedido</label>
+                        <input type="number" id="idPedido" readonly placeholder="ID automático">
                     </div>
                     
                     <div class="form-group">
-                        <label for="customerName">Nombre Cliente *</label>
-                        <input type="text" id="customerName" required placeholder="Nombre completo del cliente">
+                        <label for="idCliente">ID Cliente *</label>
+                        <input type="number" id="idCliente" required placeholder="ID del cliente">
                     </div>
                     
                     <div class="form-group">
-                        <label for="customerEmail">Email Cliente *</label>
-                        <input type="email" id="customerEmail" required placeholder="cliente@ejemplo.com">
+                        <label for="idUsuario">ID Usuario *</label>
+                        <input type="number" id="idUsuario" readonly placeholder="ID automático del usuario en sesión">
                     </div>
                     
                     <div class="form-group">
-                        <label for="customerPhone">TelÃ©fono Cliente</label>
-                        <input type="tel" id="customerPhone" placeholder="123-456-7890">
+                        <label for="fechaPedido">Fecha Pedido *</label>
+                        <input type="datetime-local" id="fechaPedido" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="orderStatus">Estado Pedido *</label>
-                        <select id="orderStatus" required>
+                        <label for="total">Total *</label>
+                        <input type="number" id="total" required min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="estado">Estado *</label>
+                        <select id="estado" required>
                             <option value="">Seleccionar estado...</option>
                             <option value="pendiente">Pendiente</option>
                             <option value="en_proceso">En Proceso</option>
-                            <option value="completado">Entregado</option>
+                            <option value="completado">Completado</option>
                             <option value="cancelled">Cancelado</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="orderDate">Fecha Pedido *</label>
-                        <input type="date" id="orderDate" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="totalAmount">Monto Total *</label>
-                        <input type="number" id="totalAmount" required min="0" step="0.01" placeholder="0.00">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="shippingAddress">DirecciÃ³n EnvÃ­o</label>
-                        <input type="text" id="shippingAddress" placeholder="Calle, Ciudad, PaÃ­s">
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label for="orderNotes">Notas del Pedido</label>
-                        <textarea id="orderNotes" placeholder="Instrucciones especiales o notas adicionales..."></textarea>
+                        <label for="codigoDetalle">Código Detalle *</label>
+                        <input type="text" id="codigoDetalle" required placeholder="Ej: PED-001-01">
                     </div>
                 </div>
 
@@ -480,13 +538,13 @@
             <table class="orders-table" id="ordersTable">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>NÃºmero Pedido</th>
-                        <th>Cliente</th>
-                        <th>Email</th>
+                        <th>ID Pedido</th>
+                        <th>ID Cliente</th>
+                        <th>ID Usuario</th>
+                        <th>Fecha Pedido</th>
+                        <th>Total</th>
                         <th>Estado</th>
-                        <th>Fecha</th>
-                        <th>Monto</th>
+                        <th>Código Detalle</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -516,16 +574,189 @@
         // Cargar datos iniciales
         document.addEventListener('DOMContentLoaded', async () => {
             await loadOrders();
+            await loadClientes();
+            
+            // Obtener ID del usuario en sesión
+            await loadUsuarioEnSesion();
             
             // Event listeners
             document.getElementById('orderForm').addEventListener('submit', handleSubmit);
+            document.getElementById('clienteForm').addEventListener('submit', handleClienteSubmit);
             
-            // Establecer fecha actual por defecto
-            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+            // Establecer fecha y hora actual por defecto
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('fechaPedido').value = now.toISOString().slice(0, 16);
         });
 
         let allOrders = [];
+        let allClientes = [];
         let editingOrder = null;
+        let editingCliente = null;
+        let usuarioEnSesion = null;
+
+        // Cargar usuario en sesión
+        async function loadUsuarioEnSesion() {
+            try {
+                const response = await fetch('/api/auth/me');
+                const result = await response.json();
+                
+                if (result.ok && result.user) {
+                    usuarioEnSesion = result.user;
+                    // Establecer ID del usuario en el formulario
+                    document.getElementById('idUsuario').value = result.user.id_usuario;
+                } else {
+                    // Si no hay sesión, establecer valor por defecto
+                    document.getElementById('idUsuario').value = 1; // admin por defecto
+                }
+            } catch (error) {
+                console.error('Error al obtener usuario en sesión:', error);
+                // En caso de error, establecer valor por defecto
+                document.getElementById('idUsuario').value = 1; // admin por defecto
+            }
+        }
+
+        // Cargar clientes
+        async function loadClientes() {
+            try {
+                const response = await fetch('/api/clientes');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    allClientes = result.clientes;
+                    renderClientes();
+                } else {
+                    console.error('Error al cargar clientes:', result.error);
+                }
+            } catch (error) {
+                console.error('Error cargando clientes:', error);
+            }
+        }
+
+        // Renderizar tabla de clientes
+        function renderClientes() {
+            const tbody = document.getElementById('clientesBody');
+            tbody.innerHTML = '';
+            
+            if (allClientes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No hay clientes registrados</td></tr>';
+                return;
+            }
+            
+            allClientes.forEach(cliente => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${cliente.id_cliente}</strong></td>
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.apellido || ''}</td>
+                    <td>${cliente.email || 'N/A'}</td>
+                    <td>${cliente.telefono || 'N/A'}</td>
+                    <td>${cliente.direccion || 'N/A'}</td>
+                    <td>${new Date(cliente.fecha_registro).toLocaleDateString()}</td>
+                    <td class="actions">
+                        <button class="btn-small btn-primary" onclick="editCliente(${cliente.id_cliente})">Editar</button>
+                        <button class="btn-small btn-danger" onclick="deleteCliente(${cliente.id_cliente})">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Manejar envío del formulario de clientes
+        async function handleClienteSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido').value,
+                email: document.getElementById('email').value,
+                telefono: document.getElementById('telefono').value,
+                direccion: document.getElementById('direccion').value
+            };
+            
+            try {
+                const method = editingCliente ? 'PUT' : 'POST';
+                const url = editingCliente ? `/api/clientes/${editingCliente}` : '/api/clientes';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showAlert(editingCliente ? 'Cliente actualizado' : 'Cliente creado', 'success');
+                    resetClienteForm();
+                    await loadClientes();
+                } else {
+                    showAlert(result.error || 'Error en la operación', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error de conexión', 'danger');
+            }
+        }
+
+        // Editar cliente
+        function editCliente(id) {
+            const cliente = allClientes.find(c => c.id_cliente === id);
+            if (cliente) {
+                editingCliente = id;
+                document.getElementById('clienteId').value = id;
+                document.getElementById('nombre').value = cliente.nombre;
+                document.getElementById('apellido').value = cliente.apellido || '';
+                document.getElementById('email').value = cliente.email || '';
+                document.getElementById('telefono').value = cliente.telefono || '';
+                document.getElementById('direccion').value = cliente.direccion || '';
+                
+                document.getElementById('submitClienteText').textContent = 'Actualizar Cliente';
+                
+                // Scroll al formulario de clientes
+                document.getElementById('clienteForm').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Eliminar cliente
+        function deleteCliente(id) {
+            editingCliente = id;
+            document.getElementById('modalTitle').textContent = 'Eliminar Cliente';
+            document.getElementById('modalMessage').textContent = '¿Está seguro de eliminar este cliente? Esta acción no se puede deshacer.';
+            document.getElementById('confirmModal').style.display = 'block';
+            
+            document.getElementById('confirmBtn').onclick = async () => {
+                try {
+                    const response = await fetch(`/api/clientes/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.ok) {
+                        showAlert('Cliente eliminado', 'success');
+                        await loadClientes();
+                    } else {
+                        showAlert(result.error || 'Error al eliminar', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('Error de conexión', 'danger');
+                } finally {
+                    closeModal();
+                }
+            };
+        }
+
+        // Resetear formulario de clientes
+        function resetClienteForm() {
+            document.getElementById('clienteForm').reset();
+            document.getElementById('clienteId').value = '';
+            editingCliente = null;
+            document.getElementById('submitClienteText').textContent = 'Crear Cliente';
+        }
 
         // Cargar pedidos
         async function loadOrders() {
@@ -610,12 +841,12 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${order.id_pedido}</strong></td>
-                    <td><code>${order.numero_pedido}</code></td>
-                    <td><strong>${order.nombre_cliente}</strong></td>
-                    <td>${order.email_cliente}</td>
-                    <td><span class="status-badge ${order.estado_pedido}">${getStatusText(order.estado_pedido)}</span></td>
-                    <td>${new Date(order.fecha_pedido).toLocaleDateString()}</td>
-                    <td><strong>$${parseFloat(order.monto_total).toFixed(2)}</strong></td>
+                    <td><code>${order.id_cliente}</code></td>
+                    <td><code>${order.id_usuario}</code></td>
+                    <td>${new Date(order.fecha_pedido).toLocaleString()}</td>
+                    <td><strong>$${parseFloat(order.total).toFixed(2)}</strong></td>
+                    <td><span class="status-badge ${order.estado}">${getStatusText(order.estado)}</span></td>
+                    <td><code>${order.codigo_detalle}</code></td>
                     <td class="actions">
                         <button class="btn-small btn-primary" onclick="editOrder(${order.id_pedido})">Editar</button>
                         <button class="btn-small btn-danger" onclick="deleteOrder(${order.id_pedido})">Eliminar</button>
@@ -640,21 +871,25 @@
             return statusMap[status] || status;
         }
 
-        // Manejar envÃ­o del formulario
+        // Manejar envío del formulario
         async function handleSubmit(e) {
             e.preventDefault();
             
+            // No enviar id_pedido en POST (se genera automáticamente)
             const formData = {
-                numero_pedido: document.getElementById('orderNumber').value,
-                nombre_cliente: document.getElementById('customerName').value,
-                email_cliente: document.getElementById('customerEmail').value,
-                telefono_cliente: document.getElementById('customerPhone').value,
-                estado_pedido: document.getElementById('orderStatus').value,
-                fecha_pedido: document.getElementById('orderDate').value,
-                monto_total: parseFloat(document.getElementById('totalAmount').value),
-                direccion_envio: document.getElementById('shippingAddress').value,
-                notas_pedido: document.getElementById('orderNotes').value
+                id_cliente: parseInt(document.getElementById('idCliente').value),
+                id_usuario: parseInt(document.getElementById('idUsuario').value),
+                fecha_pedido: document.getElementById('fechaPedido').value,
+                total: parseFloat(document.getElementById('total').value),
+                estado: document.getElementById('estado').value,
+                codigo_detalle: document.getElementById('codigoDetalle').value
             };
+            
+            // Validaciones básicas
+            if (!formData.id_cliente || !formData.id_usuario || !formData.fecha_pedido || !formData.total) {
+                showAlert('Por favor complete todos los campos requeridos', 'danger');
+                return;
+            }
             
             try {
                 const method = editingOrder ? 'PUT' : 'POST';
@@ -675,11 +910,11 @@
                     resetForm();
                     await loadOrders();
                 } else {
-                    showAlert(result.error || 'Error en la operaciÃ³n', 'danger');
+                    showAlert(result.error || 'Error en la operación', 'danger');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert('Error de conexiÃ³n', 'danger');
+                showAlert('Error de conexión', 'danger');
             }
         }
 
@@ -689,15 +924,20 @@
             if (order) {
                 editingOrder = id;
                 document.getElementById('orderId').value = id;
-                document.getElementById('orderNumber').value = order.numero_pedido;
-                document.getElementById('customerName').value = order.nombre_cliente;
-                document.getElementById('customerEmail').value = order.email_cliente;
-                document.getElementById('customerPhone').value = order.telefono_cliente || '';
-                document.getElementById('orderStatus').value = order.estado_pedido;
-                document.getElementById('orderDate').value = order.fecha_pedido.split('T')[0];
-                document.getElementById('totalAmount').value = order.monto_total;
-                document.getElementById('shippingAddress').value = order.direccion_envio || '';
-                document.getElementById('orderNotes').value = order.notas_pedido || '';
+                // Mostrar el ID del pedido en el campo readonly
+                document.getElementById('idPedido').value = order.id_pedido;
+                document.getElementById('idCliente').value = order.id_cliente;
+                document.getElementById('idUsuario').value = order.id_usuario;
+                
+                // Formatear fecha para datetime-local
+                const fecha = new Date(order.fecha_pedido);
+                fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset());
+                document.getElementById('fechaPedido').value = fecha.toISOString().slice(0, 16);
+                
+                document.getElementById('total').value = order.total;
+                document.getElementById('estado').value = order.estado;
+                document.getElementById('codigoDetalle').value = order.codigo_detalle;
+                
                 document.getElementById('submitText').textContent = 'Actualizar Pedido';
                 
                 // Scroll al formulario
@@ -739,9 +979,14 @@
         function resetForm() {
             document.getElementById('orderForm').reset();
             document.getElementById('orderId').value = '';
+            document.getElementById('idPedido').value = '';
             editingOrder = null;
             document.getElementById('submitText').textContent = 'Crear Pedido';
-            document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+            
+            // Establecer fecha y hora actual por defecto
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('fechaPedido').value = now.toISOString().slice(0, 16);
         }
 
         // Mostrar alerta

@@ -6,7 +6,7 @@ const router = express.Router();
 // GET - Obtener todos los pedidos
 router.get('/', async (req, res) => {
   try {
-    // Query adaptada a la tabla existente
+    // Query exacta como la solicitada por el usuario
     const query = `
       SELECT 
         p.id_pedido,
@@ -15,16 +15,8 @@ router.get('/', async (req, res) => {
         p.fecha_pedido,
         p.total,
         p.estado,
-        p.numero_pedido,
-        p.direccion_envio,
-        p.notas_pedido,
-        c.nombre as nombre_cliente,
-        c.email as email_cliente,
-        c.telefono as telefono_cliente,
-        u.nombre_usuario as nombre_usuario
+        p.codigo_detalle
       FROM pedido p
-      LEFT JOIN cliente c ON p.id_cliente = c.id_cliente
-      LEFT JOIN usuario u ON p.id_usuario = u.id_usuario
       ORDER BY p.fecha_pedido DESC
     `;
     
@@ -33,17 +25,21 @@ router.get('/', async (req, res) => {
     // Transformar datos para que coincidan con el frontend
     const pedidosTransformados = result.rows.map(row => ({
       id_pedido: row.id_pedido,
-      numero_pedido: row.numero_pedido,
-      nombre_cliente: row.nombre_cliente || 'Cliente ' + row.id_cliente,
-      email_cliente: row.email_cliente || 'N/A',
-      telefono_cliente: row.telefono_cliente || 'N/A',
-      estado_pedido: row.estado,
-      fecha_pedido: row.fecha_pedido,
-      monto_total: parseFloat(row.total),
-      direccion_envio: row.direccion_envio || 'N/A',
-      notas_pedido: row.notas_pedido || 'N/A',
+      id_cliente: row.id_cliente,
       id_usuario: row.id_usuario,
-      nombre_usuario: row.nombre_usuario
+      fecha_pedido: row.fecha_pedido,
+      total: row.total,
+      estado: row.estado,
+      codigo_detalle: row.codigo_detalle,
+      // Campos adicionales para compatibilidad con frontend
+      numero_pedido: row.codigo_detalle,
+      nombre_cliente: 'Cliente ' + row.id_cliente,
+      email_cliente: 'N/A',
+      telefono_cliente: 'N/A',
+      estado_pedido: row.estado,
+      monto_total: parseFloat(row.total),
+      direccion_envio: 'N/A',
+      notas_pedido: 'N/A'
     }));
     
     res.json({
@@ -61,63 +57,63 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const {
-      numero_pedido,
-      nombre_cliente,
-      email_cliente,
-      telefono_cliente,
-      estado_pedido,
+      id_cliente,
+      id_usuario,
       fecha_pedido,
-      monto_total,
-      direccion_envio,
-      notas_pedido
+      total,
+      estado,
+      codigo_detalle
     } = req.body;
     
-    // Primero verificar si existe el cliente, si no, crearlo
-    let clienteResult = await db.query(
-      'SELECT id_cliente FROM cliente WHERE email = $1',
-      [email_cliente]
+    // Verificar que el cliente exista
+    const clienteResult = await db.query(
+      'SELECT id_cliente FROM cliente WHERE id_cliente = $1',
+      [id_cliente]
     );
     
-    let id_cliente;
     if (clienteResult.rows.length === 0) {
-      // Crear nuevo cliente
-      const newClientResult = await db.query(
-        'INSERT INTO cliente (nombre, email, telefono) VALUES ($1, $2, $3) RETURNING id_cliente',
-        [nombre_cliente, email_cliente, telefono_cliente || null]
-      );
-      id_cliente = newClientResult.rows[0].id_cliente;
-    } else {
-      id_cliente = clienteResult.rows[0].id_cliente;
+      return res.status(400).json({ 
+        error: 'El cliente con ID ' + id_cliente + ' no existe. Debe usar un ID de cliente existente (1, 2, 3, etc).' 
+      });
     }
     
-    // Obtener usuario (por defecto id 1)
-    const id_usuario = 1;
+    // Verificar que el usuario exista
+    const usuarioResult = await db.query(
+      'SELECT id_usuario FROM usuario WHERE id_usuario = $1',
+      [id_usuario]
+    );
     
-    // Generar número de pedido único si no se proporciona
-    const numeroPedido = numero_pedido || `PED-${Date.now()}`;
+    if (usuarioResult.rows.length === 0) {
+      return res.status(400).json({ 
+        error: 'El usuario con ID ' + id_usuario + ' no existe. Debe usar un ID de usuario existente (1 o 2).' 
+      });
+    }
     
-    // Insertar pedido con la estructura existente
+    // Obtener el siguiente ID disponible para pedido
+    const maxIdResult = await db.query('SELECT COALESCE(MAX(id_pedido), 0) as max_id FROM pedido');
+    const nextId = parseInt(maxIdResult.rows[0].max_id) + 1;
+    
+    // Insertar pedido con ID manual generado
     const query = `
       INSERT INTO pedido (
-        id_cliente, id_usuario, fecha_pedido, total, estado, numero_pedido, direccion_envio, notas_pedido
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *
+        id_pedido, id_cliente, id_usuario, fecha_pedido, total, estado, codigo_detalle
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id_pedido, id_cliente, id_usuario, fecha_pedido, total, estado, codigo_detalle
     `;
     
     const values = [
+      nextId,
       id_cliente,
       id_usuario,
       fecha_pedido || new Date().toISOString(),
-      monto_total,
-      estado_pedido || 'pendiente',
-      numeroPedido,
-      direccion_envio || null,
-      notas_pedido || null
+      parseFloat(total) || 0,
+      estado || 'pendiente',
+      codigo_detalle || 'PED-' + Date.now().toString().slice(-6)
     ];
     
     const result = await db.query(query, values);
     
-    // Obtener datos completos del pedido creado
+    // Obtener datos completos del pedido creado para respuesta
     const pedidoCompleto = await db.query(`
       SELECT 
         p.id_pedido,
@@ -126,12 +122,9 @@ router.post('/', async (req, res) => {
         p.fecha_pedido,
         p.total,
         p.estado,
-        p.numero_pedido,
-        p.direccion_envio,
-        p.notas_pedido,
+        p.codigo_detalle,
         c.nombre as nombre_cliente,
-        c.email as email_cliente,
-        c.telefono as telefono_cliente
+        c.email as email_cliente
       FROM pedido p
       LEFT JOIN cliente c ON p.id_cliente = c.id_cliente
       WHERE p.id_pedido = $1
@@ -140,15 +133,21 @@ router.post('/', async (req, res) => {
     // Transformar para el frontend
     const pedidoTransformado = {
       id_pedido: pedidoCompleto.rows[0].id_pedido,
-      numero_pedido: pedidoCompleto.rows[0].numero_pedido,
-      nombre_cliente: pedidoCompleto.rows[0].nombre_cliente,
-      email_cliente: pedidoCompleto.rows[0].email_cliente,
-      telefono_cliente: pedidoCompleto.rows[0].telefono_cliente,
-      estado_pedido: pedidoCompleto.rows[0].estado,
+      id_cliente: pedidoCompleto.rows[0].id_cliente,
+      id_usuario: pedidoCompleto.rows[0].id_usuario,
       fecha_pedido: pedidoCompleto.rows[0].fecha_pedido,
+      total: pedidoCompleto.rows[0].total,
+      estado: pedidoCompleto.rows[0].estado,
+      codigo_detalle: pedidoCompleto.rows[0].codigo_detalle,
+      // Campos adicionales para compatibilidad
+      numero_pedido: pedidoCompleto.rows[0].codigo_detalle,
+      nombre_cliente: pedidoCompleto.rows[0].nombre_cliente || 'Cliente ' + pedidoCompleto.rows[0].id_cliente,
+      email_cliente: pedidoCompleto.rows[0].email_cliente || 'N/A',
+      telefono_cliente: 'N/A',
+      estado_pedido: pedidoCompleto.rows[0].estado,
       monto_total: parseFloat(pedidoCompleto.rows[0].total),
-      direccion_envio: direccion_envio || 'N/A',
-      notas_pedido: notas_pedido || 'N/A'
+      direccion_envio: 'N/A',
+      notas_pedido: 'N/A'
     };
     
     res.status(201).json({
@@ -167,15 +166,12 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      numero_pedido,
-      nombre_cliente,
-      email_cliente,
-      telefono_cliente,
-      estado_pedido,
+      id_cliente,
+      id_usuario,
       fecha_pedido,
-      monto_total,
-      direccion_envio,
-      notas_pedido
+      total,
+      estado,
+      codigo_detalle
     } = req.body;
     
     // Verificar que el pedido exista
@@ -188,52 +184,98 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Pedido no encontrado' });
     }
     
-    // Verificar que el nuevo número de pedido no exista (si es diferente)
-    if (numero_pedido) {
-      const duplicateOrder = await db.query(
-        'SELECT id_pedido FROM pedido WHERE numero_pedido = $1 AND id_pedido != $2',
-        [numero_pedido, id]
+    // Verificar que el cliente exista (si se proporciona)
+    if (id_cliente) {
+      const clienteResult = await db.query(
+        'SELECT id_cliente FROM cliente WHERE id_cliente = $1',
+        [id_cliente]
       );
       
-      if (duplicateOrder.rows.length > 0) {
-        return res.status(400).json({ error: 'El número de pedido ya existe' });
+      if (clienteResult.rows.length === 0) {
+        return res.status(400).json({ 
+          error: 'El cliente con ID ' + id_cliente + ' no existe.' 
+        });
+      }
+    }
+    
+    // Verificar que el usuario exista (si se proporciona)
+    if (id_usuario) {
+      const usuarioResult = await db.query(
+        'SELECT id_usuario FROM usuario WHERE id_usuario = $1',
+        [id_usuario]
+      );
+      
+      if (usuarioResult.rows.length === 0) {
+        return res.status(400).json({ 
+          error: 'El usuario con ID ' + id_usuario + ' no existe.' 
+        });
       }
     }
     
     const query = `
       UPDATE pedido SET
-        numero_pedido = COALESCE($1, numero_pedido),
-        nombre_cliente = COALESCE($2, nombre_cliente),
-        email_cliente = COALESCE($3, email_cliente),
-        telefono_cliente = COALESCE($4, telefono_cliente),
-        estado_pedido = COALESCE($5, estado_pedido),
-        fecha_pedido = COALESCE($6, fecha_pedido),
-        monto_total = COALESCE($7, monto_total),
-        direccion_envio = COALESCE($8, direccion_envio),
-        notas_pedido = COALESCE($9, notas_pedido),
-        fecha_actualizacion = CURRENT_TIMESTAMP
-      WHERE id_pedido = $10
+        id_cliente = COALESCE($1, id_cliente),
+        id_usuario = COALESCE($2, id_usuario),
+        fecha_pedido = COALESCE($3, fecha_pedido),
+        total = COALESCE($4, total),
+        estado = COALESCE($5, estado),
+        codigo_detalle = COALESCE($6, codigo_detalle)
+      WHERE id_pedido = $7
       RETURNING *
     `;
     
     const values = [
-      numero_pedido,
-      nombre_cliente,
-      email_cliente,
-      telefono_cliente,
-      estado_pedido,
+      id_cliente,
+      id_usuario,
       fecha_pedido,
-      monto_total,
-      direccion_envio,
-      notas_pedido,
+      total,
+      estado,
+      codigo_detalle,
       id
     ];
     
     const result = await db.query(query, values);
     
+    // Obtener datos completos del pedido actualizado
+    const pedidoCompleto = await db.query(`
+      SELECT 
+        p.id_pedido,
+        p.id_cliente,
+        p.id_usuario,
+        p.fecha_pedido,
+        p.total,
+        p.estado,
+        p.codigo_detalle,
+        c.nombre as nombre_cliente,
+        c.email as email_cliente
+      FROM pedido p
+      LEFT JOIN cliente c ON p.id_cliente = c.id_cliente
+      WHERE p.id_pedido = $1
+    `, [result.rows[0].id_pedido]);
+    
+    // Transformar para el frontend
+    const pedidoTransformado = {
+      id_pedido: pedidoCompleto.rows[0].id_pedido,
+      id_cliente: pedidoCompleto.rows[0].id_cliente,
+      id_usuario: pedidoCompleto.rows[0].id_usuario,
+      fecha_pedido: pedidoCompleto.rows[0].fecha_pedido,
+      total: pedidoCompleto.rows[0].total,
+      estado: pedidoCompleto.rows[0].estado,
+      codigo_detalle: pedidoCompleto.rows[0].codigo_detalle,
+      // Campos adicionales para compatibilidad
+      numero_pedido: pedidoCompleto.rows[0].codigo_detalle,
+      nombre_cliente: pedidoCompleto.rows[0].nombre_cliente || 'Cliente ' + pedidoCompleto.rows[0].id_cliente,
+      email_cliente: pedidoCompleto.rows[0].email_cliente || 'N/A',
+      telefono_cliente: 'N/A',
+      estado_pedido: pedidoCompleto.rows[0].estado,
+      monto_total: parseFloat(pedidoCompleto.rows[0].total),
+      direccion_envio: 'N/A',
+      notas_pedido: 'N/A'
+    };
+    
     res.json({
       ok: true,
-      pedido: result.rows[0],
+      pedido: pedidoTransformado,
       message: 'Pedido actualizado exitosamente'
     });
   } catch (err) {

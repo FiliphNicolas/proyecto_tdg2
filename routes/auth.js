@@ -124,6 +124,23 @@ router.post('/login', async (req, res) => {
 
 // Obtener datos del usuario autenticado - MOVIDO A routes/usuarios.js
 
+// Obtener datos del usuario autenticado
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    // El middleware authMiddleware ya estableció req.user
+    res.json({ 
+      ok: true, 
+      user: {
+        id_usuario: req.user.id_usuario,
+        nombre_usuario: req.user.nombre_usuario
+      }
+    });
+  } catch (err) {
+    console.error('Error /api/auth/me', err);
+    res.status(500).json({ error: 'Error del servidor: ' + err.message });
+  }
+});
+
 // Endpoint para probar conexión
 router.get('/test-connection', authMiddleware, async (req, res) => {
   try {

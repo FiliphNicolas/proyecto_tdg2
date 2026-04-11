@@ -2,15 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const db = require('./databasepg');
-const { protectPages, serveProtectedPage } = require('./auth-middleware');
-const { router: authRouter } = require('../routes/auth');
-const usuariosRouter = require('../routes/usuarios');
-const productosRouter = require('../routes/productos');
-const inventarioRouter = require('../routes/inventario');
-const auditoriaRouter = require('../routes/auditoria');
-const pedidosRouter = require('../routes/pedidos');
-const sedesRouter = require('../routes/sedes');
+const db = require('./javascript/databasepg');
+const { protectPages, serveProtectedPage } = require('./javascript/auth-middleware');
+const { router: authRouter } = require('./routes/auth');
+const usuariosRouter = require('./routes/usuarios');
+const productosRouter = require('./routes/productos');
+const inventarioRouter = require('./routes/inventario');
+const auditoriaRouter = require('./routes/auditoria');
+const pedidosRouter = require('./routes/pedidos');
+const clientesRouter = require('./routes/clientes');
+const sedesRouter = require('./routes/sedes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ app.use('/api/inventario', inventarioRouter);
 app.use('/api', productosRouter);
 app.use('/api/auditoria', auditoriaRouter);
 app.use('/api/pedidos', pedidosRouter);
+app.use('/api/clientes', clientesRouter);
 app.use('/api/sedes', sedesRouter);
 
 // Inicializar base de datos al iniciar el servidor
@@ -49,19 +51,19 @@ const initializeServer = async () => {
 
 
 // Servir archivos estáticos
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname)));
 
 // Servir páginas HTML desde carpeta pages
-app.use(express.static(path.join(__dirname, '..', 'pages')));
+app.use(express.static(path.join(__dirname, 'pages')));
 
 // Servir página principal (login) - sin protección
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'pages', 'iniciar-sesion.html'));
+  res.sendFile(path.join(__dirname, 'pages', 'iniciar-sesion.html'));
 });
 
 // También permitir acceso directo a iniciar-sesion.html - sin protección
 app.get('/iniciar-sesion.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'pages', 'iniciar-sesion.html'));
+  res.sendFile(path.join(__dirname, 'pages', 'iniciar-sesion.html'));
 });
 
 

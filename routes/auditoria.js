@@ -69,8 +69,8 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Endpoint para SELECT directo a tabla auditoria de Systemsware
-router.get('/direct', authMiddleware, async (req, res) => {
+// Endpoint público para SELECT directo a tabla auditoria de Systemsware
+router.get('/direct', async (req, res) => {
   try {
     // Consulta directa a la tabla auditoria
     const auditQuery = `

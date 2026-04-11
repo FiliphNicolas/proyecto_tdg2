@@ -12,31 +12,69 @@
             <h1>Nuestros Productos</h1>
             <div class="productos-info">
                 <span class="productos-count">Total de productos: <strong id="totalProductos">0</strong></span>
+                <button class="btn-stats" onclick="mostrarEstadisticas()">📊 Estadísticas</button>
                 <button class="btn-agregar" onclick="mostrarModalAgregar()">+ Agregar Producto</button>
             </div>
+        </div>
+        
+        <!-- Estadísticas Dashboard -->
+        <div id="statsDashboard" class="stats-dashboard" style="display: none;">
+            <h3>📊 Estadísticas de Productos</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Total Productos</h4>
+                    <span id="statTotal" class="stat-number">0</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Bajo Stock (&lt;10)</h4>
+                    <span id="statLowStock" class="stat-number warning">0</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Agotados</h4>
+                    <span id="statOutOfStock" class="stat-number danger">0</span>
+                </div>
+                <div class="stat-card">
+                    <h4>Valor Inventario</h4>
+                    <span id="statValue" class="stat-number">$0</span>
+                </div>
+            </div>
+            <div class="stats-details">
+                <div class="stat-section">
+                    <h4>Productos por Categoría</h4>
+                    <div id="statCategories" class="category-list"></div>
+                </div>
+                <div class="stat-section">
+                    <h4>Productos Más Caros</h4>
+                    <div id="statExpensive" class="product-list"></div>
+                </div>
+                <div class="stat-section">
+                    <h4>Mayor Stock</h4>
+                    <div id="statHighStock" class="product-list"></div>
+                </div>
+            </div>
+            <button class="btn-secondary" onclick="ocultarEstadisticas()">Cerrar</button>
         </div>
 
         <div class="productos-filtros">
             <input type="text" id="searchProduct" placeholder="Buscar producto...">
             <select id="filterCategory">
-                <option value="">Todas las categorÃ­as</option>
-                <option value="Computadores">Computadores</option>
-                <option value="Monitores">Monitores</option>
-                <option value="PerifÃ©ricos">PerifÃ©ricos</option>
-                <option value="Audio">Audio</option>
-                <option value="Cables">Cables</option>
-                <option value="Adaptadores">Adaptadores</option>
-                <option value="Almacenamiento">Almacenamiento</option>
-                <option value="Accesorios">Accesorios</option>
-                <option value="Impresoras">Impresoras</option>
-                <option value="Redes">Redes</option>
-                <option value="Mobiliario">Mobiliario</option>
-                <option value="Hardware">Hardware</option>
-                <option value="Software">Software</option>
-                <option value="Oficina">Oficina</option>
-                <option value="ElectrÃ³nica">ElectrÃ³nica</option>
+                <option value="">Todas las categorías</option>
             </select>
-            <button onclick="loadProducts()">Actualizar</button>
+            <input type="number" id="minPrice" placeholder="Precio mínimo" min="0" step="0.01">
+            <input type="number" id="maxPrice" placeholder="Precio máximo" min="0" step="0.01">
+            <select id="sortBy">
+                <option value="codigo_producto">Ordenar por Código</option>
+                <option value="nombre">Ordenar por Nombre</option>
+                <option value="precio">Ordenar por Precio</option>
+                <option value="cantidad_stock">Ordenar por Stock</option>
+                <option value="categoria">Ordenar por Categoría</option>
+            </select>
+            <select id="sortOrder">
+                <option value="ASC">Ascendente</option>
+                <option value="DESC">Descendente</option>
+            </select>
+            <button onclick="loadProducts()">🔄 Actualizar</button>
+            <button onclick="clearFilters()">🗑️ Limpiar</button>
         </div>
 
         <!-- Modal para agregar/editar producto -->
@@ -96,6 +134,20 @@
                             <small>Deja en blanco para usar imagen predeterminada</small>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stockOperation">Operación de Stock:</label>
+                            <select id="stockOperation">
+                                <option value="set">Establecer</option>
+                                <option value="add">Agregar</option>
+                                <option value="subtract">Reducir</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="stockQuantity">Cantidad:</label>
+                            <input type="number" id="stockQuantity" min="0" placeholder="0">
+                            </div>
+                    </div>
                     <div class="form-group full-width">
                         <label for="productDescription">DescripciÃ³n:</label>
                         <textarea id="productDescription" rows="3"></textarea>
@@ -147,19 +199,49 @@
             try {
                 document.getElementById('loadingMessage').style.display = 'block';
                 
-                const response = await fetch('/api/public/productos');
+                // Construir parámetros de consulta
+                const params = new URLSearchParams();
+                
+                const searchTerm = document.getElementById('searchProduct').value.trim();
+                if (searchTerm) params.append('q', searchTerm);
+                
+                const category = document.getElementById('filterCategory').value;
+                if (category) params.append('categoria', category);
+                
+                const minPrice = document.getElementById('minPrice').value;
+                if (minPrice) params.append('min_price', minPrice);
+                
+                const maxPrice = document.getElementById('maxPrice').value;
+                if (maxPrice) params.append('max_price', maxPrice);
+                
+                const sortBy = document.getElementById('sortBy').value;
+                if (sortBy) params.append('sort_by', sortBy);
+                
+                const sortOrder = document.getElementById('sortOrder').value;
+                if (sortOrder) params.append('order', sortOrder);
+                
+                const url = `/api/public/productos${params.toString() ? '?' + params.toString() : ''}`;
+                
+                const response = await fetch(url);
                 const result = await response.json();
                 
                 if (result.ok) {
                     allProducts = result.products.map(product => ({
                         id: product.codigo_producto,
                         nombre: product.nombre,
-                        categoria: product.categoria || 'Sin categorÃ­a',
+                        categoria: product.categoria || 'Sin categoría',
                         precio: Number(product.precio),
                         stock: product.cantidad_stock,
                         descripcion: product.descripcion || '',
-                        imagen: `https://via.placeholder.com/300x200/${getRandomColor()}/FFFFFF?text=${encodeURIComponent(product.nombre)}`
+                        imagen: `https://via.placeholder.com/300x200/${getRandomColor()}/FFFFFF?text=${encodeURIComponent(product.nombre)}`,
+                        fecha_creacion: product.fecha_creacion,
+                        fecha_actualizacion: product.fecha_actualizacion
                     }));
+                    
+                    // Actualizar paginación si existe
+                    if (result.pagination) {
+                        updatePagination(result.pagination);
+                    }
                 } else {
                     throw new Error('Error al cargar productos');
                 }
@@ -202,8 +284,9 @@
                         <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
                         <div class="producto-stock ${stockClass}">${stockText}</div>
                         <div class="producto-acciones">
-                            <button class="btn-editar" onclick="editarProducto('${producto.id}')">Editar</button>
-                            <button class="btn-eliminar" onclick="eliminarProducto('${producto.id}')">Eliminar</button>
+                            <button class="btn-editar" onclick="editarProducto('${producto.id}')">✏️ Editar</button>
+                            <button class="btn-stock" onclick="promptStockUpdate('${producto.id}')">📦 Stock</button>
+                            <button class="btn-eliminar" onclick="eliminarProducto('${producto.id}')">🗑️ Eliminar</button>
                         </div>
                     </div>
                 `;
@@ -232,14 +315,31 @@
             document.getElementById('totalProductos').textContent = filtered.length + ' (de ' + allProducts.length + ')';
         }
 
-        function updateCategoryFilter() {
-            const categorySelect = document.getElementById('filterCategory');
-            const categories = [...new Set(allProducts.map(p => p.categoria))].sort();
-            
-            categorySelect.innerHTML = '<option value="">Todas las categorÃ­as</option>';
-            categories.forEach(cat => {
-                categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-            });
+        async function updateCategoryFilter() {
+            try {
+                // Cargar categorías desde la API
+                const response = await fetch('/api/public/productos/categories');
+                const result = await response.json();
+                
+                const categorySelect = document.getElementById('filterCategory');
+                categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
+                
+                if (result.ok && result.categories) {
+                    result.categories.forEach(cat => {
+                        categorySelect.innerHTML += `<option value="${cat.categoria}">${cat.categoria} (${cat.count})</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error al cargar categorías:', error);
+                // Fallback: usar categorías locales
+                const categorySelect = document.getElementById('filterCategory');
+                const categories = [...new Set(allProducts.map(p => p.categoria))].sort();
+                
+                categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
+                categories.forEach(cat => {
+                    categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+                });
+            }
         }
 
         function updateCounter() {
@@ -310,13 +410,16 @@
                 if (result.ok) {
                     await loadProducts(); // Recargar desde la base de datos
                     cerrarModal();
-                    alert(isEditing ? 'Producto actualizado exitosamente' : 'Producto agregado exitosamente');
+                    showAlert(isEditing ? 'Producto actualizado exitosamente' : 'Producto agregado exitosamente', 'success');
                 } else {
-                    alert('Error: ' + result.error);
+                    showAlert('Error: ' + (result.error || 'Error desconocido'), 'danger');
+                    if (result.details && Array.isArray(result.details)) {
+                        showAlert('Detalles: ' + result.details.join(', '), 'danger');
+                    }
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al guardar producto');
+                showAlert('Error al guardar producto', 'danger');
             }
         }
 
@@ -325,7 +428,7 @@
         }
 
         async function eliminarProducto(id) {
-            if (confirm('Â¿EstÃ¡s seguro de que quieres eliminar este producto?')) {
+            if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
                 try {
                     const response = await fetch(`/api/public/productos/${id}`, {
                         method: 'DELETE'
@@ -335,13 +438,13 @@
                     
                     if (result.ok) {
                         await loadProducts(); // Recargar desde la base de datos
-                        alert('Producto eliminado exitosamente de la base de datos');
+                        showAlert('Producto eliminado exitosamente de la base de datos', 'success');
                     } else {
-                        alert('Error al eliminar producto: ' + result.error);
+                        showAlert('Error al eliminar producto: ' + result.error, 'danger');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error al eliminar producto');
+                    showAlert('Error al eliminar producto', 'danger');
                 }
             }
         }
@@ -349,6 +452,140 @@
         function getRandomColor() {
             const colors = ['4A90E2', '0078D4', '000000', 'E60012', 'EA3E23', 'FF6B35', '28A745', '17A2B8', '6F42C1', 'FD7E14'];
             return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // Funciones adicionales
+        function clearFilters() {
+            document.getElementById('searchProduct').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('sortBy').value = 'codigo_producto';
+            document.getElementById('sortOrder').value = 'ASC';
+            loadProducts();
+        }
+        
+        function updatePagination(pagination) {
+            // Implementar paginación si es necesario
+            console.log('Paginación:', pagination);
+        }
+        
+        function showAlert(message, type) {
+            // Implementar sistema de alertas mejorado
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                padding: 15px 20px;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                ${type === 'success' ? 'background: #28a745;' : 'background: #dc3545;'}
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(alertDiv);
+            }, 3000);
+        }
+        
+        async function mostrarEstadisticas() {
+            try {
+                const response = await fetch('/api/public/productos/stats');
+                const result = await response.json();
+                
+                if (result.ok) {
+                    const stats = result.stats;
+                    
+                    // Actualizar dashboard de estadísticas
+                    document.getElementById('statTotal').textContent = stats.total_products || 0;
+                    document.getElementById('statLowStock').textContent = stats.low_stock || 0;
+                    document.getElementById('statOutOfStock').textContent = stats.out_of_stock || 0;
+                    document.getElementById('statValue').textContent = '$' + (stats.total_inventory_value || 0).toFixed(2);
+                    
+                    // Categorías
+                    const categoriesDiv = document.getElementById('statCategories');
+                    categoriesDiv.innerHTML = '';
+                    stats.by_category.forEach(cat => {
+                        const catDiv = document.createElement('div');
+                        catDiv.className = 'category-item';
+                        catDiv.innerHTML = `<strong>${cat.categoria}:</strong> ${cat.count} productos`;
+                        categoriesDiv.appendChild(catDiv);
+                    });
+                    
+                    // Productos más caros
+                    const expensiveDiv = document.getElementById('statExpensive');
+                    expensiveDiv.innerHTML = '';
+                    stats.most_expensive.forEach(prod => {
+                        const prodDiv = document.createElement('div');
+                        prodDiv.className = 'product-item';
+                        prodDiv.innerHTML = `<strong>${prod.nombre}:</strong> $${parseFloat(prod.precio).toFixed(2)}`;
+                        expensiveDiv.appendChild(prodDiv);
+                    });
+                    
+                    // Mayor stock
+                    const highStockDiv = document.getElementById('statHighStock');
+                    highStockDiv.innerHTML = '';
+                    stats.highest_stock.forEach(prod => {
+                        const prodDiv = document.createElement('div');
+                        prodDiv.className = 'product-item';
+                        prodDiv.innerHTML = `<strong>${prod.nombre}:</strong> ${prod.cantidad_stock} unidades`;
+                        highStockDiv.appendChild(prodDiv);
+                    });
+                    
+                    document.getElementById('statsDashboard').style.display = 'block';
+                } else {
+                    showAlert('Error al cargar estadísticas', 'danger');
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+                showAlert('Error al cargar estadísticas', 'danger');
+            }
+        }
+        
+        function ocultarEstadisticas() {
+            document.getElementById('statsDashboard').style.display = 'none';
+        }
+        
+        // Actualizar stock de producto
+        async function actualizarStockProducto(codigo, cantidad, operacion) {
+            try {
+                const response = await fetch(`/api/public/productos/${codigo}/stock`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ cantidad, operacion })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    await loadProducts();
+                    showAlert('Stock actualizado exitosamente', 'success');
+                } else {
+                    showAlert('Error al actualizar stock: ' + result.error, 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error al actualizar stock', 'danger');
+            }
+        }
+        function promptStockUpdate(codigo) {
+            const cantidad = prompt('Ingrese la cantidad:', '10');
+            if (cantidad && !isNaN(cantidad) && cantidad >= 0) {
+                const operacion = prompt('Tipo de operación (add/subtract/set):', 'add');
+                if (['add', 'subtract', 'set'].includes(operacion)) {
+                    actualizarStockProducto(codigo, parseInt(cantidad), operacion);
+                } else {
+                    showAlert('Operación no válida. Use: add, subtract, o set', 'danger');
+                }
+            }
         }
     </script>
     <script src="../javascript/nav-loader.js"></script>
