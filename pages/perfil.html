@@ -5,6 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi perfil - Systemsware</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .perfil-photo {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .avatar-placeholder {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .user-name {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .carta-perfil {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .contenedor-perfil {
+            display: flex !important;
+            visibility: visible !important;
+            flex-direction: column;
+            gap: 15px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -103,6 +134,12 @@
             }
             if (avatarImg && userAvatarUrl) {
                 avatarImg.src = userAvatarUrl;
+                avatarImg.style.display = 'block';
+                avatarImg.style.visibility = 'visible';
+            } else if (avatarImg) {
+                // Asegurar que la imagen por defecto sea visible
+                avatarImg.style.display = 'block';
+                avatarImg.style.visibility = 'visible';
             }
         });
     </script>
