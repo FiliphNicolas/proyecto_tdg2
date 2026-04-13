@@ -14,6 +14,10 @@
                 <span class="productos-count">Total de productos: <strong id="totalProductos">0</strong></span>
                 <button class="btn-stats" onclick="mostrarEstadisticas()">📊 Estadísticas</button>
                 <button class="btn-agregar" onclick="mostrarModalAgregar()">+ Agregar Producto</button>
+                <div class="auth-buttons">
+                    <button class="btn-login" onclick="openAuthModal('login')">Iniciar Sesión</button>
+                    <button class="btn-register" onclick="openAuthModal('register')">Registrarse</button>
+                </div>
             </div>
         </div>
         
@@ -588,6 +592,7 @@
             }
         }
     </script>
+    <script src="/javascript/auth-modals.js"></script>
     <script src="../javascript/nav-loader.js"></script>
 </body>
 </html>

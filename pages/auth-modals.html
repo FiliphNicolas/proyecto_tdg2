@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modales de Autenticación - Systemsware</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        /* Estilos adicionales para modales */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .modal-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .modal-tab {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .modal-tab.active {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            margin-bottom: -2px;
+        }
+        
+        .modal-form {
+            display: none;
+        }
+        
+        .modal-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de Autenticación -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            
+            <div class="modal-tabs">
+                <button class="modal-tab active" onclick="switchTab('login')">Iniciar Sesión</button>
+                <button class="modal-tab" onclick="switchTab('register')">Registrarse</button>
+            </div>
+            
+            <!-- Formulario de Inicio de Sesión -->
+            <div id="loginForm" class="modal-form active">
+                <h3> Bienvenido de vuelta</h3>
+                <p>Ingresa tus credenciales para acceder</p>
+                
+                <div id="loginSuccess" class="success-message" style="display: none;">
+                    ¡Inicio de sesión exitoso! Redirigiendo...
+                </div>
+                
+                <form id="loginFormElement">
+                    <div class="form-group">
+                        <label for="loginEmail">Correo electrónico</label>
+                        <input type="email" id="loginEmail" placeholder="correo@ejemplo.com" required>
+                        <div class="error-message" id="loginEmailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" id="loginPassword" placeholder="Ingresa tu contraseña" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                                <span id="loginEyeIcon">?</span>
+                            </button>
+                        </div>
+                        <div class="error-message" id="loginPasswordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="rememberMe">
+                            Recordarme
+                        </label>
+                    </div>
+                    
+                    <div class="error-message" id="loginError"></div>
+                    
+                    <button type="submit" class="btn-primary" id="loginBtn">
+                        Iniciar Sesión
+                        <span class="loading-spinner" id="loginSpinner"></span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Formulario de Registro -->
+            <div id="registerForm" class="modal-form">
+                <h3> Crear tu cuenta</h3>
+                <p>Completa tus datos para unirte a Systemsware</p>
+                
+                <div id="registerSuccess" class="success-message" style="display: none;">
+                    ¡Cuenta creada exitosamente! Redirigiendo...
+                </div>
+                
+                <form id="registerFormElement">
+                    <div class="form-group">
+                        <label for="registerName">Nombre completo</label>
+                        <input type="text" id="registerName" placeholder="Juan Pérez" required>
+                        <div class="error-message" id="registerNameError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerEmail">Correo electrónico</label>
+                        <input type="email" id="registerEmail" placeholder="correo@ejemplo.com" required>
+                        <div class="error-message" id="registerEmailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword">Contraseña</label>
+                        <div class="password-container">
+                            <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('registerPassword')">
+                                <span id="registerEyeIcon">?</span>
+                            </button>
+                        </div>
+                        <div class="error-message" id="registerPasswordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Confirmar contraseña</label>
+                        <div class="password-container">
+                            <input type="password" id="registerConfirmPassword" placeholder="Repite tu contraseña" required>
+                            <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword')">
+                                <span id="confirmEyeIcon">?</span>
+                            </button>
+                        </div>
+                        <div class="error-message" id="registerConfirmPasswordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPhone">Número de celular</label>
+                        <input type="tel" id="registerPhone" placeholder="3001234567" required>
+                        <div class="error-message" id="registerPhoneError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerAddress">Dirección</label>
+                        <input type="text" id="registerAddress" placeholder="Calle Principal #123" required>
+                        <div class="error-message" id="registerAddressError"></div>
+                    </div>
+                    
+                    <div class="error-message" id="registerError"></div>
+                    
+                    <button type="submit" class="btn-primary" id="registerBtn">
+                        Crear Cuenta
+                        <span class="loading-spinner" id="registerSpinner"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para manejar los modales
+        function openAuthModal(tab = 'login') {
+            document.getElementById('authModal').classList.add('active');
+            switchTab(tab);
+        }
+        
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+            resetForms();
+        }
+        
+        function switchTab(tab) {
+            // Actualizar tabs
+            document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.modal-tab[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            // Actualizar formularios
+            document.querySelectorAll('.modal-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab + 'Form').classList.add('active');
+        }
+        
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId.replace('Password', 'EyeIcon'));
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.textContent = '¡';
+            } else {
+                field.type = 'password';
+                icon.textContent = '?';
+            }
+        }
+        
+        function resetForms() {
+            // Resetear formulario de login
+            document.getElementById('loginFormElement').reset();
+            document.getElementById('loginSuccess').style.display = 'none';
+            document.querySelectorAll('#loginForm .error-message').forEach(err => err.style.display = 'none');
+            
+            // Resetear formulario de registro
+            document.getElementById('registerFormElement').reset();
+            document.getElementById('registerSuccess').style.display = 'none';
+            document.querySelectorAll('#registerForm .error-message').forEach(err => err.style.display = 'none');
+        }
+        
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+        
+        function hideError(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+        
+        function setLoading(formType, loading) {
+            const btn = document.getElementById(formType + 'Btn');
+            const spinner = document.getElementById(formType + 'Spinner');
+            
+            if (loading) {
+                btn.disabled = true;
+                spinner.style.display = 'inline-block';
+            } else {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+            }
+        }
+        
+        // Validación de email
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+        
+        // Validación de teléfono
+        function validatePhone(phone) {
+            const regex = /^[0-9]{10}$/;
+            return regex.test(phone);
+        }
+        
+        // Manejar formulario de login
+        document.getElementById('loginFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // Resetear errores
+            document.querySelectorAll('#loginForm .error-message').forEach(err => err.style.display = 'none');
+            
+            let valid = true;
+            
+            // Validar email
+            if (!email) {
+                showError('loginEmailError', 'El correo es obligatorio');
+                valid = false;
+            } else if (!validateEmail(email)) {
+                showError('loginEmailError', 'Ingresa un correo válido');
+                valid = false;
+            }
+            
+            // Validar contraseña
+            if (!password) {
+                showError('loginPasswordError', 'La contraseña es obligatoria');
+                valid = false;
+            } else if (password.length < 6) {
+                showError('loginPasswordError', 'La contraseña debe tener al menos 6 caracteres');
+                valid = false;
+            }
+            
+            if (!valid) return;
+            
+            setLoading('login', true);
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        correo: email,
+                        contrasena: password,
+                        rememberMe: rememberMe
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok) {
+                    // Guardar datos de sesión
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userName', data.user.nombre_usuario);
+                    localStorage.setItem('loginTime', Date.now().toString());
+                    
+                    // Mostrar éxito
+                    document.getElementById('loginSuccess').style.display = 'block';
+                    
+                    // Redirigir después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '/inicio.html';
+                    }, 1500);
+                } else {
+                    showError('loginError', data.error || 'Correo o contraseña incorrectos');
+                }
+            } catch (error) {
+                console.error('Error de login:', error);
+                showError('loginError', 'Error de conexión. Intenta nuevamente.');
+            } finally {
+                setLoading('login', false);
+            }
+        });
+        
+        // Manejar formulario de registro
+        document.getElementById('registerFormElement').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+            const phone = document.getElementById('registerPhone').value.trim();
+            const address = document.getElementById('registerAddress').value.trim();
+            
+            // Resetear errores
+            document.querySelectorAll('#registerForm .error-message').forEach(err => err.style.display = 'none');
+            
+            let valid = true;
+            
+            // Validar nombre
+            if (!name) {
+                showError('registerNameError', 'El nombre es obligatorio');
+                valid = false;
+            } else if (name.length < 3) {
+                showError('registerNameError', 'El nombre debe tener al menos 3 caracteres');
+                valid = false;
+            }
+            
+            // Validar email
+            if (!email) {
+                showError('registerEmailError', 'El correo es obligatorio');
+                valid = false;
+            } else if (!validateEmail(email)) {
+                showError('registerEmailError', 'Ingresa un correo válido');
+                valid = false;
+            }
+            
+            // Validar contraseña
+            if (!password) {
+                showError('registerPasswordError', 'La contraseña es obligatoria');
+                valid = false;
+            } else if (password.length < 6) {
+                showError('registerPasswordError', 'La contraseña debe tener al menos 6 caracteres');
+                valid = false;
+            }
+            
+            // Validar confirmación de contraseña
+            if (!confirmPassword) {
+                showError('registerConfirmPasswordError', 'Confirma tu contraseña');
+                valid = false;
+            } else if (password !== confirmPassword) {
+                showError('registerConfirmPasswordError', 'Las contraseñas no coinciden');
+                valid = false;
+            }
+            
+            // Validar teléfono
+            if (!phone) {
+                showError('registerPhoneError', 'El teléfono es obligatorio');
+                valid = false;
+            } else if (!validatePhone(phone)) {
+                showError('registerPhoneError', 'Ingresa un teléfono válido (10 dígitos)');
+                valid = false;
+            }
+            
+            // Validar dirección
+            if (!address) {
+                showError('registerAddressError', 'La dirección es obligatoria');
+                valid = false;
+            } else if (address.length < 5) {
+                showError('registerAddressError', 'La dirección debe tener al menos 5 caracteres');
+                valid = false;
+            }
+            
+            if (!valid) return;
+            
+            setLoading('register', true);
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: name,
+                        correo: email,
+                        contrasena: password,
+                        telefono: phone,
+                        direccion: address
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.ok) {
+                    // Mostrar éxito
+                    document.getElementById('registerSuccess').style.display = 'block';
+                    
+                    // Redirigir después de 1.5 segundos
+                    setTimeout(() => {
+                        window.location.href = '/iniciar-sesion.html';
+                    }, 1500);
+                } else {
+                    showError('registerError', data.error || 'Error al crear la cuenta');
+                }
+            } catch (error) {
+                console.error('Error de registro:', error);
+                showError('registerError', 'Error de conexión. Intenta nuevamente.');
+            } finally {
+                setLoading('register', false);
+            }
+        });
+        
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
+        
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAuthModal();
+            }
+        });
+    </script>
+</body>
+</html>

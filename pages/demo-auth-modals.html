@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Modales de Autenticación</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .demo-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-login {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-register {
+            background: #28a745;
+            color: white;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .code-example {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1> Demostración: Modales de Autenticación</h1>
+        <p>Sistema de modales reutilizables para iniciar sesión y registrarse</p>
+        
+        <div class="demo-buttons">
+            <button class="demo-btn btn-login" onclick="openAuthModal('login')">
+                Iniciar Sesión
+            </button>
+            <button class="demo-btn btn-register" onclick="openAuthModal('register')">
+                Registrarse
+            </button>
+        </div>
+        
+        <div class="info-box">
+            <h3> Características</h3>
+            <ul>
+                <li> Diseño responsive y moderno</li>
+                <li> Validación de formularios en tiempo real</li>
+                <li> Toggle para mostrar/ocultar contraseñas</li>
+                <li> Estados de carga con spinners</li>
+                <li> Manejo de errores con mensajes específicos</li>
+                <li> Cierre con Escape o clic fuera del modal</li>
+                <li> Integración con APIs del backend</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3> Cómo usar en tus páginas</h3>
+            <p>Simplemente incluye el script y llama a las funciones globales:</p>
+            
+            <div class="code-example">
+                &lt;!-- Incluir el script --&gt;<br>
+                &lt;script src="/javascript/auth-modals.js"&gt;&lt;/script&gt;<br><br>
+                
+                &lt;!-- Abrir modal de login --&gt;<br>
+                &lt;button onclick="openAuthModal('login')"&gt;<br>
+                &nbsp;&nbsp;Iniciar Sesión<br>
+                &lt;/button&gt;<br><br>
+                
+                &lt;!-- Abrir modal de registro --&gt;<br>
+                &lt;button onclick="openAuthModal('register')"&gt;<br>
+                &nbsp;&nbsp;Registrarse<br>
+                &lt;/button&gt;
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3> Campos del formulario de registro</h3>
+            <ul>
+                <li> <strong>Nombre completo:</strong> Mínimo 3 caracteres</li>
+                <li> <strong>Correo electrónico:</strong> Formato email válido</li>
+                <li> <strong>Contraseña:</strong> Mínimo 6 caracteres</li>
+                <li> <strong>Confirmar contraseña:</strong> Debe coincidir</li>
+                <li> <strong>Teléfono:</strong> 10 dígitos (formato colombiano)</li>
+                <li> <strong>Dirección:</strong> Mínimo 5 caracteres</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3> Campos del formulario de login</h3>
+            <ul>
+                <li> <strong>Correo electrónico:</strong> Formato email válido</li>
+                <li> <strong>Contraseña:</strong> Mínimo 6 caracteres</li>
+                <li> <strong>Recordarme:</strong> Opción opcional</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3> Integración con Backend</h3>
+            <p>Los modales se integran automáticamente con las siguientes APIs:</p>
+            <ul>
+                <li> <strong>POST /api/auth/login</strong> - Inicio de sesión</li>
+                <li> <strong>POST /api/auth/register</strong> - Registro de usuarios</li>
+            </ul>
+            
+            <p>Al iniciar sesión exitosamente, se guardan los siguientes datos en localStorage:</p>
+            <ul>
+                <li> <code>authToken</code> - Token de autenticación</li>
+                <li> <code>userName</code> - Nombre del usuario</li>
+                <li> <code>loginTime</code> - Timestamp del login</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3> Páginas donde puedes usarlo</h3>
+            <p>Este sistema de modales puede integrarse en cualquier página del sistema:</p>
+            <ul>
+                <li> Página principal (<code>inicio.html</code>)</li>
+                <li> Página de productos (<code>productos.html</code>)</li>
+                <li> CRUD de pedidos (<code>pedidos-crud.html</code>)</li>
+                <li> Auditoría (<code>conexion-auditoria.html</code>)</li>
+                <li> Cualquier página que requiera autenticación</li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 40px; padding: 20px; background: #e9ecef; border-radius: 8px;">
+            <h3> Estado actual del sistema</h3>
+            <div id="authStatus">Verificando estado de autenticación...</div>
+        </div>
+    </div>
+
+    <!-- Incluir el script de modales de autenticación -->
+    <script src="/javascript/auth-modals.js"></script>
+    
+    <script>
+        // Verificar estado de autenticación al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+        });
+        
+        function checkAuthStatus() {
+            const token = localStorage.getItem('authToken');
+            const userName = localStorage.getItem('userName');
+            const loginTime = localStorage.getItem('loginTime');
+            
+            const statusDiv = document.getElementById('authStatus');
+            
+            if (token && userName) {
+                const loginDate = new Date(parseInt(loginTime));
+                const timeAgo = getTimeAgo(loginDate);
+                
+                statusDiv.innerHTML = `
+                    <div style="color: #28a745;">
+                        <strong> Usuario autenticado</strong><br>
+                        Usuario: ${userName}<br>
+                        Tiempo de sesión: ${timeAgo}<br>
+                        <button onclick="logout()" style="margin-top: 10px; padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div style="color: #6c757d;">
+                        <strong> No autenticado</strong><br>
+                        Usa los botones de arriba para iniciar sesión o registrarte.
+                    </div>
+                `;
+            }
+        }
+        
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'hace unos segundos';
+            if (seconds < 3600) return `hace ${Math.floor(seconds / 60)} minutos`;
+            if (seconds < 86400) return `hace ${Math.floor(seconds / 3600)} horas`;
+            return `hace ${Math.floor(seconds / 86400)} días`;
+        }
+        
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('loginTime');
+            checkAuthStatus();
+        }
+        
+        // Actualizar estado cada 30 segundos
+        setInterval(checkAuthStatus, 30000);
+    </script>
+</body>
+</html>

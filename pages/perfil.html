@@ -18,10 +18,10 @@
                 <div class="user-name" id="perfilNombrePerfil">Usuario</div>
             </div>            <div class="contenedor-perfil">
                 <button class="carta-perfil" onclick="window.location.href='ver-usuario-actual.html'" title="Ver y editar informaciÃ³n personal">
-                    “‹ Ver estado de usuario
+                 Ver estado de usuario
                 </button>
                 <button class="carta-perfil cerrar-seccion" onclick="cerrarSesion()">
-                    šª Cerrar sesión
+                     Cerrar sesión
                 </button>
             </div>
         </div>
@@ -30,7 +30,7 @@
     <script src="../javascript/nav-loader.js"></script>
     <script>
         function cerrarSesion() {
-            if (confirm('Â¿EstÃ¡s seguro de que quieres cerrar sesiÃ³n?')) {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
                 // Limpiar localStorage/sessionStorage
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('userName');
@@ -47,7 +47,7 @@
             try {
                 const token = localStorage.getItem('authToken');
                 if (!token) {
-                    alert('No tienes sesiÃ³n activa');
+                    alert('No tienes sesión activa');
                     window.location.href = 'iniciar-sesion.html';
                     return;
                 }
@@ -61,34 +61,34 @@
                 });
 
                 if (response.ok) {
-                    alert('âœ… Tu cuenta ha sido eliminada permanentemente.\n\nSerÃ¡s redirigido a la pÃ¡gina principal.');
+                    alert('✅ Tu cuenta ha sido eliminada permanentemente.\n\nSerás redirigido a la página principal.');
                     
                     // Limpiar datos locales
                     localStorage.clear();
                     sessionStorage.clear();
                     
-                    // Redirigir a pÃ¡gina principal
+                    // Redirigir a página principal
                     window.location.href = 'index.html';
                 } else {
                     const error = await response.json();
-                    alert('âŒ Error al eliminar la cuenta: ' + (error.error || 'Error desconocido'));
+                    alert('❌ Error al eliminar la cuenta: ' + (error.error || 'Error desconocido'));
                 }
             } catch (error) {
                 console.error('Error al eliminar cuenta:', error);
-                alert('âŒ Error de conexiÃ³n al eliminar la cuenta. Por favor intenta nuevamente.');
+                alert('❌ Error de conexión al eliminar la cuenta. Por favor intenta nuevamente.');
             }
         }
 
-        // Verificar si el usuario estÃ¡ logueado
+        // Verificar si el usuario está logueado
         document.addEventListener('DOMContentLoaded', function() {
             const userToken = localStorage.getItem('authToken') || localStorage.getItem('userToken');
             if (!userToken) {
-                alert('Debes iniciar sesiÃ³n para acceder a tu perfil');
+                alert('Debes iniciar sesión para acceder a tu perfil');
                 window.location.href = 'iniciar-sesion.html';
                 return;
             }
 
-            // Cargar la navegaciÃ³n
+            // Cargar la navegación
             if (typeof loadNavigation === 'function') {
                 loadNavigation();
             }

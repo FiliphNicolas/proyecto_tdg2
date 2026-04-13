@@ -2820,6 +2820,43 @@ hr { border: none; height: 1px; background: #efefef; }
   font-size: 1.2rem;
 }
 
+/* Estilos para botones de autenticación en productos */
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.btn-login, .btn-register {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.btn-login {
+  background: #007bff;
+  color: white;
+}
+
+.btn-login:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.btn-register {
+  background: #28a745;
+  color: white;
+}
+
+.btn-register:hover {
+  background: #1e7e34;
+  transform: translateY(-1px);
+}
+
 /* Alertas mejoradas */
 .alert {
   position: fixed;
@@ -2858,6 +2895,16 @@ hr { border: none; height: 1px; background: #efefef; }
     flex-direction: column;
     gap: 15px;
     text-align: center;
+  }
+  
+  .productos-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .auth-buttons {
+    margin-left: 0;
+    justify-content: center;
   }
   
   .productos-filtros {

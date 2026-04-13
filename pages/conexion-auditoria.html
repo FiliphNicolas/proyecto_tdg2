@@ -5,12 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conexión PostgreSQL - Auditoría Systemsware</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .btn-login, .btn-register {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-login {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .btn-register {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: #1e7e34;
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .auth-buttons {
+                margin-left: 0;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body class="conexion">
     <div class="container">
         <div class="header">
-            <h1>Auditoría de Base de Datos</h1>
-            <p>Monitoreo de conexión y consultas en tiempo real</p>
+            <div class="header-content">
+                <div>
+                    <h1>Auditoría de Base de Datos</h1>
+                    <p>Monitoreo de conexión y consultas en tiempo real</p>
+                </div>
+                <div class="auth-buttons">
+                    <button class="btn-login" onclick="openAuthModal('login')">Iniciar Sesión</button>
+                    <button class="btn-register" onclick="openAuthModal('register')">Registrarse</button>
+                </div>
+            </div>
         </div>
 
         <div id="connectionStatus" class="connection-status disconnected">
@@ -214,6 +278,7 @@
             }
         }, 30000);
     </script>
+    <script src="/javascript/auth-modals.js"></script>
     <script src="/javascript/nav-loader.js"></script>
 </body>
 </html>
