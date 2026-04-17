@@ -12,8 +12,10 @@ router.get('/', async (req, res) => {
         nombre,
         apellido,
         email,
+        cedula,
         telefono,
         direccion,
+        id_sede,
         fecha_registro
       FROM cliente
       ORDER BY id_cliente
@@ -39,8 +41,10 @@ router.post('/', async (req, res) => {
       nombre,
       apellido,
       email,
+      cedula,
       telefono,
-      direccion
+      direccion,
+      id_sede
     } = req.body;
     
     // Verificar que el email no exista
@@ -55,13 +59,25 @@ router.post('/', async (req, res) => {
       }
     }
     
+    // Verificar que la cédula no exista
+    if (cedula) {
+      const existingCedula = await db.query(
+        'SELECT id_cliente FROM cliente WHERE cedula = $1',
+        [cedula]
+      );
+      
+      if (existingCedula.rows.length > 0) {
+        return res.status(400).json({ error: 'La cédula ya está registrada' });
+      }
+    }
+    
     // Obtener el siguiente ID disponible
     const maxIdResult = await db.query('SELECT COALESCE(MAX(id_cliente), 0) as max_id FROM cliente');
     const nextId = parseInt(maxIdResult.rows[0].max_id) + 1;
     
     const query = `
-      INSERT INTO cliente (id_cliente, nombre, apellido, email, telefono, direccion)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      INSERT INTO cliente (id_cliente, nombre, apellido, email, cedula, telefono, direccion, id_sede)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
     
@@ -70,8 +86,10 @@ router.post('/', async (req, res) => {
       nombre,
       apellido || null,
       email || null,
+      cedula || null,
       telefono || null,
-      direccion || null
+      direccion || null,
+      id_sede || 1
     ];
     
     const result = await db.query(query, values);
@@ -95,8 +113,10 @@ router.put('/:id', async (req, res) => {
       nombre,
       apellido,
       email,
+      cedula,
       telefono,
-      direccion
+      direccion,
+      id_sede
     } = req.body;
     
     // Verificar que el cliente exista
@@ -121,14 +141,28 @@ router.put('/:id', async (req, res) => {
       }
     }
     
+    // Verificar que la nueva cédula no exista (si es diferente y se proporciona)
+    if (cedula) {
+      const duplicateCedula = await db.query(
+        'SELECT id_cliente FROM cliente WHERE cedula = $1 AND id_cliente != $2',
+        [cedula, id]
+      );
+      
+      if (duplicateCedula.rows.length > 0) {
+        return res.status(400).json({ error: 'La cédula ya está registrada por otro cliente' });
+      }
+    }
+    
     const query = `
       UPDATE cliente SET
         nombre = COALESCE($1, nombre),
         apellido = COALESCE($2, apellido),
         email = COALESCE($3, email),
-        telefono = COALESCE($4, telefono),
-        direccion = COALESCE($5, direccion)
-      WHERE id_cliente = $6
+        cedula = COALESCE($4, cedula),
+        telefono = COALESCE($5, telefono),
+        direccion = COALESCE($6, direccion),
+        id_sede = COALESCE($7, id_sede)
+      WHERE id_cliente = $8
       RETURNING *
     `;
     
@@ -136,8 +170,10 @@ router.put('/:id', async (req, res) => {
       nombre,
       apellido,
       email,
+      cedula,
       telefono,
       direccion,
+      id_sede,
       id
     ];
     

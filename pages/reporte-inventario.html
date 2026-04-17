@@ -179,9 +179,43 @@
             border-collapse: collapse;
             margin-top: 10px;
             background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 1200px;
+        }
+        
+        /* Wrapper para scroll horizontal */
+        .table-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+        
+        /* Scrollbar personalizado */
+        .table-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        /* Firefox */
+        .table-wrapper {
+            scrollbar-color: #667eea #f1f1f1;
+            scrollbar-width: thin;
         }
         
         .movements-table th {
@@ -194,6 +228,9 @@
             border: none;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
         .movements-table td {
@@ -489,6 +526,35 @@
             <button class="btn-export print" onclick="window.print()">Imprimir</button>
         </div>
 
+        <!-- Filtros de Inventario -->
+        <div class="filter-row" style="margin-bottom: 20px; margin-top: 20px;">
+            <div class="filter-group" style="flex: 2;">
+                <label for="filterInventorySearch">🔍 Buscar</label>
+                <input type="text" id="filterInventorySearch" placeholder="Buscar por producto o código..." oninput="filterInventory()">
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterInventoryType">Tipo Movimiento</label>
+                <select id="filterInventoryType" onchange="filterInventory()">
+                    <option value="">Todos</option>
+                    <option value="entrada">Entrada</option>
+                    <option value="salida">Salida</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterInventorySede">Sede</label>
+                <select id="filterInventorySede" onchange="filterInventory()">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-secondary" onclick="clearInventoryFilters()">Limpiar Filtros</button>
+            </div>
+        </div>
+
         <div class="table-wrapper">
             <table class="movements-table" id="inventoryTable">
                 <thead>
@@ -498,6 +564,7 @@
                         <th>Producto</th>
                         <th>Tipo</th>
                         <th>Cant.</th>
+                        <th>Sede</th>
                         <th>Usuario</th>
                         <th>Descripción</th>
                         <th>Acciones</th>
@@ -514,6 +581,33 @@
         let filteredData = [];
         let editingMovementId = null;
         let productList = [];
+        let sedesMap = {}; // Mapeo de id_sede a nombre
+
+        // Cargar sedes desde API
+        async function loadSedes() {
+            try {
+                const response = await fetch('/api/sedes');
+                const result = await response.json();
+                
+                if (Array.isArray(result)) {
+                    result.forEach(sede => {
+                        sedesMap[sede.id_sede] = sede.nombre;
+                    });
+                } else if (result.ok && Array.isArray(result.sedes)) {
+                    result.sedes.forEach(sede => {
+                        sedesMap[sede.id_sede] = sede.nombre;
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando sedes:', error);
+                // Fallback
+                sedesMap[1] = 'Sede Principal';
+                sedesMap[2] = 'Sede Sur';
+            }
+            
+            // Actualizar filtro de sedes
+            updateSedeFilterInventory();
+        }
 
         // Cargar datos desde API
         async function loadInventoryData() {
@@ -534,6 +628,7 @@
                         nombre: m.nombre_producto || m.codigo_producto,
                         tipo: m.tipo_movimiento,
                         cantidad: m.cantidad,
+                        id_sede: m.id_sede || 1,
                         usuario: m.usuario_registro || 'Sistema',
                         email: m.email_usuario || '',
                         desc: m.descripcion || 'Sin descripción'
@@ -557,6 +652,7 @@
                             nombre: 'Laptop Dell',
                             tipo: 'entrada',
                             cantidad: 5,
+                            id_sede: 1,
                             desc: 'Nueva entrada',
                             usuario: 'Sistema',
                             email: ''
@@ -568,6 +664,7 @@
                             nombre: 'Monitor LG',
                             tipo: 'salida',
                             cantidad: 2,
+                            id_sede: 1,
                             desc: 'Venta',
                             usuario: 'Sistema',
                             email: ''
@@ -588,6 +685,7 @@
                         nombre: 'Laptop Dell',
                         tipo: 'entrada',
                         cantidad: 5,
+                        id_sede: 1,
                         desc: 'Nueva entrada',
                         usuario: 'Sistema',
                         email: ''
@@ -601,6 +699,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('currentDate').innerText = new Date().toLocaleString();
+            loadSedes();
             loadInventoryData();
         });
 
@@ -628,6 +727,45 @@
             });
         }
 
+        function filterInventory() {
+            const searchText = document.getElementById('filterInventorySearch')?.value.toLowerCase() || '';
+            const typeFilter = document.getElementById('filterInventoryType')?.value || '';
+            const sedeFilter = document.getElementById('filterInventorySede')?.value || '';
+            
+            let filtered = allMovements.filter(m => {
+                const matchesSearch = !searchText || 
+                    m.codigo.toLowerCase().includes(searchText) ||
+                    m.nombre.toLowerCase().includes(searchText);
+                
+                const matchesType = !typeFilter || m.tipo === typeFilter;
+                const matchesSede = !sedeFilter || m.id_sede.toString() === sedeFilter;
+                
+                return matchesSearch && matchesType && matchesSede;
+            });
+            
+            renderTable(filtered);
+        }
+        
+        function clearInventoryFilters() {
+            document.getElementById('filterInventorySearch').value = '';
+            document.getElementById('filterInventoryType').value = '';
+            document.getElementById('filterInventorySede').value = '';
+            filterInventory();
+        }
+        
+        function updateSedeFilterInventory() {
+            const sedeSelect = document.getElementById('filterInventorySede');
+            if (sedeSelect) {
+                sedeSelect.innerHTML = '<option value="">Todas</option>';
+                Object.entries(sedesMap).forEach(([id, nombre]) => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = nombre;
+                    sedeSelect.appendChild(option);
+                });
+            }
+        }
+
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -636,12 +774,14 @@
             let totalOut = 0;
 
             data.forEach(m => {
+                const sedeName = sedesMap[m.id_sede] || 'Sede Desconocida';
                 const row = `<tr>
                     <td>${m.fecha}</td>
                     <td><code>${m.codigo}</code></td>
                     <td>${m.nombre}</td>
                     <td><span class="type-badge ${m.tipo}">${m.tipo}</span></td>
                     <td><strong>${m.cantidad}</strong></td>
+                    <td><span class="badge">${sedeName}</span></td>
                     <td>
                         <div style="font-size: 12px;">
                             <div style="font-weight: 600;">${m.usuario}</div>

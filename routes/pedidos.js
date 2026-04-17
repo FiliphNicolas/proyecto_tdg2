@@ -12,6 +12,7 @@ router.get('/', async (req, res) => {
         p.id_pedido,
         p.id_cliente,
         p.id_usuario,
+        p.id_sede,
         p.fecha_pedido,
         p.total,
         p.estado,
@@ -27,6 +28,7 @@ router.get('/', async (req, res) => {
       id_pedido: row.id_pedido,
       id_cliente: row.id_cliente,
       id_usuario: row.id_usuario,
+      id_sede: row.id_sede || 1,
       fecha_pedido: row.fecha_pedido,
       total: row.total,
       estado: row.estado,
@@ -59,6 +61,7 @@ router.post('/', async (req, res) => {
     const {
       id_cliente,
       id_usuario,
+      id_sede,
       fecha_pedido,
       total,
       estado,
@@ -96,15 +99,16 @@ router.post('/', async (req, res) => {
     // Insertar pedido con ID manual generado
     const query = `
       INSERT INTO pedido (
-        id_pedido, id_cliente, id_usuario, fecha_pedido, total, estado, codigo_detalle
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id_pedido, id_cliente, id_usuario, fecha_pedido, total, estado, codigo_detalle
+        id_pedido, id_cliente, id_usuario, id_sede, fecha_pedido, total, estado, codigo_detalle
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id_pedido, id_cliente, id_usuario, id_sede, fecha_pedido, total, estado, codigo_detalle
     `;
     
     const values = [
       nextId,
       id_cliente,
       id_usuario,
+      id_sede || 1,
       fecha_pedido || new Date().toISOString(),
       parseFloat(total) || 0,
       estado || 'pendiente',
@@ -119,6 +123,7 @@ router.post('/', async (req, res) => {
         p.id_pedido,
         p.id_cliente,
         p.id_usuario,
+        p.id_sede,
         p.fecha_pedido,
         p.total,
         p.estado,
@@ -168,6 +173,7 @@ router.put('/:id', async (req, res) => {
     const {
       id_cliente,
       id_usuario,
+      id_sede,
       fecha_pedido,
       total,
       estado,
@@ -216,17 +222,19 @@ router.put('/:id', async (req, res) => {
       UPDATE pedido SET
         id_cliente = COALESCE($1, id_cliente),
         id_usuario = COALESCE($2, id_usuario),
-        fecha_pedido = COALESCE($3, fecha_pedido),
-        total = COALESCE($4, total),
-        estado = COALESCE($5, estado),
-        codigo_detalle = COALESCE($6, codigo_detalle)
-      WHERE id_pedido = $7
+        id_sede = COALESCE($3, id_sede),
+        fecha_pedido = COALESCE($4, fecha_pedido),
+        total = COALESCE($5, total),
+        estado = COALESCE($6, estado),
+        codigo_detalle = COALESCE($7, codigo_detalle)
+      WHERE id_pedido = $8
       RETURNING *
     `;
     
     const values = [
       id_cliente,
       id_usuario,
+      id_sede,
       fecha_pedido,
       total,
       estado,
@@ -242,6 +250,7 @@ router.put('/:id', async (req, res) => {
         p.id_pedido,
         p.id_cliente,
         p.id_usuario,
+        p.id_sede,
         p.fecha_pedido,
         p.total,
         p.estado,
@@ -258,6 +267,7 @@ router.put('/:id', async (req, res) => {
       id_pedido: pedidoCompleto.rows[0].id_pedido,
       id_cliente: pedidoCompleto.rows[0].id_cliente,
       id_usuario: pedidoCompleto.rows[0].id_usuario,
+      id_sede: pedidoCompleto.rows[0].id_sede || 1,
       fecha_pedido: pedidoCompleto.rows[0].fecha_pedido,
       total: pedidoCompleto.rows[0].total,
       estado: pedidoCompleto.rows[0].estado,

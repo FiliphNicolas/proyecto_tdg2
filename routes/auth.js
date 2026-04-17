@@ -70,8 +70,28 @@ router.post('/create-test-user', async (req, res) => {
 // Registro de usuario
 router.post('/register', async (req, res) => {
   try {
-    const { nombre, correo, contrasena, direccion, numero_cel, ciudad } = req.body;
+    const { nombre, correo, contrasena, direccion, numero_cel, ciudad, rol, id_sede } = req.body;
     if (!nombre || !correo || !contrasena) return res.status(400).json({ error: 'Faltan campos requeridos' });
+
+    // Validar rol
+    const rolesValidos = ['empleado', 'vendedor', 'gerente', 'administrador'];
+    const rolFinal = rolesValidos.includes(rol) ? rol : 'empleado';
+
+    // Validar sede si se proporciona
+    let sedeValida = null;
+    if (id_sede) {
+      const sedeCheck = await db.query('SELECT id_sede FROM sede WHERE id_sede = $1', [id_sede]);
+      if (sedeCheck.rows.length === 0) {
+        return res.status(400).json({ error: 'La sede especificada no existe' });
+      }
+      sedeValida = id_sede;
+    } else {
+      // Si no especifica sede, usar la primera disponible
+      const defaultSede = await db.query('SELECT id_sede FROM sede LIMIT 1');
+      if (defaultSede.rows.length > 0) {
+        sedeValida = defaultSede.rows[0].id_sede;
+      }
+    }
 
     const hashed = await bcrypt.hash(contrasena, 10);
 
@@ -79,13 +99,13 @@ router.post('/register', async (req, res) => {
     const maxIdResult = await db.query('SELECT COALESCE(MAX(id_usuario), 0) + 1 as next_id FROM "usuario"');
     const nextId = maxIdResult.rows[0].next_id;
 
-    const text = 'INSERT INTO "usuario" (id_usuario, nombre_usuario, contrasena, email, rol, activo, direccion, numero_cel, ciudad) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id_usuario, nombre_usuario, email';
-    const values = [nextId, nombre, hashed, correo, 'empleado', true, direccion || null, numero_cel || null, ciudad || null];
+    const text = 'INSERT INTO "usuario" (id_usuario, id_sede, nombre_usuario, contrasena, email, rol, activo, direccion, numero_cel, ciudad) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id_usuario, nombre_usuario, email, rol, id_sede';
+    const values = [nextId, sedeValida, nombre, hashed, correo, rolFinal, true, direccion || null, numero_cel || null, ciudad || null];
 
     const result = await db.query(text, values);
     const user = result.rows[0];
 
-    const token = jwt.sign({ id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, JWT_SECRET, { expiresIn: '8h' });
+    const token = jwt.sign({ id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario, rol: user.rol, id_sede: user.id_sede }, JWT_SECRET, { expiresIn: '8h' });
 
     res.json({ ok: true, user, token });
   } catch (err) {

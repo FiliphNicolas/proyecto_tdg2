@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS cliente (
     nombre               VARCHAR(100) NOT NULL,
     apellido             VARCHAR(100) NOT NULL,
     email                VARCHAR(100) UNIQUE,
+    cedula               VARCHAR(20) UNIQUE,
     telefono             VARCHAR(15),
     direccion            VARCHAR(255),
     fecha_registro       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -39,6 +40,7 @@ CREATE TABLE IF NOT EXISTS cliente (
 -- ============================================
 CREATE TABLE IF NOT EXISTS usuario (
     id_usuario           INT PRIMARY KEY NOT NULL,
+    id_sede              INT REFERENCES sede(id_sede) ON DELETE SET NULL DEFAULT 1,
     nombre_usuario       VARCHAR(50) UNIQUE NOT NULL,
     contrasena           VARCHAR(255) NOT NULL,
     email                VARCHAR(100) UNIQUE NOT NULL,
@@ -56,6 +58,7 @@ CREATE TABLE IF NOT EXISTS usuario (
 -- ============================================
 CREATE TABLE IF NOT EXISTS producto (
     codigo_producto      VARCHAR(30) NOT NULL PRIMARY KEY,
+    id_sede              INT REFERENCES sede(id_sede) ON DELETE SET NULL DEFAULT 1,
     nombre               VARCHAR(150) NOT NULL,
     descripcion          VARCHAR(500),
     precio               NUMERIC(10,2) NOT NULL,
@@ -99,6 +102,7 @@ CREATE TABLE IF NOT EXISTS detalle_pedido (
 -- ============================================
 CREATE TABLE IF NOT EXISTS inventario (
     id_movimiento        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_sede              INT REFERENCES sede(id_sede) ON DELETE SET NULL DEFAULT 1,
     codigo_producto      VARCHAR(30) NOT NULL REFERENCES producto(codigo_producto),
     tipo_movimiento      VARCHAR(50) NOT NULL,
     cantidad             INT NOT NULL,
@@ -121,25 +125,24 @@ CREATE TABLE IF NOT EXISTS auditoria (
 -- ============================================
 -- DATOS DE PRUEBA: SEDES
 -- ============================================
+
 INSERT INTO sede (nombre, ciudad, direccion, telefono, email, encargado, activo)
 VALUES
   ('Sede Principal', 'Bogotá', 'Carrera 5 #45-67, Centro comercial Platino', '(1) 2345-6789', 'bogota@systemsware.com', 'Juan García', TRUE),
-  ('Sede Medellín', 'Medellín', 'Calle 10 #30-50, Parque Bolívar', '(4) 4567-8901', 'medellin@systemsware.com', 'María López', TRUE),
-  ('Sede Cali', 'Cali', 'Avenida 6 #20-40, Zona Rosa', '(2) 3456-7890', 'cali@systemsware.com', 'Carlos Rodríguez', TRUE),
-  ('Sede Barranquilla', 'Barranquilla', 'Boulevard 53 #45-60, Centro', '(5) 3456-7890', 'barranquilla@systemsware.com', 'Ana Martínez', TRUE),
-  ('Sede Santa Marta', 'Santa Marta', 'Carrera 1 #12-34, Frente al mar', '(5) 4321-0987', 'santamarta@systemsware.com', 'Pedro Sánchez', TRUE)
+  ('Sede Sur', 'Bogotá', 'Carrera #123-45, Edificio Las Palmas', '(4) 5678-1234', 'sur@systemsware.com', 'María López', TRUE)
 ON CONFLICT DO NOTHING;
+
 
 -- ============================================
 -- DATOS DE PRUEBA: PRODUCTOS
 -- ============================================
-INSERT INTO producto (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria)
+INSERT INTO producto (codigo_producto, id_sede, nombre, descripcion, precio, cantidad_stock, categoria)
 VALUES
-  ('PROD-001', 'Laptop Dell XPS 13', 'Portátil ultraligero 13 pulgadas', 1200.00, 15, 'Electrónica'),
-  ('PROD-002', 'Mouse Logitech MX', 'Ratón inalámbrico de precisión', 79.99, 50, 'Accesorios'),
-  ('PROD-003', 'Teclado Mecánico RGB', 'Teclado gaming con iluminación RGB', 149.99, 30, 'Accesorios'),
-  ('PROD-004', 'Monitor LG 27"', 'Pantalla IPS 4K 27 pulgadas', 399.99, 20, 'Monitores'),
-  ('PROD-005', 'SSD Kingston 1TB', 'Unidad de estado sólido 1TB NVMe', 89.99, 100, 'Almacenamiento')
+  ('PROD-001', 1, 'Laptop Dell XPS 13', 'Portátil ultraligero 13 pulgadas', 1200.00, 15, 'Electrónica'),
+  ('PROD-002', 1, 'Mouse Logitech MX', 'Ratón inalámbrico de precisión', 79.99, 50, 'Accesorios'),
+  ('PROD-003', 2, 'Teclado Mecánico RGB', 'Teclado gaming con iluminación RGB', 149.99, 30, 'Accesorios'),
+  ('PROD-004', 1, 'Monitor LG 27"', 'Pantalla IPS 4K 27 pulgadas', 399.99, 20, 'Monitores'),
+  ('PROD-005', 2, 'SSD Kingston 1TB', 'Unidad de estado sólido 1TB NVMe', 89.99, 100, 'Almacenamiento')
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -157,11 +160,11 @@ ON CONFLICT DO NOTHING;
 -- ============================================
 -- DATOS DE PRUEBA: USUARIOS
 -- ============================================
-INSERT INTO usuario (id_usuario, nombre_usuario, contrasena, email, rol, activo, ciudad)
+INSERT INTO usuario (id_usuario, id_sede, nombre_usuario, contrasena, email, rol, activo, ciudad)
 VALUES
-  (1, 'admin', '$2b$10$YourHashedPasswordHere', 'admin@systemsware.com', 'admin', TRUE, 'Bogotá'),
-  (2, 'vendedor1', '$2b$10$YourHashedPasswordHere', 'vendedor@systemsware.com', 'vendedor', TRUE, 'Medellín'),
-  (3, 'empleado1', '$2b$10$YourHashedPasswordHere', 'empleado@systemsware.com', 'empleado', TRUE, 'Cali')
+  (1, 1, 'admin', '$2b$10$YourHashedPasswordHere', 'admin@systemsware.com', 'admin', TRUE, 'Bogotá'),
+  (2, 1, 'vendedor1', '$2b$10$YourHashedPasswordHere', 'vendedor@systemsware.com', 'vendedor', TRUE, 'Bogotá'),
+  (3, 2, 'empleado1', '$2b$10$YourHashedPasswordHere', 'empleado@systemsware.com', 'empleado', TRUE, 'Bogotá')
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -191,38 +194,167 @@ ON CONFLICT DO NOTHING;
 -- ============================================
 -- DATOS DE PRUEBA: INVENTARIO
 -- ============================================
-INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, descripcion)
+INSERT INTO inventario (id_sede, codigo_producto, tipo_movimiento, cantidad, descripcion)
 VALUES
-  ('PROD-001', 'entrada', 20, 'Compra a proveedor distribuidor A'),
-  ('PROD-002', 'entrada', 100, 'Compra a proveedor distribuidor B'),
-  ('PROD-001', 'salida', 5, 'Venta pedido PED-001'),
-  ('PROD-003', 'entrada', 50, 'Reposición de stock'),
-  ('PROD-004', 'salida', 1, 'Venta pedido PED-002');
+  (1, 'PROD-001', 'entrada', 20, 'Compra a proveedor distribuidor A'),
+  (1, 'PROD-002', 'entrada', 100, 'Compra a proveedor distribuidor B'),
+  (1, 'PROD-001', 'salida', 5, 'Venta pedido PED-001'),
+  (2, 'PROD-003', 'entrada', 50, 'Reposición de stock'),
+  (1, 'PROD-004', 'salida', 1, 'Venta pedido PED-002');
 
 -- ============================================
 -- ÍNDICES PARA PERFORMANCE
 -- ============================================
+CREATE INDEX IF NOT EXISTS idx_usuario_sede ON usuario(id_sede);
+CREATE INDEX IF NOT EXISTS idx_producto_sede ON producto(id_sede);
+CREATE INDEX IF NOT EXISTS idx_inventario_sede ON inventario(id_sede);
+CREATE INDEX IF NOT EXISTS idx_inventario_producto ON inventario(codigo_producto);
+CREATE INDEX IF NOT EXISTS idx_inventario_producto_sede ON inventario(codigo_producto, id_sede);
+CREATE INDEX IF NOT EXISTS idx_inventario_fecha ON inventario(fecha_movimiento);
 CREATE INDEX IF NOT EXISTS idx_pedido_fecha ON pedido(fecha_pedido);
 CREATE INDEX IF NOT EXISTS idx_pedido_estado ON pedido(estado_pedido);
-CREATE INDEX IF NOT EXISTS idx_inventario_producto ON inventario(codigo_producto);
-CREATE INDEX IF NOT EXISTS idx_inventario_fecha ON inventario(fecha_movimiento);
 CREATE INDEX IF NOT EXISTS idx_usuario_email ON usuario(email);
 CREATE INDEX IF NOT EXISTS idx_cliente_email ON cliente(email);
 CREATE INDEX IF NOT EXISTS idx_auditoria_usuario ON auditoria(id_usuario);
 CREATE INDEX IF NOT EXISTS idx_auditoria_fecha ON auditoria(fecha_accion);
 
 -- ============================================
+-- FUNCTION Y TRIGGERS DE AUDITORIA
+-- ============================================
+
+-- Función para registrar cambios en la tabla auditoria
+CREATE OR REPLACE FUNCTION fn_audit_log()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_user_id INT;
+    v_action VARCHAR(50);
+    v_details TEXT;
+BEGIN
+    -- Obtener el ID del usuario de la sesión (si exists)
+    BEGIN
+        v_user_id := current_setting('app.current_user_id')::INT;
+    EXCEPTION WHEN OTHERS THEN
+        v_user_id := 1; -- Usuario por defecto si no se especifica
+    END;
+
+    -- Determinar la acción
+    IF TG_OP = 'INSERT' THEN
+        v_action := 'INSERT';
+        v_details := row_to_json(NEW);
+    ELSIF TG_OP = 'UPDATE' THEN
+        v_action := 'UPDATE';
+        v_details := json_build_object(
+            'anterior', row_to_json(OLD),
+            'nuevo', row_to_json(NEW)
+        )::TEXT;
+    ELSIF TG_OP = 'DELETE' THEN
+        v_action := 'DELETE';
+        v_details := row_to_json(OLD);
+    END IF;
+
+    -- Insertar en auditoria
+    INSERT INTO auditoria (id_usuario, tabla_afectada, accion, detalles, fecha_accion)
+    VALUES (v_user_id, TG_TABLE_NAME, v_action, v_details, CURRENT_TIMESTAMP);
+
+    RETURN CASE WHEN TG_OP = 'DELETE' THEN OLD ELSE NEW END;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ============================================
+-- TRIGGERS PARA TABLA: USUARIO
+-- ============================================
+CREATE TRIGGER trg_audit_usuario_insert
+AFTER INSERT ON usuario
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_usuario_update
+AFTER UPDATE ON usuario
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_usuario_delete
+AFTER DELETE ON usuario
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+-- ============================================
+-- TRIGGERS PARA TABLA: CLIENTE
+-- ============================================
+CREATE TRIGGER trg_audit_cliente_insert
+AFTER INSERT ON cliente
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_cliente_update
+AFTER UPDATE ON cliente
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_cliente_delete
+AFTER DELETE ON cliente
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+-- ============================================
+-- TRIGGERS PARA TABLA: PRODUCTO
+-- ============================================
+CREATE TRIGGER trg_audit_producto_insert
+AFTER INSERT ON producto
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_producto_update
+AFTER UPDATE ON producto
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_producto_delete
+AFTER DELETE ON producto
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+-- ============================================
+-- TRIGGERS PARA TABLA: PEDIDO
+-- ============================================
+CREATE TRIGGER trg_audit_pedido_insert
+AFTER INSERT ON pedido
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_pedido_update
+AFTER UPDATE ON pedido
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_pedido_delete
+AFTER DELETE ON pedido
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+-- ============================================
+-- TRIGGERS PARA TABLA: SEDE
+-- ============================================
+CREATE TRIGGER trg_audit_sede_insert
+AFTER INSERT ON sede
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_sede_update
+AFTER UPDATE ON sede
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+CREATE TRIGGER trg_audit_sede_delete
+AFTER DELETE ON sede
+FOR EACH ROW EXECUTE FUNCTION fn_audit_log();
+
+-- ============================================
 -- RESUMEN DE TABLAS CREADAS
 -- ============================================
--- 1. SEDE (5 registros)
+-- 1. SEDE (2 registros)
 -- 2. CLIENTE (5 registros)
--- 3. USUARIO (3 registros)
--- 4. PRODUCTO (5 registros)
+-- 3. USUARIO (3 registros) - Con relación a SEDE
+-- 4. PRODUCTO (5 registros) - Con relación a SEDE
 -- 5. PEDIDO (5 registros)
 -- 6. DETALLE_PEDIDO (5 registros)
--- 7. INVENTARIO (5 registros)
+-- 7. INVENTARIO (5 registros) - Con relación a SEDE
 -- 8. AUDITORIA (vacía, se llena al usar el sistema)
 --
 -- Total de tablas: 8
--- Total de registros de prueba: 33
+-- Total de registros de prueba: 30
+-- Total de triggers: 15 (auditoría automática)
+-- Relaciones principales:
+--   - usuario.id_sede -> sede.id_sede
+--   - producto.id_sede -> sede.id_sede
+--   - inventario.id_sede -> sede.id_sede
+--   - inventario.codigo_producto -> producto.codigo_producto
+--   - pedido.id_pedido <- detalle_pedido.id_pedido
+--   - auditoria.id_usuario -> usuario.id_usuario
 -- ============================================

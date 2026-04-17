@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido a Systemsware</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="inicio-html">
   <div class="content-wrap">
@@ -13,11 +14,31 @@
         <h1>Bienvenido a Systemsware</h1>
         <p class="subtitulo">Tu plataforma de gestión de inventario</p>
       </div>
+
+      <!-- Resumen de Estadísticas -->
+      <div id="estadisticas-resumen" class="estadisticas-resumen">
+        <!-- Se carga dinámicamente con JavaScript -->
+      </div>
+
+      <!-- Gráficas -->
+      <div id="estadisticas-container" class="estadisticas-grid">
+        <div class="estadistica-chart">
+          <canvas id="graficaPedidos"></canvas>
+        </div>
+        <div class="estadistica-chart">
+          <canvas id="graficaInventario"></canvas>
+        </div>
+        <div class="estadistica-chart">
+          <canvas id="graficaUsuarios"></canvas>
+        </div>
+      </div>
     </div>
   </div>
+
     <script src="/javascript/auth-modals.js"></script>
     <script src="../javascript/nav-loader.js"></script>
     <script src="../javascript/session-timeout.js"></script>
+    <script src="../javascript/graficas.js"></script>
 </body>
 </html>
 

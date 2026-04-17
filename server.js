@@ -12,6 +12,7 @@ const auditoriaRouter = require('./routes/auditoria');
 const pedidosRouter = require('./routes/pedidos');
 const clientesRouter = require('./routes/clientes');
 const sedesRouter = require('./routes/sedes');
+const estadisticasRouter = require('./routes/estadisticas');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ app.use('/api/auditoria', auditoriaRouter);
 app.use('/api/pedidos', pedidosRouter);
 app.use('/api/clientes', clientesRouter);
 app.use('/api/sedes', sedesRouter);
+app.use('/api/estadisticas', estadisticasRouter);
 
 // Inicializar base de datos al iniciar el servidor
 const initializeServer = async () => {

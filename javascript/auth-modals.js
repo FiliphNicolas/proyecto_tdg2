@@ -421,14 +421,25 @@ class AuthModals {
 
     togglePassword(fieldId) {
         const field = document.getElementById(fieldId);
-        const icon = document.querySelector(`[data-field="${fieldId}"] .eye-icon`);
+        let icon;
         
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.textContent = '¡';
-        } else {
-            field.type = 'password';
-            icon.textContent = '?';
+        // Buscar el icono correcto según el fieldId
+        if (fieldId === 'loginPassword') {
+            icon = document.getElementById('loginEyeIcon');
+        } else if (fieldId === 'registerPassword') {
+            icon = document.getElementById('registerEyeIcon');
+        } else if (fieldId === 'registerConfirmPassword') {
+            icon = document.getElementById('confirmEyeIcon');
+        }
+        
+        if (field && icon) {
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.textContent = '¡';
+            } else {
+                field.type = 'password';
+                icon.textContent = '¡';
+            }
         }
     }
 

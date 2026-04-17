@@ -37,7 +37,7 @@ router.get('/', authMiddleware, async (req, res) => {
   try {
     const { q, categoria, min_price, max_price, min_stock, max_stock, sort_by, order, page = 1, limit = 50 } = req.query;
     
-    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, fecha_creacion, fecha_actualizacion FROM "producto"';
+    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, fecha_creacion, fecha_actualizacion FROM "producto"';
     const clauses = [];
     const values = [];
     
@@ -115,7 +115,7 @@ router.get('/', authMiddleware, async (req, res) => {
 // Crear producto (público para pruebas)
 router.post('/public/productos', async (req, res) => {
   try {
-    const { codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+    const { codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede } = req.body;
     
     // Validar datos
     const errors = validateProductData(req.body);
@@ -132,8 +132,8 @@ router.post('/public/productos', async (req, res) => {
       return res.status(400).json({ error: 'El código del producto ya existe' });
     }
 
-    const text = 'INSERT INTO "producto" (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, fecha_creacion, fecha_actualizacion) VALUES ($1,$2,$3,$4,$5,$6,NOW(),NOW()) RETURNING *';
-    const values = [codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null];
+    const text = 'INSERT INTO "producto" (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, fecha_creacion, fecha_actualizacion) VALUES ($1,$2,$3,$4,$5,$6,$7,NOW(),NOW()) RETURNING *';
+    const values = [codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null, id_sede || 1];
     const result = await db.query(text, values);
     
     // Registrar en auditoría
@@ -158,7 +158,7 @@ router.get('/public/productos', async (req, res) => {
   try {
     const { q, categoria, min_price, max_price, min_stock, max_stock, sort_by, order, page = 1, limit = 50 } = req.query;
     
-    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, fecha_creacion, fecha_actualizacion FROM "producto"';
+    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, fecha_creacion, fecha_actualizacion FROM "producto"';
     const clauses = [];
     const values = [];
     
@@ -418,7 +418,7 @@ router.get('/public/productos/:codigo', async (req, res) => {
 router.put('/public/productos/:codigo', async (req, res) => {
   try {
     const { codigo } = req.params;
-    const { nombre, descripcion, precio, cantidad_stock, categoria } = req.body;
+    const { nombre, descripcion, precio, cantidad_stock, categoria, id_sede } = req.body;
     
     // Validar que el producto existe
     const existingProduct = await db.query('SELECT codigo_producto FROM "producto" WHERE codigo_producto = $1', [codigo]);
@@ -459,6 +459,11 @@ router.put('/public/productos/:codigo', async (req, res) => {
     if (categoria !== undefined) {
       updates.push(`categoria = $${paramIndex++}`);
       values.push(categoria);
+    }
+    
+    if (id_sede !== undefined) {
+      updates.push(`id_sede = $${paramIndex++}`);
+      values.push(id_sede);
     }
     
     updates.push(`fecha_actualizacion = NOW()`);

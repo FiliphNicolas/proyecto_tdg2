@@ -272,14 +272,47 @@
             color: #333;
             font-size: 1.5rem;
         }
+        
+        /* Wrapper para scroll horizontal */
+        .table-scroll-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Scrollbar personalizado */
+        .table-scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        /* Firefox */
+        .table-scroll-wrapper {
+            scrollbar-color: #667eea #f1f1f1;
+            scrollbar-width: thin;
+        }
 
         .orders-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            min-width: 1000px;
         }
 
         .orders-table thead {
@@ -479,6 +512,26 @@
         <div class="table-container">
             <h3>👥 Lista de Clientes</h3>
             
+            <!-- Filtros de Clientes -->
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="filterClienteSearch">🔍 Buscar</label>
+                    <input type="text" id="filterClienteSearch" placeholder="Buscar por nombre, email, teléfono..." oninput="filterClientes()">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterClienteSede">Sede</label>
+                    <select id="filterClienteSede" onchange="filterClientes()">
+                        <option value="">Todas las sedes</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn btn-secondary" onclick="clearClienteFilters()">Limpiar Filtros</button>
+                </div>
+            </div>
+            
             <!-- Formulario de Clientes -->
             <div class="form-container" style="margin-bottom: 20px;">
                 <h3>📝 Crear/Editar Cliente</h3>
@@ -502,6 +555,11 @@
                         </div>
                         
                         <div class="form-group">
+                            <label for="cedula">Cédula</label>
+                            <input type="text" id="cedula" placeholder="12345678901">
+                        </div>
+                        
+                        <div class="form-group">
                             <label for="telefono">Teléfono</label>
                             <input type="tel" id="telefono" placeholder="123-456-7890">
                         </div>
@@ -509,6 +567,13 @@
                         <div class="form-group">
                             <label for="direccion">Dirección</label>
                             <input type="text" id="direccion" placeholder="Calle, Ciudad, País">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="clienteSede">Sede</label>
+                            <select id="clienteSede">
+                                <option value="">Seleccionar sede...</option>
+                            </select>
                         </div>
                     </div>
 
@@ -522,25 +587,29 @@
                 </form>
             </div>
 
-            <table class="orders-table" id="clientesTable">
-                <thead>
-                    <tr>
-                        <th>ID Cliente</th>
+            <div class="table-scroll-wrapper">
+                <table class="orders-table" id="clientesTable">
+                    <thead>
+                        <tr>
+                            <th>ID Cliente</th>
                         <th>Nombre</th>
                         <th>Apellido</th>
                         <th>Email</th>
+                        <th>Cédula</th>
                         <th>Teléfono</th>
                         <th>Dirección</th>
                         <th>Fecha Registro</th>
+                        <th>Sede</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="clientesBody">
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px;">Cargando clientes...</td>
+                        <td colspan="10" style="text-align: center; padding: 20px;">Cargando clientes...</td>
                     </tr>
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         <!-- Formulario de Pedidos -->
@@ -563,6 +632,13 @@
                     <div class="form-group">
                         <label for="idUsuario">ID Usuario *</label>
                         <input type="number" id="idUsuario" readonly placeholder="ID automático del usuario en sesión">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idSede">Sede *</label>
+                        <select id="idSede" required>
+                            <option value="">Seleccionar sede...</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -604,13 +680,15 @@
 
         <!-- Tabla de Pedidos -->
         <div class="table-container">
-            <h3>“‹ Lista de Pedidos</h3>
-            <table class="orders-table" id="ordersTable">
-                <thead>
-                    <tr>
-                        <th>ID Pedido</th>
-                        <th>ID Cliente</th>
+            <h3>📋 Lista de Pedidos</h3>
+            <div class="table-scroll-wrapper">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>ID Cliente</th>
                         <th>ID Usuario</th>
+                        <th>Sede</th>
                         <th>Fecha Pedido</th>
                         <th>Total</th>
                         <th>Estado</th>
@@ -620,10 +698,11 @@
                 </thead>
                 <tbody id="ordersBody">
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px;">Cargando pedidos...</td>
+                        <td colspan="9" style="text-align: center; padding: 20px;">Cargando pedidos...</td>
                     </tr>
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -643,6 +722,7 @@
     <script>
         // Cargar datos iniciales
         document.addEventListener('DOMContentLoaded', async () => {
+            await loadSedes();
             await loadOrders();
             await loadClientes();
             
@@ -661,6 +741,7 @@
 
         let allOrders = [];
         let allClientes = [];
+        let sedesMap = {}; // Mapeo de id_sede a nombre
         let editingOrder = null;
         let editingCliente = null;
         let usuarioEnSesion = null;
@@ -686,6 +767,89 @@
             }
         }
 
+        // Cargar sedes desde API
+        async function loadSedes() {
+            try {
+                const response = await fetch('/api/sedes');
+                const result = await response.json();
+                
+                if (Array.isArray(result)) {
+                    // Si es array directo de sedes
+                    result.forEach(sede => {
+                        sedesMap[sede.id_sede] = sede.nombre;
+                    });
+                } else if (result.ok && Array.isArray(result.sedes)) {
+                    // Si está dentro de un objeto con propiedad 'sedes'
+                    result.sedes.forEach(sede => {
+                        sedesMap[sede.id_sede] = sede.nombre;
+                    });
+                } else {
+                    console.error('Error al parsear sedes:', result);
+                }
+                
+                // Poblar dropdown de sede para pedidos
+                const sedeSelect = document.getElementById('idSede');
+                if (sedeSelect) {
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        sedeSelect.appendChild(option);
+                    });
+                }
+                
+                // Poblar dropdown de sede para clientes
+                const clienteSedeSelect = document.getElementById('clienteSede');
+                if (clienteSedeSelect) {
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        clienteSedeSelect.appendChild(option);
+                    });
+                }
+                
+                // Poblar dropdown de filtro de sede para clientes
+                const filterClienteSedeSelect = document.getElementById('filterClienteSede');
+                if (filterClienteSedeSelect) {
+                    filterClienteSedeSelect.innerHTML = '<option value="">Todas las sedes</option>';
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        filterClienteSedeSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando sedes:', error);
+                // Crear defaults si la API falla
+                sedesMap[1] = 'Sede Principal';
+                sedesMap[2] = 'Sede Sur';
+                
+                const sedeSelect = document.getElementById('idSede');
+                if (sedeSelect) {
+                    sedeSelect.innerHTML = '<option value="">Seleccionar sede...</option>';
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        sedeSelect.appendChild(option);
+                    });
+                }
+                
+                const clienteSedeSelect = document.getElementById('clienteSede');
+                if (clienteSedeSelect) {
+                    clienteSedeSelect.innerHTML = '<option value="">Seleccionar sede...</option>';
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        clienteSedeSelect.appendChild(option);
+                    });
+                }
+            }
+        }
+
         // Cargar clientes
         async function loadClientes() {
             try {
@@ -704,25 +868,29 @@
         }
 
         // Renderizar tabla de clientes
-        function renderClientes() {
+        function renderClientes(clientes = allClientes) {
             const tbody = document.getElementById('clientesBody');
             tbody.innerHTML = '';
             
-            if (allClientes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No hay clientes registrados</td></tr>';
+            if (clientes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">No hay clientes que coincidan con los filtros</td></tr>';
                 return;
             }
             
-            allClientes.forEach(cliente => {
+            clientes.forEach(cliente => {
                 const row = document.createElement('tr');
+                const sedeId = cliente.id_sede || 1;
+                const sedeName = sedesMap[sedeId] || 'Sede Desconocida';
                 row.innerHTML = `
                     <td><strong>${cliente.id_cliente}</strong></td>
                     <td>${cliente.nombre}</td>
                     <td>${cliente.apellido || ''}</td>
                     <td>${cliente.email || 'N/A'}</td>
+                    <td>${cliente.cedula || 'N/A'}</td>
                     <td>${cliente.telefono || 'N/A'}</td>
                     <td>${cliente.direccion || 'N/A'}</td>
                     <td>${new Date(cliente.fecha_registro).toLocaleDateString()}</td>
+                    <td><span class="badge">${sedeName}</span></td>
                     <td class="actions">
                         <button class="btn-small btn-primary" onclick="editCliente(${cliente.id_cliente})">Editar</button>
                         <button class="btn-small btn-danger" onclick="deleteCliente(${cliente.id_cliente})">Eliminar</button>
@@ -740,8 +908,10 @@
                 nombre: document.getElementById('nombre').value,
                 apellido: document.getElementById('apellido').value,
                 email: document.getElementById('email').value,
+                cedula: document.getElementById('cedula').value,
                 telefono: document.getElementById('telefono').value,
-                direccion: document.getElementById('direccion').value
+                direccion: document.getElementById('direccion').value,
+                id_sede: parseInt(document.getElementById('clienteSede').value) || 1
             };
             
             try {
@@ -780,8 +950,10 @@
                 document.getElementById('nombre').value = cliente.nombre;
                 document.getElementById('apellido').value = cliente.apellido || '';
                 document.getElementById('email').value = cliente.email || '';
+                document.getElementById('cedula').value = cliente.cedula || '';
                 document.getElementById('telefono').value = cliente.telefono || '';
                 document.getElementById('direccion').value = cliente.direccion || '';
+                document.getElementById('clienteSede').value = cliente.id_sede || 1;
                 
                 document.getElementById('submitClienteText').textContent = 'Actualizar Cliente';
                 
@@ -848,13 +1020,26 @@
 
         // Filtrar pedidos
         function filterOrders() {
-            const orderNumberFilter = document.getElementById('filterOrderNumber').value.toLowerCase();
-            const customerFilter = document.getElementById('filterCustomer').value.toLowerCase();
-            const statusFilter = document.getElementById('filterStatus').value;
-            const dateFromFilter = document.getElementById('filterDateFrom').value;
-            const dateToFilter = document.getElementById('filterDateTo').value;
+            const globalSearch = document.getElementById('filterOrderSearch')?.value.toLowerCase() || '';
+            const orderNumberFilter = document.getElementById('filterOrderNumber')?.value.toLowerCase() || '';
+            const customerFilter = document.getElementById('filterCustomer')?.value.toLowerCase() || '';
+            const statusFilter = document.getElementById('filterStatus')?.value || '';
+            const dateFromFilter = document.getElementById('filterDateFrom')?.value || '';
+            const dateToFilter = document.getElementById('filterDateTo')?.value || '';
             
             let filteredOrders = allOrders.filter(order => {
+                // Búsqueda global
+                if (globalSearch) {
+                    const searchInFields = (
+                        (order.id_pedido?.toString() || '').includes(globalSearch) ||
+                        (order.id_cliente?.toString() || '').includes(globalSearch) ||
+                        (order.id_usuario?.toString() || '').includes(globalSearch) ||
+                        (order.nombre_cliente && order.nombre_cliente.toLowerCase().includes(globalSearch)) ||
+                        (order.numero_pedido && order.numero_pedido.toLowerCase().includes(globalSearch))
+                    );
+                    if (!searchInFields) return false;
+                }
+                
                 if (orderNumberFilter && !order.numero_pedido.toLowerCase().includes(orderNumberFilter)) {
                     return false;
                 }
@@ -894,7 +1079,35 @@
             document.getElementById('filterStatus').value = '';
             document.getElementById('filterDateFrom').value = '';
             document.getElementById('filterDateTo').value = '';
+            document.getElementById('filterOrderSearch').value = '';
             filterOrders();
+        }
+
+        // Filtrar clientes
+        function filterClientes() {
+            const searchText = document.getElementById('filterClienteSearch').value.toLowerCase();
+            const sedeFilter = document.getElementById('filterClienteSede').value;
+            
+            let filteredClientes = allClientes.filter(cliente => {
+                const matchesSearch = !searchText || 
+                    cliente.nombre.toLowerCase().includes(searchText) ||
+                    cliente.apellido.toLowerCase().includes(searchText) ||
+                    (cliente.email && cliente.email.toLowerCase().includes(searchText)) ||
+                    (cliente.telefono && cliente.telefono.toLowerCase().includes(searchText));
+                
+                const matchesSede = !sedeFilter || cliente.id_sede.toString() === sedeFilter;
+                
+                return matchesSearch && matchesSede;
+            });
+            
+            renderClientes(filteredClientes);
+        }
+
+        // Limpiar filtros de clientes
+        function clearClienteFilters() {
+            document.getElementById('filterClienteSearch').value = '';
+            document.getElementById('filterClienteSede').value = '';
+            filterClientes();
         }
 
         // Renderizar tabla de pedidos
@@ -903,16 +1116,19 @@
             tbody.innerHTML = '';
             
             if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No se encontraron pedidos con los filtros aplicados</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">No se encontraron pedidos con los filtros aplicados</td></tr>';
                 return;
             }
             
             orders.slice(0, 20).forEach(order => {
                 const row = document.createElement('tr');
+                const sedeId = order.id_sede || 1;
+                const sedeName = sedesMap[sedeId] || 'Sede Desconocida';
                 row.innerHTML = `
                     <td><strong>${order.id_pedido}</strong></td>
                     <td><code>${order.id_cliente}</code></td>
                     <td><code>${order.id_usuario}</code></td>
+                    <td><span class="badge">${sedeName}</span></td>
                     <td>${new Date(order.fecha_pedido).toLocaleString()}</td>
                     <td><strong>$${parseFloat(order.total).toFixed(2)}</strong></td>
                     <td><span class="status-badge ${order.estado}">${getStatusText(order.estado)}</span></td>
@@ -949,10 +1165,11 @@
             const formData = {
                 id_cliente: parseInt(document.getElementById('idCliente').value),
                 id_usuario: parseInt(document.getElementById('idUsuario').value),
+                id_sede: parseInt(document.getElementById('idSede').value),
                 fecha_pedido: document.getElementById('fechaPedido').value,
                 total: parseFloat(document.getElementById('total').value),
                 estado: document.getElementById('estado').value,
-                codigo_detalle: document.getElementById('codigoDetalle').value
+                codigo_detalle: document.getElementById('codigoDetalle').value,
             };
             
             // Validaciones básicas
@@ -998,6 +1215,7 @@
                 document.getElementById('idPedido').value = order.id_pedido;
                 document.getElementById('idCliente').value = order.id_cliente;
                 document.getElementById('idUsuario').value = order.id_usuario;
+                document.getElementById('idSede').value = order.id_sede || 1;
                 
                 // Formatear fecha para datetime-local
                 const fecha = new Date(order.fecha_pedido);
@@ -1050,6 +1268,7 @@
             document.getElementById('orderForm').reset();
             document.getElementById('orderId').value = '';
             document.getElementById('idPedido').value = '';
+            document.getElementById('idSede').value = '';
             editingOrder = null;
             document.getElementById('submitText').textContent = 'Crear Pedido';
             

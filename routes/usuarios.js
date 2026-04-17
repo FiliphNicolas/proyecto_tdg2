@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const id = req.user.id_usuario;
-    const text = 'SELECT id_usuario, nombre_usuario, email, rol, activo, direccion, numero_cel, ciudad, fecha_creacion FROM "usuario" WHERE id_usuario = $1 LIMIT 1';
+    const text = 'SELECT id_usuario, nombre_usuario, email, rol, activo, id_sede, direccion, numero_cel, ciudad, fecha_creacion FROM "usuario" WHERE id_usuario = $1 LIMIT 1';
     const result = await db.query(text, [id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
     res.json({ ok: true, user: result.rows[0] });
@@ -22,7 +22,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 router.put('/me', authMiddleware, async (req, res) => {
   try {
     const id = req.user.id_usuario;
-    const { nombre_usuario, email, direccion, numero_cel, ciudad } = req.body;
+    const { nombre_usuario, email, id_sede, direccion, numero_cel, ciudad } = req.body;
     
     // Validaciones básicas
     if (!nombre_usuario || !email) {
@@ -31,11 +31,11 @@ router.put('/me', authMiddleware, async (req, res) => {
 
     const text = `
       UPDATE "usuario" 
-      SET nombre_usuario = $1, email = $2, direccion = $3, numero_cel = $4, ciudad = $5, fecha_actualizacion = NOW()
-      WHERE id_usuario = $6 
-      RETURNING id_usuario, nombre_usuario, email, rol, activo, direccion, numero_cel, ciudad, fecha_creacion
+      SET nombre_usuario = $1, email = $2, id_sede = $3, direccion = $4, numero_cel = $5, ciudad = $6, fecha_actualizacion = NOW()
+      WHERE id_usuario = $7 
+      RETURNING id_usuario, nombre_usuario, email, rol, activo, id_sede, direccion, numero_cel, ciudad, fecha_creacion
     `;
-    const values = [nombre_usuario, email, direccion || null, numero_cel || null, ciudad || null, id];
+    const values = [nombre_usuario, email, id_sede || 1, direccion || null, numero_cel || null, ciudad || null, id];
     
     const result = await db.query(text, values);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -142,7 +142,7 @@ router.get('/', authMiddleware, async (req, res) => {
     
     queryParams.push(limit, offset);
     const usersQuery = `
-      SELECT id_usuario, nombre_usuario, email, rol, activo, direccion, numero_cel, ciudad, fecha_creacion 
+      SELECT id_usuario, nombre_usuario, email, rol, activo, id_sede, direccion, numero_cel, ciudad, fecha_creacion 
       FROM "usuario" 
       ${whereClause}
       ORDER BY fecha_creacion DESC 
@@ -188,7 +188,7 @@ router.put('/:id/estado', authMiddleware, async (req, res) => {
       UPDATE "usuario" 
       SET activo = $1, fecha_actualizacion = NOW()
       WHERE id_usuario = $2 
-      RETURNING id_usuario, nombre_usuario, email, rol, activo
+      RETURNING id_usuario, nombre_usuario, email, rol, activo, id_sede
     `;
     
     const result = await db.query(text, [activo, id]);

@@ -56,31 +56,31 @@
         
         <div class="test-section">
             <h3>1. Modal de Productos</h3>
-            <button class="test-button" onclick="testModalAgregar()">â–¶ Probar Modal Agregar</button>
-            <button class="test-button" onclick="testModalEditar()">â–¶ Probar Modal Editar</button>
+            <button class="test-button" onclick="testModalAgregar()">Probar Modal Agregar</button>
+            <button class="test-button" onclick="testModalEditar()">Probar Modal Editar</button>
             <div id="modalTestResult" class="test-result"></div>
         </div>
 
         <div class="test-section">
             <h3>2. Endpoints de Productos</h3>
-            <button class="test-button" onclick="testGetProductos()">“‹ GET /api/public/productos</button>
-            <button class="test-button" onclick="testPostProducto()">âž• POST /api/public/productos</button>
-            <button class="test-button" onclick="testPutProducto()">âœ PUT /api/public/productos</button>
-            <button class="test-button" onclick="testDeleteProducto()">—‘ DELETE /api/public/productos</button>
+            <button class="test-button" onclick="testGetProductos()">GET /api/public/productos</button>
+            <button class="test-button" onclick="testPostProducto()">POST /api/public/productos</button>
+            <button class="test-button" onclick="testPutProducto()">PUT /api/public/productos</button>
+            <button class="test-button" onclick="testDeleteProducto()">DELETE /api/public/productos</button>
             <div id="productosTestResult" class="test-result"></div>
         </div>
 
         <div class="test-section">
             <h3>3. Endpoint de InformaciÃ³n del Inventario</h3>
-            <button class="test-button" onclick="testInventarioInfo()">“Š GET /api/public/inventario/info</button>
+            <button class="test-button" onclick="testInventarioInfo()">GET /api/public/inventario/info</button>
             <div id="inventarioTestResult" class="test-result"></div>
         </div>
 
         <div class="test-section">
             <h3>4. NavegaciÃ³n RÃ¡pida</h3>
-            <button class="test-button" onclick="window.location.href='productos.html'">“¦ Ir a Productos</button>
-            <button class="test-button" onclick="window.location.href='gestion-inventario.html'">“Š Ir a GestiÃ³n Inventario</button>
-            <button class="test-button" onclick="window.location.href='reporte-inventario.html'">“ˆ Ir a Reporte Inventario</button>
+            <button class="test-button" onclick="window.location.href='productos.html'">Ir a Productos</button>
+            <button class="test-button" onclick="window.location.href='gestion-inventario.html'">Ir a Gestión Inventario</button>
+            <button class="test-button" onclick="window.location.href='reporte-inventario.html'">Ir a Reporte Inventario</button>
         </div>
     </div>
 
@@ -94,9 +94,9 @@
             <form id="productForm" onsubmit="handleTestSubmit(event)">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="productCode">CÃ³digo del Producto:</label>
+                        <label for="productCode">Código del Producto:</label>
                         <input type="text" id="productCode" placeholder="PROD-XXX">
-                        <small>Deja en blanco para generar automÃ¡ticamente</small>
+                        <small>Deja en blanco para generar automáticamente</small>
                     </div>
                     <div class="form-group">
                         <label for="productName">Nombre del Producto:</label>
@@ -105,12 +105,12 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="productCategory">CategorÃ­a:</label>
+                        <label for="productCategory">Categoría:</label>
                         <select id="productCategory" required>
-                            <option value="">Seleccionar categorÃ­a</option>
+                            <option value="">Seleccionar categoría</option>
                             <option value="Computadores">Computadores</option>
                             <option value="Monitores">Monitores</option>
-                            <option value="PerifÃ©ricos">PerifÃ©ricos</option>
+                            <option value="Periféricos">Periféricos</option>
                             <option value="Audio">Audio</option>
                             <option value="Cables">Cables</option>
                             <option value="Adaptadores">Adaptadores</option>
@@ -122,7 +122,7 @@
                             <option value="Hardware">Hardware</option>
                             <option value="Software">Software</option>
                             <option value="Oficina">Oficina</option>
-                            <option value="ElectrÃ³nica">ElectrÃ³nica</option>
+                            <option value="Electrónica">Electrónica</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -142,12 +142,12 @@
                     </div>
                 </div>
                 <div class="form-group full-width">
-                    <label for="productDescription">DescripciÃ³n:</label>
+                    <label for="productDescription">Descripción:</label>
                     <textarea id="productDescription" rows="3"></textarea>
                 </div>
                 <div class="form-buttons">
-                    <button type="submit" class="btn-primary">’¾ Guardar Producto</button>
-                    <button type="button" class="btn-secondary" onclick="cerrarModal()">âŒ Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Producto</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -231,14 +231,14 @@
                 const result = await response.json();
                 
                 if (result.ok) {
-                    logResult('modalTestResult', `âœ… Producto ${isEditing ? 'actualizado' : 'agregado'} exitosamente`, 'success');
+                    logResult('modalTestResult', `Producto ${isEditing ? 'actualizado' : 'agregado'} exitosamente`, 'success');
                     logResult('modalTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
                     cerrarModal();
                 } else {
-                    logResult('modalTestResult', `âŒ Error: ${result.error}`, 'error');
+                    logResult('modalTestResult', `Error: ${result.error}`, 'error');
                 }
             } catch (error) {
-                logResult('modalTestResult', `âŒ Error de conexiÃ³n: ${error.message}`, 'error');
+                logResult('modalTestResult', `Error de conexión: ${error.message}`, 'error');
             }
         }
 
@@ -250,13 +250,13 @@
                 const result = await response.json();
                 
                 if (result.ok) {
-                    logResult('productosTestResult', `âœ… Endpoint funcionando! Encontrados ${result.products.length} productos`, 'success');
+                    logResult('productosTestResult', `Endpoint funcionando! Encontrados ${result.products.length} productos`, 'success');
                     logResult('productosTestResult', `<pre>${JSON.stringify(result.products.slice(0, 3), null, 2)}</pre>`, 'info');
                 } else {
-                    logResult('productosTestResult', `âŒ Error: ${result.error}`, 'error');
+                    logResult('productosTestResult', `Error: ${result.error}`, 'error');
                 }
             } catch (error) {
-                logResult('productosTestResult', `âŒ Error de conexiÃ³n: ${error.message}`, 'error');
+                logResult('productosTestResult', `Error de conexión: ${error.message}`, 'error');
             }
         }
 
@@ -283,13 +283,13 @@
                 const result = await response.json();
                 
                 if (result.ok) {
-                    logResult('productosTestResult', `âœ… Producto creado exitosamente!`, 'success');
+                    logResult('productosTestResult', `Producto creado exitosamente!`, 'success');
                     logResult('productosTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
                 } else {
-                    logResult('productosTestResult', `âŒ Error: ${result.error}`, 'error');
+                    logResult('productosTestResult', `Error: ${result.error}`, 'error');
                 }
             } catch (error) {
-                logResult('productosTestResult', `âŒ Error de conexiÃ³n: ${error.message}`, 'error');
+                logResult('productosTestResult', `Error de conexión: ${error.message}`, 'error');
             }
         }
 
@@ -316,13 +316,13 @@
                 const result = await response.json();
                 
                 if (result.ok) {
-                    logResult('productosTestResult', `âœ… Producto actualizado exitosamente!`, 'success');
+                    logResult('productosTestResult', `Producto actualizado exitosamente!`, 'success');
                     logResult('productosTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
                 } else {
-                    logResult('productosTestResult', `âŒ Error: ${result.error}`, 'error');
+                    logResult('productosTestResult', `Error: ${result.error}`, 'error');
                 }
             } catch (error) {
-                logResult('productosTestResult', `âŒ Error de conexiÃ³n: ${error.message}`, 'error');
+                logResult('productosTestResult', `Error de conexión: ${error.message}`, 'error');
             }
         }
 
@@ -337,13 +337,13 @@
                 const result = await response.json();
                 
                 if (result.ok) {
-                    logResult('productosTestResult', `âœ… Producto eliminado exitosamente!`, 'success');
+                    logResult('productosTestResult', `Producto eliminado exitosamente!`, 'success');
                     logResult('productosTestResult', `<pre>${JSON.stringify(result, null, 2)}</pre>`, 'info');
                 } else {
-                    logResult('productosTestResult', `âŒ Error: ${result.error}`, 'error');
+                    logResult('productosTestResult', `Error: ${result.error}`, 'error');
                 }
             } catch (error) {
-                logResult('productosTestResult', `âŒ Error de conexiÃ³n: ${error.message}`, 'error');
+                logResult('productosTestResult', `Error de conexión: ${error.message}`, 'error');
             }
         }
 
@@ -358,32 +358,32 @@
                     logResult('inventarioTestResult', `âœ… Endpoint de informaciÃ³n funcionando!`, 'success');
                     
                     const stats = result.data.estadisticas_generales;
-                    logResult('inventarioTestResult', `“Š EstadÃ­sticas:`, 'info');
-                    logResult('inventarioTestResult', `   â€¢ Total productos: ${stats.total_productos}`, 'info');
-                    logResult('inventarioTestResult', `   â€¢ Total stock: ${stats.total_stock}`, 'info');
-                    logResult('inventarioTestResult', `   â€¢ Productos agotados: ${stats.productos_agotados}`, 'info');
-                    logResult('inventarioTestResult', `   â€¢ Stock bajo: ${stats.stock_bajo}`, 'info');
-                    logResult('inventarioTestResult', `   â€¢ Valor total inventario: $${parseFloat(stats.valor_total_inventario).toFixed(2)}`, 'info');
+                    logResult('inventarioTestResult', `Estadísticas:`, 'info');
+                    logResult('inventarioTestResult', `   • Total productos: ${stats.total_productos}`, 'info');
+                    logResult('inventarioTestResult', `   • Total stock: ${stats.total_stock}`, 'info');
+                    logResult('inventarioTestResult', `   • Productos agotados: ${stats.productos_agotados}`, 'info');
+                    logResult('inventarioTestResult', `   • Stock bajo: ${stats.stock_bajo}`, 'info');
+                    logResult('inventarioTestResult', `   • Valor total inventario: $${parseFloat(stats.valor_total_inventario).toFixed(2)}`, 'info');
                     
                     if (result.data.productos_stock_bajo.length > 0) {
-                        logResult('inventarioTestResult', `âš  Productos con stock bajo:`, 'info');
+                        logResult('inventarioTestResult', `Productos con stock bajo:`, 'info');
                         result.data.productos_stock_bajo.forEach(p => {
-                            logResult('inventarioTestResult', `   â€¢ ${p.nombre}: ${p.cantidad_stock} unidades`, 'info');
+                            logResult('inventarioTestResult', `   • ${p.nombre}: ${p.cantidad_stock} unidades`, 'info');
                         });
                     }
                 } else {
-                    logResult('inventarioTestResult', `âŒ Error: ${result.error}`, 'error');
+                    logResult('inventarioTestResult', `Error: ${result.error}`, 'error');
                 }
             } catch (error) {
-                logResult('inventarioTestResult', `âŒ Error de conexiÃ³n: ${error.message}`, 'error');
+                logResult('inventarioTestResult', `Error de conexión: ${error.message}`, 'error');
             }
         }
 
-        // Auto-test al cargar la pÃ¡gina
+        // Auto-test al cargar la página
         document.addEventListener('DOMContentLoaded', () => {
-            logResult('modalTestResult', 'š€ PÃ¡gina de test cargada correctamente', 'success');
-            logResult('productosTestResult', 'š€ Test de endpoints listo', 'success');
-            logResult('inventarioTestResult', 'š€ Test de informaciÃ³n del inventario listo', 'success');
+            logResult('modalTestResult', 'Página de test cargada correctamente', 'success');
+            logResult('productosTestResult', 'Test de endpoints listo', 'success');
+            logResult('inventarioTestResult', 'Test de información del inventario listo', 'success');
         });
     </script>
 </body>

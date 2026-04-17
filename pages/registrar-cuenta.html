@@ -17,56 +17,97 @@
         <p class="descripcion">Completa tus datos para unirte a Systemsware</p>
       </div>
       
-      <div class="barra">
-        <label class="etiqueta" for="nombre">Nombre completo</label>
-        <input type="text" id="nombre" placeholder="Juan Pérez" required autocomplete="name">
-        <span class="error" id="error-nombre"></span>
-      </div>
-      
-      <div class="barra">
-        <label class="etiqueta" for="direccion"> Dirección</label>
-        <input type="text" id="direccion" placeholder="Calle Principal #123" required autocomplete="street-address">
-        <span class="error" id="error-direccion"></span>
-      </div>
-      
-      <div class="barra">
-        <label class="etiqueta" for="numero_cel"> Número de celular</label>
-        <input type="tel" id="numero_cel" placeholder="3001234567" required autocomplete="tel">
-        <span class="error" id="error-numero_cel"></span>
-      </div>
-      
-      <div class="barra">
-        <label class="etiqueta" for="ciudad">Ciudad</label>
-        <input type="text" id="ciudad" placeholder="Bogotá" required autocomplete="address-level2">
-        <span class="error" id="error-ciudad"></span>
-      </div>
-      
-      <div class="barra">
-        <label class="etiqueta" for="correo">Correo electrónico</label>
-        <input type="email" id="correo" placeholder="correo@ejemplo.com" required autocomplete="email">
-        <span class="error" id="error-correo"></span>
-      </div>
-      
-      <div class="barra">
-        <label class="etiqueta" for="contrasena">Contraseña</label>
-        <div class="password-input-container">
-          <input type="password" id="contrasena" placeholder="Crea una contraseña segura" required autocomplete="new-password">
-          <button type="button" class="password-toggle" onclick="togglePassword('contrasena')">
-            <span id="eyeIcon1"></span>
-          </button>
+      <!-- FORMULARIO DE DOS COLUMNAS -->
+      <div class="form-columns-container">
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="form-column">
+          <div class="barra">
+            <label class="etiqueta" for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" placeholder="Juan Pérez" required autocomplete="name">
+            <span class="error" id="error-nombre"></span>
+          </div>
+          
+          <div class="barra">
+            <label class="etiqueta" for="numero_cel">Número de celular</label>
+            <input type="tel" id="numero_cel" placeholder="3001234567" required autocomplete="tel">
+            <span class="error" id="error-numero_cel"></span>
+          </div>
+          
+          <div class="barra">
+            <label class="etiqueta" for="rol">Rol en Systemsware</label>
+            <select id="rol" required>
+              <option value="">-- Selecciona un rol --</option>
+              <option value="empleado">Empleado</option>
+              <option value="vendedor">Vendedor</option>
+              <option value="gerente">Gerente</option>
+            </select>
+            <span class="error" id="error-rol"></span>
+          </div>
         </div>
-        <span class="error" id="error-contrasena"></span>
+        
+        <!-- COLUMNA DERECHA -->
+        <div class="form-column">
+          <div class="barra">
+            <label class="etiqueta" for="direccion">Dirección</label>
+            <input type="text" id="direccion" placeholder="Calle Principal #123" required autocomplete="street-address">
+            <span class="error" id="error-direccion"></span>
+          </div>
+          
+          <div class="barra">
+            <label class="etiqueta" for="ciudad">Ciudad</label>
+            <input type="text" id="ciudad" placeholder="Bogotá" required autocomplete="address-level2">
+            <span class="error" id="error-ciudad"></span>
+          </div>
+          
+          <div class="barra">
+            <label class="etiqueta" for="sede">Sede</label>
+            <select id="sede" required>
+              <option value="">-- Cargando sedes... --</option>
+            </select>
+            <span class="error" id="error-sede"></span>
+          </div>
+        </div>
       </div>
       
-      <div class="barra">
-        <label class="etiqueta" for="contrasena_nuevo">Confirmar contraseña</label>
-        <div class="password-input-container">
-          <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseña" required autocomplete="new-password">
-          <button type="button" class="password-toggle" onclick="togglePassword('contrasena_nuevo')">
-            <span id="eyeIcon2"></span>
-          </button>
+      <!-- CORREO, CONTRASEÑAS (FULL WIDTH) -->
+      <div class="form-columns-container">
+        <div class="form-full-width">
+          <div class="barra">
+            <label class="etiqueta" for="correo">Correo electrónico</label>
+            <input type="email" id="correo" placeholder="correo@ejemplo.com" required autocomplete="email">
+            <span class="error" id="error-correo"></span>
+          </div>
         </div>
-        <span class="error" id="error-contrasena_nuevo"></span>
+      </div>
+      
+      <div class="form-columns-container">
+        <div class="form-full-width">
+          <div class="barra">
+            <label class="etiqueta" for="contrasena">Contraseña</label>
+            <div class="password-input-container">
+              <input type="password" id="contrasena" placeholder="Crea una contraseña segura" required autocomplete="new-password">
+              <button type="button" class="password-toggle" onclick="togglePassword('contrasena')">
+                <span id="eyeIcon1">👁️‍🗨️</span>
+              </button>
+            </div>
+            <span class="error" id="error-contrasena"></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-columns-container">
+        <div class="form-full-width">
+          <div class="barra">
+            <label class="etiqueta" for="contrasena_nuevo">Confirmar contraseña</label>
+            <div class="password-input-container">
+              <input type="password" id="contrasena_nuevo" placeholder="Repite tu contraseña" required autocomplete="new-password">
+              <button type="button" class="password-toggle" onclick="togglePassword('contrasena_nuevo')">
+                <span id="eyeIcon2">👁️‍🗨️</span>
+              </button>
+            </div>
+            <span class="error" id="error-contrasena_nuevo"></span>
+          </div>
+        </div>
       </div>
       
       <div class="form-options">
@@ -93,6 +134,40 @@
   </div>
 
 <script>
+// Cargar sedes al abrir la página
+async function cargarSedes() {
+  try {
+    const response = await fetch('/api/sedes', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (!response.ok) throw new Error('No se pudieron cargar las sedes');
+    
+    const data = await response.json();
+    const sedeSelect = document.getElementById('sede');
+    
+    // Limpiar opciones excepto la primera
+    sedeSelect.innerHTML = '<option value="">-- Selecciona una sede --</option>';
+    
+    // Agregar sedes
+    if (data.ok && Array.isArray(data.sedes)) {
+      data.sedes.forEach(sede => {
+        const option = document.createElement('option');
+        option.value = sede.id_sede;
+        option.textContent = `${sede.nombre} (${sede.ciudad})`;
+        sedeSelect.appendChild(option);
+      });
+    } else {
+      throw new Error('Formato de respuesta inválido');
+    }
+  } catch (err) {
+    console.error('Error cargando sedes:', err);
+    const sedeSelect = document.getElementById('sede');
+    sedeSelect.innerHTML = '<option value="">Error al cargar sedes</option>';
+  }
+}
+
 function togglePassword(fieldId) {
   const passwordInput = document.getElementById(fieldId);
   const eyeIcon = document.getElementById(fieldId === 'contrasena' ? 'eyeIcon1' : 'eyeIcon2');
@@ -148,6 +223,8 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
   const direccion         = document.getElementById("direccion").value.trim();
   const numero_cel        = document.getElementById("numero_cel").value.trim();
   const ciudad            = document.getElementById("ciudad").value.trim();
+  const rol               = document.getElementById("rol").value.trim();
+  const sede              = document.getElementById("sede").value.trim();
   const contrasena        = document.getElementById("contrasena").value.trim();
   const contrasena_nuevo  = document.getElementById("contrasena_nuevo").value.trim();
   const acceptTerms       = document.getElementById('acceptTerms').checked;
@@ -158,6 +235,8 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     direccion:             document.getElementById("error-direccion"),
     numero_cel:            document.getElementById("error-numero_cel"),
     ciudad:                document.getElementById("error-ciudad"),
+    rol:                   document.getElementById("error-rol"),
+    sede:                  document.getElementById("error-sede"),
     contrasena:            document.getElementById("error-contrasena"),
     contrasena_nuevo:      document.getElementById("error-contrasena_nuevo")
   };
@@ -223,6 +302,24 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     valido = false;
   }
 
+  // Rol
+  if (rol === "") {
+    errores.rol.textContent = "Debes seleccionar un rol.";
+    valido = false;
+  } else if (!['empleado', 'vendedor', 'gerente'].includes(rol)) {
+    errores.rol.textContent = "El rol seleccionado no es válido.";
+    valido = false;
+  }
+
+  // Sede
+  if (sede === "") {
+    errores.sede.textContent = "Debes seleccionar una sede.";
+    valido = false;
+  } else if (isNaN(parseInt(sede))) {
+    errores.sede.textContent = "La sede seleccionada no es válida.";
+    valido = false;
+  }
+
   // Contraseña
   if (contrasena === "") {
     errores.contrasena.textContent = "La contraseña es obligatoria.";
@@ -257,7 +354,9 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
         contrasena, 
         direccion, 
         numero_cel, 
-        ciudad 
+        ciudad,
+        rol,
+        id_sede: parseInt(sede)
       }),
       timeout: 5000
     })
@@ -307,6 +406,7 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
 // Auto-focus en el campo nombre al cargar
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('nombre').focus();
+  cargarSedes(); // Cargar sedes dinámicamente
 });
 </script>
 </body>

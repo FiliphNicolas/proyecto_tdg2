@@ -29,6 +29,7 @@ router.get('/info', async (req, res) => {
         p.nombre AS nombre_producto,
         i.tipo_movimiento,
         i.cantidad,
+        i.id_sede,
         i.fecha_movimiento,
         i.descripcion
       FROM inventario i
@@ -114,6 +115,7 @@ router.get('/movimientos', async (req, res) => {
         i.codigo_producto,
         i.tipo_movimiento,
         i.cantidad,
+        i.id_sede,
         i.fecha_movimiento,
         i.descripcion
       FROM inventario i
@@ -155,7 +157,7 @@ router.get('/movimientos', async (req, res) => {
 // Crear movimiento de inventario
 router.post('/movimientos', authMiddleware, async (req, res) => {
   try {
-    const { codigo_producto, tipo_movimiento, cantidad, descripcion } = req.body;
+    const { codigo_producto, tipo_movimiento, cantidad, id_sede, descripcion } = req.body;
     
     if (!codigo_producto || !tipo_movimiento || !cantidad) {
       return res.status(400).json({ error: 'Faltan campos requeridos' });
@@ -172,12 +174,12 @@ router.post('/movimientos', authMiddleware, async (req, res) => {
     }
     
     const insertQuery = `
-      INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento)
-      VALUES ($1, $2, $3, $4, NOW())
-      RETURNING id_movimiento, codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento
+      INSERT INTO inventario (codigo_producto, tipo_movimiento, cantidad, id_sede, descripcion, fecha_movimiento)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+      RETURNING id_movimiento, codigo_producto, tipo_movimiento, cantidad, id_sede, descripcion, fecha_movimiento
     `;
     
-    const result = await db.query(insertQuery, [codigo_producto, tipo_movimiento, cantidad, descripcion || null]);
+    const result = await db.query(insertQuery, [codigo_producto, tipo_movimiento, cantidad, id_sede || 1, descripcion || null]);
     
     // Actualizar stock del producto
     let updateQuery = '';
@@ -274,7 +276,7 @@ router.get('/stock', authMiddleware, async (req, res) => {
 router.put('/movimientos/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento } = req.body;
+    const { codigo_producto, tipo_movimiento, cantidad, id_sede, descripcion, fecha_movimiento } = req.body;
     
     if (!codigo_producto || !tipo_movimiento || !cantidad) {
       return res.status(400).json({ error: 'Faltan campos requeridos' });
@@ -329,15 +331,16 @@ router.put('/movimientos/:id', authMiddleware, async (req, res) => {
     // Actualizar movimiento
     const updateMovementQuery = `
       UPDATE inventario 
-      SET codigo_producto = $1, tipo_movimiento = $2, cantidad = $3, descripcion = $4, fecha_movimiento = $5
-      WHERE id_movimiento = $6
-      RETURNING id_movimiento, codigo_producto, tipo_movimiento, cantidad, descripcion, fecha_movimiento
+      SET codigo_producto = $1, tipo_movimiento = $2, cantidad = $3, id_sede = $4, descripcion = $5, fecha_movimiento = $6
+      WHERE id_movimiento = $7
+      RETURNING id_movimiento, codigo_producto, tipo_movimiento, cantidad, id_sede, descripcion, fecha_movimiento
     `;
     
     const result = await db.query(updateMovementQuery, [
       codigo_producto, 
       tipo_movimiento, 
       cantidad, 
+      id_sede || 1,
       descripcion || null, 
       fecha_movimiento || new Date().toISOString(), 
       id

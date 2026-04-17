@@ -101,8 +101,12 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="productCategory">CategorÃ­a:</label>
+                        <div class="form-group">                            <label for="productSede">Sede:</label>
+                            <select id="productSede" required>
+                                <option value="">Seleccionar sede</option>
+                            </select>
+                        </div>
+                        <div class="form-group">                            <label for="productCategory">CategorÃ­a:</label>
                             <select id="productCategory" required>
                                 <option value="">Seleccionar categorÃ­a</option>
                                 <option value="Computadores">Computadores</option>
@@ -168,6 +172,33 @@
             <p>Cargando productos...</p>
         </div>
 
+        <!-- Filtros de Productos -->
+        <div class="filter-row" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+            <div class="filter-group" style="flex: 2;">
+                <label for="filterProductSearch">🔍 Buscar</label>
+                <input type="text" id="filterProductSearch" placeholder="Buscar por nombre o código..." oninput="filterProducts()">
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterProductCategory">Categoría</label>
+                <select id="filterProductCategory" onchange="filterProducts()">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="filterProductSede">Sede</label>
+                <select id="filterProductSede" onchange="filterProducts()">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-secondary" onclick="clearProductFilters()">Limpiar Filtros</button>
+            </div>
+        </div>
+
         <div class="producto-grid" id="productosContainer">
             <!-- Los productos se cargarÃ¡n aquÃ­ dinÃ¡micamente -->
         </div>
@@ -175,8 +206,10 @@
 
     <script>
         let allProducts = [];
+        let sedesMap = {}; // Mapeo de id_sede a nombre
 
         window.addEventListener('DOMContentLoaded', () => {
+            loadSedes();
             loadProducts();
             setupEventListeners();
         });
@@ -185,6 +218,51 @@
             document.getElementById('searchProduct').addEventListener('keyup', debounce(filterProducts, 300));
             document.getElementById('filterCategory').addEventListener('change', filterProducts);
             document.getElementById('productForm').addEventListener('submit', handleProductSubmit);
+        }
+
+        // Cargar sedes desde API
+        async function loadSedes() {
+            try {
+                const response = await fetch('/api/sedes');
+                const result = await response.json();
+                
+                if (Array.isArray(result)) {
+                    result.forEach(sede => {
+                        sedesMap[sede.id_sede] = sede.nombre;
+                    });
+                } else if (result.ok && Array.isArray(result.sedes)) {
+                    result.sedes.forEach(sede => {
+                        sedesMap[sede.id_sede] = sede.nombre;
+                    });
+                }
+                
+                // Poblar dropdown productSede
+                const sedeSelect = document.getElementById('productSede');
+                if (sedeSelect) {
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        sedeSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando sedes:', error);
+                // Fallback
+                sedesMap[1] = 'Sede Principal';
+                sedesMap[2] = 'Sede Sur';
+                
+                const sedeSelect = document.getElementById('productSede');
+                if (sedeSelect) {
+                    sedeSelect.innerHTML = '<option value="">Seleccionar sede</option>';
+                    Object.entries(sedesMap).forEach(([id, nombre]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = nombre;
+                        sedeSelect.appendChild(option);
+                    });
+                }
+            }
         }
 
         function debounce(func, wait) {
@@ -237,6 +315,7 @@
                         precio: Number(product.precio),
                         stock: product.cantidad_stock,
                         descripcion: product.descripcion || '',
+                        id_sede: product.id_sede || 1,
                         imagen: `https://via.placeholder.com/300x200/${getRandomColor()}/FFFFFF?text=${encodeURIComponent(product.nombre)}`,
                         fecha_creacion: product.fecha_creacion,
                         fecha_actualizacion: product.fecha_actualizacion
@@ -276,6 +355,7 @@
                 
                 const stockClass = producto.stock > 10 ? 'stock-alto' : producto.stock > 0 ? 'stock-bajo' : 'stock-agotado';
                 const stockText = producto.stock > 10 ? 'Disponible' : producto.stock > 0 ? `Poco stock (${producto.stock})` : 'Agotado';
+                const sedeName = sedesMap[producto.id_sede] || 'Sede Desconocida';
                 
                 div.innerHTML = `
                     <div class="producto-imagen">
@@ -284,6 +364,7 @@
                     <div class="producto-contenido">
                         <h3 class="producto-nombre">${escapeHtml(producto.nombre)}</h3>
                         <span class="producto-categoria">${escapeHtml(producto.categoria)}</span>
+                        <span class="badge" style="margin-left: 8px;">${sedeName}</span>
                         <p class="producto-descripcion">${escapeHtml(producto.descripcion || '')}</p>
                         <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
                         <div class="producto-stock ${stockClass}">${stockText}</div>
@@ -299,24 +380,37 @@
         }
 
         function filterProducts() {
-            const searchTerm = document.getElementById('searchProduct').value.toLowerCase().trim();
-            const categoryFilter = document.getElementById('filterCategory').value;
+            const searchTerm = document.getElementById('filterProductSearch')?.value.toLowerCase().trim() || '';
+            const categoryFilter = document.getElementById('filterProductCategory')?.value || '';
+            const sedeFilter = document.getElementById('filterProductSede')?.value || '';
             
             let filtered = allProducts;
 
             if (searchTerm) {
                 filtered = filtered.filter(producto =>
                     producto.nombre.toLowerCase().includes(searchTerm) ||
-                    (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm))
+                    (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm)) ||
+                    (producto.id && producto.id.toString().includes(searchTerm))
                 );
             }
 
             if (categoryFilter) {
                 filtered = filtered.filter(producto => producto.categoria === categoryFilter);
             }
+            
+            if (sedeFilter) {
+                filtered = filtered.filter(producto => producto.id_sede.toString() === sedeFilter);
+            }
 
             displayProducts(filtered);
             document.getElementById('totalProductos').textContent = filtered.length + ' (de ' + allProducts.length + ')';
+        }
+        
+        function clearProductFilters() {
+            document.getElementById('filterProductSearch').value = '';
+            document.getElementById('filterProductCategory').value = '';
+            document.getElementById('filterProductSede').value = '';
+            filterProducts();
         }
 
         async function updateCategoryFilter() {
@@ -325,25 +419,46 @@
                 const response = await fetch('/api/public/productos/categories');
                 const result = await response.json();
                 
-                const categorySelect = document.getElementById('filterCategory');
-                categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
-                
-                if (result.ok && result.categories) {
-                    result.categories.forEach(cat => {
-                        categorySelect.innerHTML += `<option value="${cat.categoria}">${cat.categoria} (${cat.count})</option>`;
-                    });
+                const categorySelect = document.getElementById('filterProductCategory') || document.getElementById('filterCategory');
+                if (categorySelect) {
+                    categorySelect.innerHTML = '<option value="">Todas</option>';
+                    
+                    if (result.ok && result.categories) {
+                        result.categories.forEach(cat => {
+                            categorySelect.innerHTML += `<option value="${cat.categoria}">${cat.categoria}</option>`;
+                        });
+                    }
                 }
             } catch (error) {
                 console.error('Error al cargar categorías:', error);
                 // Fallback: usar categorías locales
-                const categorySelect = document.getElementById('filterCategory');
-                const categories = [...new Set(allProducts.map(p => p.categoria))].sort();
-                
-                categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
-                categories.forEach(cat => {
-                    categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+                const categorySelect = document.getElementById('filterProductCategory') || document.getElementById('filterCategory');
+                if (categorySelect) {
+                    const categories = [...new Set(allProducts.map(p => p.categoria))].sort();
+                    
+                    categorySelect.innerHTML = '<option value="">Todas</option>';
+                    categories.forEach(cat => {
+                        categorySelect.innerHTML += `<option value="${cat}">${cat}</option>`;
+                    });
+                }
+            }
+            
+            // Actualizar filtro de sedes
+            updateSedeFilter();
+        }
+        
+        function updateSedeFilter() {
+            const sedeSelect = document.getElementById('filterProductSede');
+            if (sedeSelect) {
+                sedeSelect.innerHTML = '<option value="">Todas</option>';
+                Object.entries(sedesMap).forEach(([id, nombre]) => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = nombre;
+                    sedeSelect.appendChild(option);
                 });
             }
+        }
         }
 
         function updateCounter() {
