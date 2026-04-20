@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware para subir archivos
 app.use(fileUpload({
   createParentPath: true,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   abortOnLimit: true,
   responseOnLimit: 'Archivo demasiado grande'
 }));

@@ -18,7 +18,7 @@ const db = require('./databasepg');
     });
     
     // Luego obtener los datos
-    const result = await db.query('SELECT * FROM pedido ORDER BY id_pedido');
+    const result = await db.query('SELECT  FROM pedido ORDER BY id_pedido');
     console.log(`\n Total de pedidos: ${result.rows.length}`);
     
     if (result.rows.length > 0) {
