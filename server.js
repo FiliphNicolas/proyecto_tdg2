@@ -4,6 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const db = require('./javascript/databasepg');
 const { protectPages, serveProtectedPage } = require('./javascript/auth-middleware');
+const fileUpload = require('express-fileupload');
 const { router: authRouter } = require('./routes/auth');
 const usuariosRouter = require('./routes/usuarios');
 const productosRouter = require('./routes/productos');
@@ -20,6 +21,17 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware para subir archivos
+app.use(fileUpload({
+  createParentPath: true,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  abortOnLimit: true,
+  responseOnLimit: 'Archivo demasiado grande'
+}));
+
+// Servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- API endpoints defined below ---
 // (Static files are served after so that POST/PUT/etc. don't trigger 405 responses)

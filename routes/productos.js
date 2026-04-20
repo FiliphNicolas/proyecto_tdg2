@@ -1,6 +1,8 @@
 const express = require('express');
 const db = require('../javascript/databasepg');
 const { authMiddleware } = require('./auth');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -115,7 +117,7 @@ router.get('/', authMiddleware, async (req, res) => {
 // Crear producto (público para pruebas)
 router.post('/public/productos', async (req, res) => {
   try {
-    const { codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede } = req.body;
+    const { codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, imagen } = req.body;
     
     // Validar datos
     const errors = validateProductData(req.body);
@@ -132,8 +134,8 @@ router.post('/public/productos', async (req, res) => {
       return res.status(400).json({ error: 'El código del producto ya existe' });
     }
 
-    const text = 'INSERT INTO "producto" (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, fecha_creacion, fecha_actualizacion) VALUES ($1,$2,$3,$4,$5,$6,$7,NOW(),NOW()) RETURNING *';
-    const values = [codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null, id_sede || 1];
+    const text = 'INSERT INTO "producto" (codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, imagen, fecha_creacion, fecha_actualizacion) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW(),NOW()) RETURNING *';
+    const values = [codigo, nombre, descripcion || null, precio, cantidad_stock || 0, categoria || null, id_sede || 1, imagen || null];
     const result = await db.query(text, values);
     
     // Registrar en auditoría
@@ -158,7 +160,7 @@ router.get('/public/productos', async (req, res) => {
   try {
     const { q, categoria, min_price, max_price, min_stock, max_stock, sort_by, order, page = 1, limit = 50 } = req.query;
     
-    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, fecha_creacion, fecha_actualizacion FROM "producto"';
+    let text = 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, imagen, fecha_creacion, fecha_actualizacion FROM "producto"';
     const clauses = [];
     const values = [];
     
@@ -318,6 +320,12 @@ router.get('/public/productos/stats', async (req, res) => {
     );
     stats.highest_stock = highStockResult.rows;
     
+    // Último producto con cambio de stock (basado en fecha_actualizacion)
+    const lastStockResult = await db.query(
+      'SELECT codigo_producto, nombre, cantidad_stock, fecha_actualizacion FROM "producto" WHERE fecha_actualizacion IS NOT NULL ORDER BY fecha_actualizacion DESC LIMIT 1'
+    );
+    stats.last_stock_update = lastStockResult.rows[0] || null;
+    
     res.json({ ok: true, stats });
   } catch (err) {
     console.error('Error GET /api/public/productos/stats', err);
@@ -418,7 +426,7 @@ router.get('/public/productos/:codigo', async (req, res) => {
 router.put('/public/productos/:codigo', async (req, res) => {
   try {
     const { codigo } = req.params;
-    const { nombre, descripcion, precio, cantidad_stock, categoria, id_sede } = req.body;
+    const { nombre, descripcion, precio, cantidad_stock, categoria, id_sede, imagen } = req.body;
     
     // Validar que el producto existe
     const existingProduct = await db.query('SELECT codigo_producto FROM "producto" WHERE codigo_producto = $1', [codigo]);
@@ -464,6 +472,11 @@ router.put('/public/productos/:codigo', async (req, res) => {
     if (id_sede !== undefined) {
       updates.push(`id_sede = $${paramIndex++}`);
       values.push(id_sede);
+    }
+    
+    if (imagen !== undefined) {
+      updates.push(`imagen = $${paramIndex++}`);
+      values.push(imagen);
     }
     
     updates.push(`fecha_actualizacion = NOW()`);
@@ -526,6 +539,57 @@ router.delete('/public/productos/:codigo', async (req, res) => {
     res.json({ ok: true, message: 'Producto eliminado exitosamente' });
   } catch (err) {
     console.error('Error DELETE /api/public/productos/:codigo', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Endpoint para subir imágenes de productos
+router.post('/upload-image', authMiddleware, (req, res) => {
+  try {
+    if (!req.files || !req.files.image) {
+      return res.status(400).json({ error: 'No se proporcionó ninguna imagen' });
+    }
+
+    const image = req.files.image;
+    
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(image.mimetype)) {
+      return res.status(400).json({ error: 'Tipo de archivo no permitido. Solo se aceptan imágenes JPEG, PNG, GIF y WebP' });
+    }
+
+    // Validar tamaño (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (image.size > maxSize) {
+      return res.status(400).json({ error: 'La imagen es demasiado grande. Máximo permitido: 5MB' });
+    }
+
+    // Generar nombre único
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 8);
+    const extension = path.extname(image.name);
+    const filename = `product_${timestamp}_${randomString}${extension}`;
+    
+    // Ruta donde se guardará la imagen
+    const uploadPath = path.join(__dirname, '..', 'public', 'images', 'products', filename);
+    
+    // Mover el archivo
+    image.mv(uploadPath, (err) => {
+      if (err) {
+        console.error('Error al guardar imagen:', err);
+        return res.status(500).json({ error: 'Error al guardar la imagen' });
+      }
+      
+      // Devolver la ruta relativa para guardar en la base de datos
+      const imagePath = `/images/products/${filename}`;
+      res.json({ 
+        ok: true, 
+        imagePath: imagePath,
+        message: 'Imagen subida exitosamente'
+      });
+    });
+  } catch (err) {
+    console.error('Error en upload de imagen:', err);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

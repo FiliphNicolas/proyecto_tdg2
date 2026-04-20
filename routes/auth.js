@@ -1,14 +1,82 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const db = require('../javascript/databasepg');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'systemsware_secret_change_this';
 const SESSION_TIMEOUT = 10 * 60 * 1000; // 10 minutos en milisegundos
+const MAX_CONCURRENT_SESSIONS = 3; // Máximo de sesiones simultáneas por usuario
+
+// Función para crear hash de token
+function hashToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+// Función para limpiar sesiones expiradas
+async function cleanupExpiredSessions() {
+  try {
+    await db.query('DELETE FROM user_sessions WHERE expires_at < NOW() OR (is_active = false AND created_at < NOW() - INTERVAL \'7 days\')');
+  } catch (err) {
+    console.error('Error limpiando sesiones expiradas:', err);
+  }
+}
+
+// Función para registrar nueva sesión
+async function createSession(userId, token, req) {
+  try {
+    const tokenHash = hashToken(token);
+    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000); // 8 horas
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('User-Agent') || '';
+
+    const text = `
+      INSERT INTO user_sessions (id_usuario, token_hash, ip_address, user_agent, expires_at)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id
+    `;
+    const values = [userId, tokenHash, ipAddress, userAgent, expiresAt];
+    
+    await db.query(text, values);
+  } catch (err) {
+    console.error('Error creando sesión:', err);
+  }
+}
+
+// Función para verificar sesión activa
+async function validateSession(userId, token) {
+  try {
+    const tokenHash = hashToken(token);
+    const text = `
+      SELECT id FROM user_sessions 
+      WHERE id_usuario = $1 AND token_hash = $2 
+      AND is_active = true AND expires_at > NOW()
+      LIMIT 1
+    `;
+    const result = await db.query(text, [userId, tokenHash]);
+    return result.rows.length > 0;
+  } catch (err) {
+    console.error('Error validando sesión:', err);
+    return false;
+  }
+}
+
+// Función para desactivar sesión
+async function deactivateSession(userId, token) {
+  try {
+    const tokenHash = hashToken(token);
+    await db.query(
+      'UPDATE user_sessions SET is_active = false WHERE id_usuario = $1 AND token_hash = $2',
+      [userId, tokenHash]
+    );
+  } catch (err) {
+    console.error('Error desactivando sesión:', err);
+  }
+}
 
 // Middleware para proteger rutas
-function authMiddleware(req, res, next) {
+async function authMiddleware(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth) return res.status(401).json({ error: 'No autorizado' });
   const parts = auth.split(' ');
@@ -17,11 +85,22 @@ function authMiddleware(req, res, next) {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     
+    // Validar sesión activa en base de datos
+    const isValidSession = await validateSession(payload.id_usuario, token);
+    if (!isValidSession) {
+      return res.status(401).json({ 
+        error: 'Sesión no válida o expirada',
+        code: 'INVALID_SESSION'
+      });
+    }
+    
     // Verificar timeout de sesión (10 minutos)
     const currentTime = Date.now();
     const lastActivity = payload.lastActivity || payload.iat * 1000;
     
     if (currentTime - lastActivity > SESSION_TIMEOUT) {
+      // Desactivar sesión por timeout
+      await deactivateSession(payload.id_usuario, token);
       return res.status(401).json({ 
         error: 'Sesión expirada por inactividad',
         code: 'SESSION_TIMEOUT'
@@ -31,6 +110,7 @@ function authMiddleware(req, res, next) {
     // Actualizar última actividad
     payload.lastActivity = currentTime;
     req.user = payload;
+    req.token = token;
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Token inválido' });
@@ -121,6 +201,9 @@ router.post('/login', async (req, res) => {
     const { correo, contrasena } = req.body;
     if (!correo || !contrasena) return res.status(400).json({ error: 'Faltan campos requeridos' });
 
+    // Limpiar sesiones expiradas
+    await cleanupExpiredSessions();
+
     const text = 'SELECT id_usuario, nombre_usuario, contrasena FROM "usuario" WHERE email = $1 LIMIT 1';
     const values = [correo];
     const result = await db.query(text, values);
@@ -130,12 +213,36 @@ router.post('/login', async (req, res) => {
     const match = await bcrypt.compare(contrasena, user.contrasena);
     if (!match) return res.status(401).json({ error: ' Contraseña incorrecta' });
 
+    // Verificar sesiones activas actuales
+    const activeSessionsQuery = `
+      SELECT COUNT(*) as active_count 
+      FROM user_sessions 
+      WHERE id_usuario = $1 AND is_active = true AND expires_at > NOW()
+    `;
+    const activeSessionsResult = await db.query(activeSessionsQuery, [user.id_usuario]);
+    const activeCount = parseInt(activeSessionsResult.rows[0].active_count);
+
     const token = jwt.sign({ 
       id_usuario: user.id_usuario, 
       nombre_usuario: user.nombre_usuario,
       lastActivity: Date.now()
     }, JWT_SECRET, { expiresIn: '8h' });
-    res.json({ ok: true, user: { id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, token });
+
+    // Crear nueva sesión
+    await createSession(user.id_usuario, token, req);
+
+    let message = '';
+    if (activeCount >= MAX_CONCURRENT_SESSIONS) {
+      message = `Se ha alcanzado el límite de ${MAX_CONCURRENT_SESSIONS} sesiones simultáneas. La sesión más antigua ha sido cerrada automáticamente.`;
+    }
+
+    res.json({ 
+      ok: true, 
+      user: { id_usuario: user.id_usuario, nombre_usuario: user.nombre_usuario }, 
+      token,
+      message,
+      activeSessions: Math.min(activeCount + 1, MAX_CONCURRENT_SESSIONS)
+    });
   } catch (err) {
     console.error('Error /api/login', err);
     res.status(500).json({ error: 'Error del servidor: ' + err.message });
@@ -158,6 +265,54 @@ router.get('/me', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('Error /api/auth/me', err);
     res.status(500).json({ error: 'Error del servidor: ' + err.message });
+  }
+});
+
+// Logout
+router.post('/logout', authMiddleware, async (req, res) => {
+  try {
+    await deactivateSession(req.user.id_usuario, req.token);
+    res.json({ ok: true, message: 'Sesión cerrada exitosamente' });
+  } catch (err) {
+    console.error('Error /api/logout', err);
+    res.status(500).json({ error: 'Error al cerrar sesión: ' + err.message });
+  }
+});
+
+// Logout de todas las sesiones del usuario
+router.post('/logout-all', authMiddleware, async (req, res) => {
+  try {
+    await db.query(
+      'UPDATE user_sessions SET is_active = false WHERE id_usuario = $1',
+      [req.user.id_usuario]
+    );
+    res.json({ ok: true, message: 'Todas las sesiones han sido cerradas' });
+  } catch (err) {
+    console.error('Error /api/logout-all', err);
+    res.status(500).json({ error: 'Error al cerrar todas las sesiones: ' + err.message });
+  }
+});
+
+// Ver sesiones activas del usuario
+router.get('/sessions', authMiddleware, async (req, res) => {
+  try {
+    const text = `
+      SELECT id, ip_address, user_agent, created_at, last_activity, expires_at
+      FROM user_sessions 
+      WHERE id_usuario = $1 AND is_active = true AND expires_at > NOW()
+      ORDER BY created_at DESC
+    `;
+    const result = await db.query(text, [req.user.id_usuario]);
+    
+    res.json({ 
+      ok: true, 
+      sessions: result.rows,
+      activeCount: result.rows.length,
+      maxSessions: MAX_CONCURRENT_SESSIONS
+    });
+  } catch (err) {
+    console.error('Error /api/sessions', err);
+    res.status(500).json({ error: 'Error al obtener sesiones: ' + err.message });
   }
 });
 

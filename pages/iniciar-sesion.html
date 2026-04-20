@@ -163,16 +163,22 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
         localStorage.setItem('userName', data.user.nombre_usuario);
         localStorage.setItem('loginTime', Date.now().toString());
         
-        // Mostrar mensaje de éxito
+        // Mostrar mensaje de éxito con información de sesiones
         const successDiv = document.createElement('div');
         successDiv.className = 'success-message';
-        successDiv.textContent = ' ¡Inicio de sesión exitoso! Redirigiendo...';
-        successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
+        
+        let successMessage = '¡Inicio de sesión exitoso! Redirigiendo...';
+        if (data.message) {
+          successMessage = data.message + ' Redirigiendo...';
+        }
+        
+        successDiv.textContent = successMessage;
+        successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; white-space: pre-wrap; line-height: 1.6;';
         document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
         
         setTimeout(() => {
           window.location.href = 'inicio.html';
-        }, 1500);
+        }, 2000);
       } else {
         // Asegurar que el mensaje de error siempre se muestre
         const errorMessage = data.error || ' Correo o contraseña incorrectos';

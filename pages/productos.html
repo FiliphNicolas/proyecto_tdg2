@@ -14,10 +14,6 @@
                 <span class="productos-count">Total de productos: <strong id="totalProductos">0</strong></span>
                 <button class="btn-stats" onclick="mostrarEstadisticas()">📊 Estadísticas</button>
                 <button class="btn-agregar" onclick="mostrarModalAgregar()">+ Agregar Producto</button>
-                <div class="auth-buttons">
-                    <button class="btn-login" onclick="openAuthModal('login')">Iniciar Sesión</button>
-                    <button class="btn-register" onclick="openAuthModal('register')">Registrarse</button>
-                </div>
             </div>
         </div>
         
@@ -55,32 +51,15 @@
                     <h4>Mayor Stock</h4>
                     <div id="statHighStock" class="product-list"></div>
                 </div>
+                <div class="stat-section">
+                    <h4>Último Producto con Cambio de Stock</h4>
+                    <div id="statLastStockUpdate" class="product-list"></div>
+                </div>
             </div>
             <button class="btn-secondary" onclick="ocultarEstadisticas()">Cerrar</button>
         </div>
 
-        <div class="productos-filtros">
-            <input type="text" id="searchProduct" placeholder="Buscar producto...">
-            <select id="filterCategory">
-                <option value="">Todas las categorías</option>
-            </select>
-            <input type="number" id="minPrice" placeholder="Precio mínimo" min="0" step="0.01">
-            <input type="number" id="maxPrice" placeholder="Precio máximo" min="0" step="0.01">
-            <select id="sortBy">
-                <option value="codigo_producto">Ordenar por Código</option>
-                <option value="nombre">Ordenar por Nombre</option>
-                <option value="precio">Ordenar por Precio</option>
-                <option value="cantidad_stock">Ordenar por Stock</option>
-                <option value="categoria">Ordenar por Categoría</option>
-            </select>
-            <select id="sortOrder">
-                <option value="ASC">Ascendente</option>
-                <option value="DESC">Descendente</option>
-            </select>
-            <button onclick="loadProducts()">🔄 Actualizar</button>
-            <button onclick="clearFilters()">🗑️ Limpiar</button>
-        </div>
-
+        
         <!-- Modal para agregar/editar producto -->
         <div id="productoModal" class="modal" style="display: none;">
             <div class="modal-content">
@@ -91,9 +70,9 @@
                 <form id="productForm" onsubmit="handleProductSubmit(event)">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="productCode">CÃ³digo del Producto:</label>
+                            <label for="productCode">Código del Producto:</label>
                             <input type="text" id="productCode" placeholder="PROD-XXX" required>
-                            <small>Deja en blanco para generar automÃ¡ticamente</small>
+                            <small>Deja en blanco para generar automáticamente</small>
                         </div>
                         <div class="form-group">
                             <label for="productName">Nombre del Producto:</label>
@@ -108,10 +87,10 @@
                         </div>
                         <div class="form-group">                            <label for="productCategory">CategorÃ­a:</label>
                             <select id="productCategory" required>
-                                <option value="">Seleccionar categorÃ­a</option>
+                                <option value="">Seleccionar categorí­a</option>
                                 <option value="Computadores">Computadores</option>
                                 <option value="Monitores">Monitores</option>
-                                <option value="PerifÃ©ricos">PerifÃ©ricos</option>
+                                <option value="PerifÃ©ricos">Periféricos</option>
                                 <option value="Audio">Audio</option>
                                 <option value="Cables">Cables</option>
                                 <option value="Adaptadores">Adaptadores</option>
@@ -123,7 +102,7 @@
                                 <option value="Hardware">Hardware</option>
                                 <option value="Software">Software</option>
                                 <option value="Oficina">Oficina</option>
-                                <option value="ElectrÃ³nica">ElectrÃ³nica</option>
+                                <option value="ElectrÃ³nica">Electrónica</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -137,9 +116,12 @@
                             <input type="number" id="productStock" min="0" required>
                         </div>
                         <div class="form-group">
-                            <label for="productImage">URL de la imagen:</label>
-                            <input type="url" id="productImage" placeholder="https://ejemplo.com/imagen.jpg">
-                            <small>Deja en blanco para usar imagen predeterminada</small>
+                            <label for="productImage">Imagen del producto:</label>
+                            <input type="file" id="productImage" accept="image/*" onchange="previewImage(event)">
+                            <small>Formatos permitidos: JPEG, PNG, GIF, WebP (Máximo 5MB)</small>
+                            <div id="imagePreview" style="margin-top: 10px; display: none;">
+                                <img id="previewImg" style="max-width: 200px; max-height: 150px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            </div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -157,12 +139,12 @@
                             </div>
                     </div>
                     <div class="form-group full-width">
-                        <label for="productDescription">DescripciÃ³n:</label>
+                        <label for="productDescription">Descripción:</label>
                         <textarea id="productDescription" rows="3"></textarea>
                     </div>
                     <div class="form-buttons">
-                        <button type="submit" class="btn-primary">’¾ Guardar Producto</button>
-                        <button type="button" class="btn-secondary" onclick="cerrarModal()">âŒ Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar Producto</button>
+                        <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -192,10 +174,38 @@
                     <option value="">Todas</option>
                 </select>
             </div>
+            <div class="filter-group">
+                <label for="minPrice">Precio Mín</label>
+                <input type="number" id="minPrice" placeholder="Mínimo" min="0" step="0.01" oninput="filterProducts()">
+            </div>
+            <div class="filter-group">
+                <label for="maxPrice">Precio Máx</label>
+                <input type="number" id="maxPrice" placeholder="Máximo" min="0" step="0.01" oninput="filterProducts()">
+            </div>
+            <div class="filter-group">
+                <label for="sortBy">Ordenar por</label>
+                <select id="sortBy" onchange="filterProducts()">
+                    <option value="codigo_producto">Código</option>
+                    <option value="nombre">Nombre</option>
+                    <option value="precio">Precio</option>
+                    <option value="cantidad_stock">Stock</option>
+                    <option value="categoria">Categoría</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sortOrder">Ordenar</label>
+                <select id="sortOrder" onchange="filterProducts()">
+                    <option value="ASC">Ascendente</option>
+                    <option value="DESC">Descendente</option>
+                </select>
+            </div>
             
             <div class="filter-group">
                 <label>&nbsp;</label>
-                <button type="button" class="btn btn-secondary" onclick="clearProductFilters()">Limpiar Filtros</button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-primary" onclick="loadProducts()">🔄 Actualizar</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearProductFilters()">🗑️ Limpiar</button>
+                </div>
             </div>
         </div>
 
@@ -284,10 +294,10 @@
                 // Construir parámetros de consulta
                 const params = new URLSearchParams();
                 
-                const searchTerm = document.getElementById('searchProduct').value.trim();
+                const searchTerm = document.getElementById('filterProductSearch').value.trim();
                 if (searchTerm) params.append('q', searchTerm);
                 
-                const category = document.getElementById('filterCategory').value;
+                const category = document.getElementById('filterProductCategory').value;
                 if (category) params.append('categoria', category);
                 
                 const minPrice = document.getElementById('minPrice').value;
@@ -316,7 +326,7 @@
                         stock: product.cantidad_stock,
                         descripcion: product.descripcion || '',
                         id_sede: product.id_sede || 1,
-                        imagen: `https://via.placeholder.com/300x200/${getRandomColor()}/FFFFFF?text=${encodeURIComponent(product.nombre)}`,
+                        imagen: product.imagen || `https://via.placeholder.com/300x200/${getRandomColor()}/FFFFFF?text=${encodeURIComponent(product.nombre)}`,
                         fecha_creacion: product.fecha_creacion,
                         fecha_actualizacion: product.fecha_actualizacion
                     }));
@@ -353,8 +363,29 @@
                 const div = document.createElement('div');
                 div.className = 'producto';
                 
-                const stockClass = producto.stock > 10 ? 'stock-alto' : producto.stock > 0 ? 'stock-bajo' : 'stock-agotado';
-                const stockText = producto.stock > 10 ? 'Disponible' : producto.stock > 0 ? `Poco stock (${producto.stock})` : 'Agotado';
+                let stockStatus, stockClass, stockIcon, stockLabel;
+                
+                if (producto.stock > 20) {
+                    stockStatus = 'high';
+                    stockClass = 'stock-alto';
+                    stockIcon = '✓';
+                    stockLabel = 'Disponible';
+                } else if (producto.stock > 5) {
+                    stockStatus = 'medium';
+                    stockClass = 'stock-bajo';
+                    stockIcon = '⚠';
+                    stockLabel = `Stock medio (${producto.stock})`;
+                } else if (producto.stock > 0) {
+                    stockStatus = 'low';
+                    stockClass = 'stock-bajo';
+                    stockIcon = '⚠';
+                    stockLabel = `Stock bajo (${producto.stock})`;
+                } else {
+                    stockStatus = 'out';
+                    stockClass = 'stock-agotado';
+                    stockIcon = '✕';
+                    stockLabel = 'Agotado';
+                }
                 const sedeName = sedesMap[producto.id_sede] || 'Sede Desconocida';
                 
                 div.innerHTML = `
@@ -367,7 +398,15 @@
                         <span class="badge" style="margin-left: 8px;">${sedeName}</span>
                         <p class="producto-descripcion">${escapeHtml(producto.descripcion || '')}</p>
                         <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
-                        <div class="producto-stock ${stockClass}">${stockText}</div>
+                        <div class="producto-stock ${stockClass}">
+                            <div class="stock-quantity">
+                                <span class="stock-indicator ${stockStatus}">
+                                    ${stockIcon}
+                                    <span class="stock-number">${producto.stock}</span>
+                                </span>
+                                <span>${stockLabel}</span>
+                            </div>
+                        </div>
                         <div class="producto-acciones">
                             <button class="btn-editar" onclick="editarProducto('${producto.id}')">✏️ Editar</button>
                             <button class="btn-stock" onclick="promptStockUpdate('${producto.id}')">📦 Stock</button>
@@ -383,24 +422,64 @@
             const searchTerm = document.getElementById('filterProductSearch')?.value.toLowerCase().trim() || '';
             const categoryFilter = document.getElementById('filterProductCategory')?.value || '';
             const sedeFilter = document.getElementById('filterProductSede')?.value || '';
+            const minPrice = parseFloat(document.getElementById('minPrice')?.value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice')?.value) || Infinity;
+            const sortBy = document.getElementById('sortBy')?.value || 'nombre';
+            const sortOrder = document.getElementById('sortOrder')?.value || 'ASC';
             
             let filtered = allProducts;
 
+            // Filtro de búsqueda
             if (searchTerm) {
                 filtered = filtered.filter(producto =>
                     producto.nombre.toLowerCase().includes(searchTerm) ||
                     (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm)) ||
+                    (producto.codigo_producto && producto.codigo_producto.toLowerCase().includes(searchTerm)) ||
                     (producto.id && producto.id.toString().includes(searchTerm))
                 );
             }
 
+            // Filtro de categoría
             if (categoryFilter) {
                 filtered = filtered.filter(producto => producto.categoria === categoryFilter);
             }
             
+            // Filtro de sede
             if (sedeFilter) {
                 filtered = filtered.filter(producto => producto.id_sede.toString() === sedeFilter);
             }
+
+            // Filtro de rango de precios
+            filtered = filtered.filter(producto => {
+                const price = parseFloat(producto.precio);
+                return price >= minPrice && price <= maxPrice;
+            });
+
+            // Ordenamiento
+            filtered.sort((a, b) => {
+                let aValue = a[sortBy];
+                let bValue = b[sortBy];
+                
+                // Manejar valores nulos o indefinidos
+                if (aValue === undefined || aValue === null) aValue = '';
+                if (bValue === undefined || bValue === null) bValue = '';
+                
+                // Para ordenamiento numérico
+                if (sortBy === 'precio' || sortBy === 'cantidad_stock') {
+                    aValue = parseFloat(aValue) || 0;
+                    bValue = parseFloat(bValue) || 0;
+                } else {
+                    // Para ordenamiento de texto
+                    aValue = aValue.toString().toLowerCase();
+                    bValue = bValue.toString().toLowerCase();
+                }
+                
+                if (sortOrder === 'ASC') {
+                    return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+                } else {
+                    return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+                }
+            });
 
             displayProducts(filtered);
             document.getElementById('totalProductos').textContent = filtered.length + ' (de ' + allProducts.length + ')';
@@ -410,6 +489,10 @@
             document.getElementById('filterProductSearch').value = '';
             document.getElementById('filterProductCategory').value = '';
             document.getElementById('filterProductSede').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('sortBy').value = 'nombre';
+            document.getElementById('sortOrder').value = 'ASC';
             filterProducts();
         }
 
@@ -459,7 +542,6 @@
                 });
             }
         }
-        }
 
         function updateCounter() {
             document.getElementById('totalProductos').textContent = allProducts.length;
@@ -496,19 +578,67 @@
         function cerrarModal() {
             document.getElementById('productoModal').style.display = 'none';
             document.getElementById('productForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
         }
 
         async function handleProductSubmit(e) {
             e.preventDefault();
             
             const productCode = document.getElementById('productCode').value;
+            const imageFile = document.getElementById('productImage').files[0];
+            
+            let imagePath = null;
+            
+            // Si hay una imagen, subirla primero
+            if (imageFile) {
+                const formData = new FormData();
+                formData.append('image', imageFile);
+                
+                try {
+                    const uploadResponse = await fetch('/api/upload-image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        },
+                        body: formData
+                    });
+                    
+                    const uploadResult = await uploadResponse.json();
+                    if (!uploadResult.ok) {
+                        throw new Error(uploadResult.error || 'Error al subir imagen');
+                    }
+                    imagePath = uploadResult.imagePath;
+                } catch (error) {
+                    alert('Error al subir la imagen: ' + error.message);
+                    return;
+                }
+            }
+            
             const productData = {
                 codigo_producto: productCode || undefined,
                 nombre: document.getElementById('productName').value,
                 categoria: document.getElementById('productCategory').value,
                 precio: parseFloat(document.getElementById('productPrice').value),
                 cantidad_stock: parseInt(document.getElementById('productStock').value),
-                descripcion: document.getElementById('productDescription').value
+                descripcion: document.getElementById('productDescription').value,
+                imagen: imagePath
             };
             
             try {
@@ -519,7 +649,8 @@
                 const response = await fetch(url, {
                     method: method,
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                     },
                     body: JSON.stringify(productData)
                 });
@@ -656,6 +787,22 @@
                         prodDiv.innerHTML = `<strong>${prod.nombre}:</strong> ${prod.cantidad_stock} unidades`;
                         highStockDiv.appendChild(prodDiv);
                     });
+                    
+                    // Último producto con cambio de stock
+                    const lastStockDiv = document.getElementById('statLastStockUpdate');
+                    lastStockDiv.innerHTML = '';
+                    if (stats.last_stock_update) {
+                        const lastProd = stats.last_stock_update;
+                        const prodDiv = document.createElement('div');
+                        prodDiv.className = 'product-item';
+                        prodDiv.innerHTML = `<strong>${lastProd.nombre}:</strong> ${lastProd.cantidad_stock} unidades (Actualizado: ${new Date(lastProd.fecha_actualizacion).toLocaleString()})`;
+                        lastStockDiv.appendChild(prodDiv);
+                    } else {
+                        const prodDiv = document.createElement('div');
+                        prodDiv.className = 'product-item';
+                        prodDiv.innerHTML = '<em>No hay registros de cambios de stock</em>';
+                        lastStockDiv.appendChild(prodDiv);
+                    }
                     
                     document.getElementById('statsDashboard').style.display = 'block';
                 } else {
