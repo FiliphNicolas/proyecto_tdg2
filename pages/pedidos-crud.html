@@ -444,6 +444,62 @@
         .modal-close:hover {
             color: #000;
         }
+
+        /* ===== TABS NAVIGATION ===== */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            flex-wrap: wrap;
+            background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(248,249,250,0.7));
+            padding: 0 15px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .tab-button {
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -3px;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -466,7 +522,14 @@
 
         <div id="alertContainer"></div>
 
-        <!-- Filtros de Pedidos -->
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <button class="tab-button active" onclick="switchTab('clientes')">👥 Gestión de Clientes</button>
+            <button class="tab-button" onclick="switchTab('pedidos')">📋 Gestión de Pedidos</button>
+        </div>
+
+        <!-- TAB 1: CLIENTES -->
+        <div id="tab-clientes" class="tab-content active">
         <div class="filters-section">
             <h3>🔍 Filtros de Pedidos</h3>
             <div class="filter-grid">
@@ -611,7 +674,10 @@
                 </table>
             </div>
         </div>
+        </div>
 
+        <!-- TAB 2: PEDIDOS -->
+        <div id="tab-pedidos" class="tab-content">
         <!-- Formulario de Pedidos -->
         <div class="form-container">
             <h3>📝 Crear/Editar Pedido</h3>
@@ -620,18 +686,17 @@
                 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="idPedido">ID Pedido</label>
-                        <input type="number" id="idPedido" readonly placeholder="ID automático">
+                        <label for="idCliente">Cliente *</label>
+                        <select id="idCliente" required onchange="loadClienteData()">
+                            <option value="">Seleccionar cliente...</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="idCliente">ID Cliente *</label>
-                        <input type="number" id="idCliente" required placeholder="ID del cliente">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="idUsuario">ID Usuario *</label>
-                        <input type="number" id="idUsuario" readonly placeholder="ID automático del usuario en sesión">
+                        <label for="idUsuario">Usuario *</label>
+                        <select id="idUsuario" required>
+                            <option value="">Seleccionar usuario...</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -704,6 +769,7 @@
                 </table>
             </div>
         </div>
+        </div>
     </div>
 
     <!-- Modal de ConfirmaciÃ³n -->
@@ -720,6 +786,23 @@
     </div>
 
     <script>
+        // ===== TAB SWITCHING FUNCTION =====
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
         // Cargar datos iniciales
         document.addEventListener('DOMContentLoaded', async () => {
             await loadSedes();
