@@ -70,33 +70,47 @@ Proveer una plataforma centralizada y segura para la administración eficiente d
 ```
 proyecto_tdg2/
 ├── server.js                    # Servidor Express principal
-├── databasepg.js                # Conexión a PostgreSQL
-├── auth-check.js                # Middleware de autenticación JWT
-├── nav-loader.js                # Cargador de navegación dinámico
-├── styles.css                   # Estilos globales
 ├── package.json                 # Dependencias del proyecto
-├── base-de-datos.sql            # Esquema de la base de datos
-├── datos-prueba.sql             # Datos de ejemplo para desarrollo
-├── update-database-schema.sql   # Migraciones del esquema
-├── index.html                   # Página principal / Dashboard
-├── iniciar-sesion.html          # Login
-├── registrar-cuenta.html        # Registro de usuarios
-├── perfil.html                  # Perfil de usuario
-├── ver-estado-cuenta.html       # Dashboard de cuenta
-├── productos.html               # Gestión de productos
-├── reporte-inventario.html      # Reportes con exportación PDF
-├── chatbot.html                 # Chatbot inteligente
-├── servicio.html                # Servicios
-└── soporte tecnico.html         # Soporte técnico
+├── .env                         # Variables de entorno
+├── .gitignore                   # Archivos ignorados por Git
+├── javascript/
+│   ├── databasepg.js            # Conexión a PostgreSQL
+│   ├── auth-middleware.js       # Middleware de autenticación JWT
+│   └── [otros archivos JS]
+├── css/
+│   └── styles.css               # Estilos globales
+├── pages/
+│   ├── inicio.html              # Página principal / Dashboard
+│   ├── iniciar-sesion.html      # Login
+│   ├── registrar-cuenta.html    # Registro de usuarios
+│   ├── perfil.html              # Perfil de usuario
+│   ├── productos.html           # Gestión de productos
+│   ├── reporte-inventario.html  # Reportes con exportación PDF
+│   ├── servicio.html            # Servicios
+│   └── [otras páginas HTML]
+├── routes/
+│   ├── auth.js                  # Rutas de autenticación
+│   ├── productos.js             # Rutas de productos
+│   ├── usuarios.js              # Rutas de usuarios
+│   ├── inventario.js            # Rutas de inventario
+│   ├── auditoria.js             # Rutas de auditoría
+│   ├── pedidos.js               # Rutas de pedidos
+│   ├── clientes.js              # Rutas de clientes
+│   ├── sedes.js                 # Rutas de sedes
+│   └── estadisticas.js          # Rutas de estadísticas
+├── sql/
+│   ├── schema-completo.sql      # Esquema completo de la base de datos
+│   └── [otros archivos SQL]
+└── public/                      # Archivos estáticos públicos
 ```
 
 ### 2.3 Flujo de Autenticación
 
-1. El usuario envía credenciales (email + contraseña) al endpoint `POST /api/login`
+1. El usuario envía credenciales (email + contraseña) al endpoint `POST /api/auth/login`
 2. El servidor verifica la contraseña con `bcrypt.compare()`
-3. Si es válido, genera un JWT con payload `{ userId, rol }` y expiración de 8 horas
+3. Si es válido, genera un JWT con payload `{ id_usuario, nombre_usuario, rol }` y expiración de 8 horas
 4. El cliente almacena el token y lo envía en cada petición como cabecera `Authorization`
-5. El middleware `auth-check.js` valida el token en cada ruta protegida
+5. El middleware `authMiddleware` en `routes/auth.js` valida el token en cada ruta protegida
 
 ---
 
@@ -104,25 +118,29 @@ proyecto_tdg2/
 
 ### 3.1 Configuración de Conexión
 
-La conexión a PostgreSQL se configura en `databasepg.js` mediante variables de entorno:
+La conexión a PostgreSQL se configura en `javascript/databasepg.js` mediante variables de entorno:
 
 ```env
-DB_USER     = postgres
-DB_PASSWORD = 1234
-DB_HOST     = localhost
-DB_NAME     = Systemsware
-PORT        = 3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=systemsware
+DB_USER=postgres
+DB_PASSWORD=tu_contraseña
+PORT=3000
+JWT_SECRET=tu_secreto_jwt_aqui
 ```
 
 ### 3.2 Tablas Principales
 
 | Tabla | Descripción | Campos clave |
 |---|---|---|
-| `usuarios` | Registro de cuentas del sistema | id, nombre, email, contrasena_hash, rol, ciudad, telefono |
-| `productos` | Catálogo de productos del inventario | id, nombre, descripcion, precio, stock, categoria, created_at |
-| `movimientos` | Historial de entradas/salidas de stock | id, producto_id, tipo, cantidad, fecha, usuario_id |
-| `pedidos` | Pedidos realizados por usuarios | id, usuario_id, estado, total, created_at |
-| `detalle_pedidos` | Líneas de cada pedido | id, pedido_id, producto_id, cantidad, precio_unitario |
+| `usuario` | Registro de cuentas del sistema | id_usuario, nombre_usuario, email, contrasena, rol, activo, id_sede |
+| `producto` | Catálogo de productos del inventario | codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede |
+| `inventario` | Historial de entradas/salidas de stock | id_movimiento, codigo_producto, tipo_movimiento, cantidad, id_sede, fecha_movimiento |
+| `pedido` | Pedidos realizados por usuarios | id_pedido, id_cliente, id_usuario, id_sede, fecha_pedido, total, estado |
+| `detalle_pedido` | Líneas de cada pedido | codigo_detalle, id_pedido, codigo_producto, cantidad, precio_unitario |
+| `sede` | Sedes o almacenes del sistema | id_sede, nombre, ciudad, direccion, telefono, email, encargado, activo |
+| `auditoria` | Registro de acciones del sistema | id_auditoria, id_usuario, tabla_afectada, accion, fecha_accion, detalles |
 
 ### 3.3 Roles de Usuario
 
@@ -152,10 +170,10 @@ PORT        = 3000
 | Método | Ruta | Descripción | Auth |
 |---|---|---|---|
 | GET | `/api/productos` | Listar todos los productos | Sí |
-| GET | `/api/productos/:id` | Obtener producto por ID | Sí |
+| GET | `/api/productos/:codigo` | Obtener producto por código | Sí |
 | POST | `/api/productos` | Crear nuevo producto | Admin/Empleado |
-| PUT | `/api/productos/:id` | Actualizar producto | Admin/Empleado |
-| DELETE | `/api/productos/:id` | Eliminar producto | Admin |
+| PUT | `/api/productos/:codigo` | Actualizar producto | Admin/Empleado |
+| DELETE | `/api/public/productos/:codigo` | Eliminar producto | Público (para pruebas) |
 | GET | `/api/movimientos` | Listar movimientos de stock | Admin/Empleado |
 | POST | `/api/movimientos` | Registrar movimiento (entrada/salida) | Admin/Empleado |
 
@@ -163,8 +181,7 @@ PORT        = 3000
 
 | Método | Ruta | Descripción | Auth |
 |---|---|---|---|
-| GET | `/api/pedidos` | Listar pedidos del usuario actual | Sí |
-| GET | `/api/pedidos/all` | Listar todos los pedidos | Admin/Empleado |
+| GET | `/api/pedidos` | Listar todos los pedidos | Sí |
 | POST | `/api/pedidos` | Crear nuevo pedido | Sí |
 | PUT | `/api/pedidos/:id/estado` | Actualizar estado del pedido | Admin/Empleado |
 
@@ -211,24 +228,28 @@ CREATE DATABASE Systemsware;
 
 **Paso 4: Ejecutar el esquema SQL**
 ```bash
-psql -U postgres -d Systemsware -f base-de-datos.sql
+psql -U postgres -d systemsware -f sql/schema-completo.sql
 ```
 
 **Paso 5 (Opcional): Cargar datos de prueba**
-```bash
-psql -U postgres -d Systemsware -f datos-prueba.sql
-```
+Los datos de prueba están incluidos en el archivo schema-completo.sql
 
 **Paso 6: Configurar variables de entorno**
 
-Crear archivo `.env` en la raíz del proyecto:
+Copiar el archivo `.env.example` a `.env` y configurar:
+```bash
+cp .env.example .env
+```
+
+Editar `.env` con tus credenciales:
 ```env
-PORT=3000
-DB_USER=postgres
-DB_PASSWORD=1234
 DB_HOST=localhost
-DB_NAME=Systemsware
-JWT_SECRET=tu_secreto_seguro_aqui
+DB_PORT=5432
+DB_NAME=systemsware
+DB_USER=postgres
+DB_PASSWORD=tu_contraseña
+PORT=3000
+JWT_SECRET=tu_secreto_jwt_aqui
 ```
 
 **Paso 7: Iniciar el servidor**
@@ -236,7 +257,7 @@ JWT_SECRET=tu_secreto_seguro_aqui
 npm start
 ```
 
-Abrir en el navegador: `http://localhost:3000/index.html`
+Abrir en el navegador: `http://localhost:3000`
 
 ### 5.3 Credenciales de Prueba
 
@@ -321,7 +342,13 @@ Todas las contraseñas se almacenan con bcrypt (salt 10). Nunca se guardan en te
 
 Para desarrollo activo con recarga automática:
 ```bash
-npx nodemon server.js
+npm install -g nodemon
+nodemon server.js
+```
+
+O usando npm scripts:
+```bash
+npm run dev
 ```
 
 ### 9.2 Agregar un Nuevo Endpoint

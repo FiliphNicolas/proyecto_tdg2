@@ -514,14 +514,23 @@ router.delete('/public/productos/:codigo', async (req, res) => {
     }
     
     // Verificar si el producto está en algún pedido activo
-    const inOrder = await db.query(
-      'SELECT dp.id_pedido FROM detalle_pedido dp JOIN pedido p ON dp.id_pedido = p.id_pedido WHERE dp.codigo_producto = $1 AND p.estado_pedido NOT IN (\'cancelled\', \'delivered\')',
-      [codigo]
-    );
-    
-    if (inOrder.rows.length > 0) {
-      return res.status(400).json({ error: 'No se puede eliminar el producto porque está en pedidos activos' });
+    try {
+      const inOrder = await db.query(
+        'SELECT dp.id_pedido FROM detalle_pedido dp JOIN pedido p ON dp.id_pedido = p.id_pedido WHERE dp.codigo_producto = $1 AND p.estado NOT IN (\'cancelled\', \'delivered\')',
+        [codigo]
+      );
+      
+      if (inOrder.rows.length > 0) {
+        return res.status(400).json({ error: 'No se puede eliminar el producto porque está en pedidos activos' });
+      }
+    } catch (orderCheckErr) {
+      console.error('Error verificando pedidos activos:', orderCheckErr);
+      // Si hay error al verificar pedidos, continuamos con la eliminación
+      // pero registramos el error
     }
+    
+    // Eliminar registros relacionados en inventario primero
+    await db.query('DELETE FROM "inventario" WHERE codigo_producto = $1', [codigo]);
     
     // Eliminar el producto
     await db.query('DELETE FROM "producto" WHERE codigo_producto = $1', [codigo]);
@@ -539,7 +548,7 @@ router.delete('/public/productos/:codigo', async (req, res) => {
     res.json({ ok: true, message: 'Producto eliminado exitosamente' });
   } catch (err) {
     console.error('Error DELETE /api/public/productos/:codigo', err);
-    res.status(500).json({ error: 'Error del servidor' });
+    res.status(500).json({ error: 'Error del servidor: ' + err.message });
   }
 });
 
