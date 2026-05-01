@@ -60,6 +60,41 @@
                 justify-content: center;
             }
         }
+
+        /* Wrapper para scroll horizontal */
+        .table-scroll-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Scrollbar personalizado */
+        .table-scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        
+        .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+        
+        /* Firefox */
+        .table-scroll-wrapper {
+            scrollbar-color: #667eea #f1f1f1;
+            scrollbar-width: thin;
+        }
     </style>
 </head>
 <body class="conexion">
@@ -108,24 +143,26 @@
 
         <div class="audit-table-container">
             <h3>Registro de Auditoría</h3>
-            <table class="audit-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Tabla</th>
-                        <th>Acción</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Detalles</th>
-                    </tr>
-                </thead>
-                <tbody id="auditTableBody">
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 20px;">Cargando datos...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-scroll-wrapper">
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Tabla</th>
+                            <th>Acción</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px;">Cargando datos...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
