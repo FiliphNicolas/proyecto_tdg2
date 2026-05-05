@@ -81,8 +81,14 @@ app.get('/iniciar-sesion.html', (req, res) => {
 });
 
 
-// Servir páginas HTML protegidas
-app.get(['/inicio.html', '/registrar-cuenta.html', '/perfil.html', '/productos.html', '/gestion-inventario.html', '/reporte-inventario.html', '/servicio.html', '/test-sesion-timeout.html'], protectPages, serveProtectedPage);
+// Servir páginas HTML protegidas (nota: inicio.html se sirve sin protección del servidor
+// porque la protección la maneja el frontend con AuthService/localStorage)
+app.get(['/perfil.html', '/productos.html', '/gestion-inventario.html', '/reporte-inventario.html', '/servicio.html', '/test-sesion-timeout.html'], protectPages, serveProtectedPage);
+
+// Páginas que manejan su propia autenticación en el frontend
+app.get('/inicio.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages', 'inicio.html'));
+});
 
 
 // Iniciar servidor

@@ -34,14 +34,6 @@
         <span class="error" id="error-contrasena"></span>
       </div>
       
-      <div class="form-options">
-        <label class="remember-me">
-          <input type="checkbox" id="rememberMe">
-          <span class="checkmark"></span>
-          Recordarme
-        </label>
-      </div>
-      
       <div id="errorConexion" class="error-conexion" style="display: none;"></div>
       
       <div class="boton-cuenta">
@@ -51,7 +43,16 @@
         </button>
       </div>
       
-      <div class="register-link">
+      <div class="form-options" style="justify-content: space-between; margin-top: 10px;">
+        <label class="remember-me">
+          <input type="checkbox" id="rememberMe">
+          <span class="checkmark"></span>
+          Recordarme
+        </label>
+        <a href="olvide-contrasena.html" class="olvidar" style="font-size: 13px;">¿Olvidaste tu contraseña?</a>
+      </div>
+      
+      <div class="register-link" style="margin-top: 20px;">
         <p>¿No tienes cuenta? <a href="registrar-cuenta.html" class="olvidar">Regístrate gratis</a></p>
       </div>
     </form>
@@ -110,7 +111,6 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
 
   const correo = document.getElementById("correo").value.trim();
   const contrasena = document.getElementById("contrasena").value.trim();
-  const rememberMe = document.getElementById('rememberMe').checked;
 
   const errorCorreo = document.getElementById("error-correo");
   const errorContrasena = document.getElementById("error-contrasena");
@@ -145,81 +145,57 @@ document.getElementById("loginForm").addEventListener("submit", function(e) {
     fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo, contrasena, rememberMe }),
-      timeout: 5000
+      body: JSON.stringify({ correo, contrasena })
     })
-    .then(r => {
-      if (!r.ok) throw new Error(`Servidor respondió con error: ${r.status}`);
-      return r.json();
-    })
+    .then(r => r.json())
     .then(data => {
       setLoading(false);
-      errorElement.style.display = 'none';
-      
-      console.log('Respuesta del servidor:', data);
       
       if (data.ok) {
+        // Guardar token en localStorage
         localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userName', data.user.nombre_usuario);
+        localStorage.setItem('userName', data.user?.nombre_usuario || '');
         localStorage.setItem('loginTime', Date.now().toString());
         
-        // Mostrar mensaje de éxito con información de sesiones
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        
-        let successMessage = '¡Inicio de sesión exitoso! Redirigiendo...';
-        if (data.message) {
-          successMessage = data.message + ' Redirigiendo...';
-        }
-        
-        successDiv.textContent = successMessage;
-        successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; white-space: pre-wrap; line-height: 1.6;';
-        document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
-        
-        setTimeout(() => {
-          window.location.href = 'inicio.html';
-        }, 2000);
+        // Redirigir directamente
+        window.location.href = 'inicio.html';
       } else {
-        // Asegurar que el mensaje de error siempre se muestre
-        const errorMessage = data.error || ' Correo o contraseña incorrectos';
-        console.log('Mostrando error:', errorMessage);
-        
-        errorElement.textContent = errorMessage;
+        // Mostrar error
+        errorElement.textContent = data.error || 'Credenciales incorrectas';
         errorElement.style.display = 'block';
-        errorElement.style.background = '#fee';
-        errorElement.style.border = '1px solid #f99';
-        errorElement.style.padding = '12px';
-        errorElement.style.borderRadius = '8px';
-        errorElement.style.marginTop = '15px';
-        errorElement.style.color = '#c00';
-        errorElement.style.fontSize = '13px';
-        errorElement.style.whiteSpace = 'pre-wrap';
-        errorElement.style.lineHeight = '1.6';
-        
-        errorCorreo.textContent = '';
+        errorElement.style.cssText = 'display: block; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin: 15px 0; color: #c00; font-size: 14px; text-align: center;';
       } 
     })
     .catch(err => {
       console.error('Error:', err);
       setLoading(false);
-      
-      let mensaje = ' Error de conexión';
-      if (err.message.includes('Failed to fetch')) {
-        mensaje = ' No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
-      } else if (err.message.includes('timeout')) {
-        mensaje = ' El servidor tardó demasiado en responder. Intenta nuevamente.';
-      } else {
-        mensaje = ' Error de red';
-      }
-      showError(errorElement, mensaje);
-      errorCorreo.textContent = '';
+      errorElement.textContent = 'Error de conexión. Intenta nuevamente.';
+      errorElement.style.display = 'block';
+      errorElement.style.cssText = 'display: block; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin: 15px 0; color: #c00; font-size: 14px; text-align: center;';
     });
-
   }
 });
 
-// Auto-focus en el campo correo al cargar
-window.addEventListener('DOMContentLoaded', () => {
+// Verificar si el usuario ya está autenticado
+function checkAuthAndRedirect() {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    // Si hay token, verificar que sea válido
+    fetch('/api/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(r => {
+      if (r.ok) {
+        window.location.href = 'inicio.html';
+      }
+    })
+    .catch(() => {});
+  }
+}
+
+// Auto-focus en el campo correo
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuthAndRedirect();
   document.getElementById('correo').focus();
 });
 </script>

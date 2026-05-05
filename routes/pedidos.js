@@ -3,6 +3,63 @@ const db = require('../javascript/databasepg');
 
 const router = express.Router();
 
+// GET - Verificar si un cliente ya ha realizado compras
+router.get('/cliente/:id_cliente/historial', async (req, res) => {
+  try {
+    const { id_cliente } = req.params;
+    
+    // Verificar que el cliente exista
+    const clienteResult = await db.query(
+      'SELECT id_cliente, nombre, email FROM cliente WHERE id_cliente = $1',
+      [id_cliente]
+    );
+    
+    if (clienteResult.rows.length === 0) {
+      return res.status(404).json({ 
+        error: 'El cliente no existe',
+        ya_compro: false
+      });
+    }
+    
+    const cliente = clienteResult.rows[0];
+    
+    // Obtener historial de compras del cliente
+    const pedidosResult = await db.query(
+      `SELECT 
+        p.id_pedido,
+        p.fecha_pedido,
+        p.total,
+        p.estado,
+        p.codigo_detalle
+      FROM pedido p
+      WHERE p.id_cliente = $1
+      ORDER BY p.fecha_pedido DESC`,
+      [id_cliente]
+    );
+    
+    const ya_compro = pedidosResult.rows.length > 0;
+    const total_compras = pedidosResult.rows.length;
+    const monto_total = pedidosResult.rows.reduce((sum, p) => sum + parseFloat(p.total), 0);
+    
+    res.json({
+      ok: true,
+      ya_compro,
+      total_compras,
+      monto_total: monto_total.toFixed(2),
+      cliente: {
+        id_cliente: cliente.id_cliente,
+        nombre: cliente.nombre,
+        email: cliente.email
+      },
+      pedidos: pedidosResult.rows
+    });
+    
+  } catch (err) {
+    console.error('Error GET /api/pedidos/cliente/:id_cliente/historial', err);
+    res.status(500).json({ error: 'Error del servidor: ' + err.message });
+  }
+});
+
 // GET - Obtener todos los pedidos
 router.get('/', async (req, res) => {
   try {

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi perfil - Systemsware</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <!-- AuthService para autenticación -->
+    <script src="../javascript/auth-service.js"></script>
+    <!-- AuthGuard para proteger página -->
+    <script src="../javascript/auth-guard.js"></script>
     <style>
         .perfil-photo {
             display: block !important;
@@ -60,17 +64,61 @@
 
     <script src="../javascript/nav-loader.js"></script>
     <script>
-        function cerrarSesion() {
+        async function cerrarSesion() {
             if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                // Limpiar localStorage/sessionStorage
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userName');
-                localStorage.removeItem('userToken');
-                localStorage.removeItem('userInfo');
-                sessionStorage.clear();
-                
-                // Redirigir a login
-                window.location.href = 'iniciar-sesion.html';
+                try {
+                    const token = localStorage.getItem('authToken');
+                    
+                    // Llamar al endpoint de logout del servidor
+                    if (token) {
+                        const response = await fetch('/api/auth/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            console.log('Sesión cerrada exitosamente en el servidor');
+                        } else {
+                            console.log('Error al cerrar sesión en servidor, pero continuando con logout local');
+                        }
+                    }
+                    
+                    // Limpiar localStorage/sessionStorage
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('userInfo');
+                    localStorage.removeItem('loginTime');
+                    sessionStorage.clear();
+                    
+                    // Actualizar navbar antes de redirigir
+                    if (typeof updateNavState === 'function') {
+                        updateNavState();
+                    }
+                    
+                    // Redirigir a login
+                    window.location.href = 'iniciar-sesion.html';
+                } catch (error) {
+                    console.error('Error durante logout:', error);
+                    
+                    // Aun si hay error, limpiar datos locales y redirigir
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('userInfo');
+                    localStorage.removeItem('loginTime');
+                    sessionStorage.clear();
+                    
+                    // Actualizar navbar antes de redirigir
+                    if (typeof updateNavState === 'function') {
+                        updateNavState();
+                    }
+                    
+                    window.location.href = 'iniciar-sesion.html';
+                }
             }
         }
 

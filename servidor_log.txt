@@ -1,0 +1,2240 @@
+[dotenv@17.3.1] injecting env (9) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+ Inicializando servidor con PostgreSQL...
+ Inicializando conexión a base de datos...
+ Database connection successful
+ Database tables verified
+ Base de datos lista y conectada
+ Servidor inicializado correctamente
+ Server running on port 3000
+ Open http://localhost:3000 in your browser
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 9,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 3,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 3, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 2,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 2,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 4,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 2,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: "DELETE FROM user_sessions WHERE expires_at < NOW() OR (is_active = false AND created_at < NOW() - INTERVAL '7 days')",
+  duration: 55,
+  rows: 0
+}
+ Query executed {
+  text: 'SELECT id_usuario, nombre_usuario, contrasena, email, rol, activo FROM "usuario" WHERE email = $1 LIMIT 1',
+  duration: 4,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT COUNT(*) as active_count \n' +
+    '      FROM user_sessions \n' +
+    '      WHERE id_usuario = $1 AND is_active = true AND expires_at > NOW()\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      INSERT INTO user_sessions (id_usuario, token_hash, ip_address, user_agent, expires_at, token_type)\n' +
+    '      VALUES ($1, $2, $3, $4, $5, $6)\n' +
+    '      RETURNING id\n' +
+    '    ',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: 'UPDATE user_sessions \n' +
+    '       SET is_active = false \n' +
+    '       WHERE id IN (\n' +
+    '         SELECT id FROM user_sessions \n' +
+    '         WHERE id_usuario = $1 AND is_active = true \n' +
+    '         ORDER BY created_at ASC \n' +
+    '         LIMIT 1\n' +
+    '       )',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 2,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 4, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 4,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 2,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_sede,\n' +
+    '        nombre,\n' +
+    '        ciudad,\n' +
+    '        direccion,\n' +
+    '        telefono,\n' +
+    '        email,\n' +
+    '        encargado,\n' +
+    '        activo,\n' +
+    '        fecha_creacion\n' +
+    '      FROM sede\n' +
+    '      ORDER BY nombre ASC\n' +
+    '    ',
+  duration: 4,
+  rows: 6
+}
+ Query executed {
+  text: 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, imagen, fecha_creacion, fecha_actualizacion FROM "producto" ORDER BY codigo_producto ASC LIMIT 50 OFFSET 0',
+  duration: 84,
+  rows: 22
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "producto"',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT DISTINCT categoria, COUNT(*) as count FROM "producto" WHERE categoria IS NOT NULL GROUP BY categoria ORDER BY categoria',
+  duration: 2,
+  rows: 12
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 8,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_auditoria,\n' +
+    '        id_usuario,\n' +
+    '        accion,\n' +
+    '        tabla_afectada,\n' +
+    '        detalles as descripcion,\n' +
+    '        fecha_accion\n' +
+    '      FROM auditoria \n' +
+    '      ORDER BY fecha_accion DESC \n' +
+    '      LIMIT 100\n' +
+    '    ',
+  duration: 5,
+  rows: 100
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        COUNT(*) as total_registros,\n' +
+    '        COUNT(DISTINCT id_usuario) as usuarios_unicos,\n' +
+    '        MAX(fecha_accion) as ultimo_registro\n' +
+    '      FROM auditoria\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 73,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_sede,\n' +
+    '        nombre,\n' +
+    '        ciudad,\n' +
+    '        direccion,\n' +
+    '        telefono,\n' +
+    '        email,\n' +
+    '        encargado,\n' +
+    '        activo,\n' +
+    '        fecha_creacion\n' +
+    '      FROM sede\n' +
+    '      ORDER BY nombre ASC\n' +
+    '    ',
+  duration: 76,
+  rows: 6
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        p.id_pedido,\n' +
+    '        p.id_cliente,\n' +
+    '        p.id_usuario,\n' +
+    '        p.id_sede,\n' +
+    '        p.fecha_pedido,\n' +
+    '        p.total,\n' +
+    '        p.estado,\n' +
+    '        p.codigo_detalle\n' +
+    '      FROM pedido p\n' +
+    '      ORDER BY p.fecha_pedido DESC\n' +
+    '    ',
+  duration: 6,
+  rows: 5
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_cliente,\n' +
+    '        nombre,\n' +
+    '        apellido,\n' +
+    '        email,\n' +
+    '        cedula,\n' +
+    '        telefono,\n' +
+    '        direccion,\n' +
+    '        id_sede,\n' +
+    '        fecha_registro\n' +
+    '      FROM cliente\n' +
+    '      ORDER BY id_cliente\n' +
+    '    ',
+  duration: 5,
+  rows: 8
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT id, id_usuario FROM user_sessions WHERE token_hash = $1 AND is_active = true AND expires_at > NOW()',
+  duration: 52,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT id_usuario, nombre_usuario, email, rol, id_sede, activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 4,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 86,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_sede,\n' +
+    '        nombre,\n' +
+    '        ciudad,\n' +
+    '        direccion,\n' +
+    '        telefono,\n' +
+    '        email,\n' +
+    '        encargado,\n' +
+    '        activo,\n' +
+    '        fecha_creacion\n' +
+    '      FROM sede\n' +
+    '      ORDER BY nombre ASC\n' +
+    '    ',
+  duration: 92,
+  rows: 6
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        p.id_pedido,\n' +
+    '        p.id_cliente,\n' +
+    '        p.id_usuario,\n' +
+    '        p.id_sede,\n' +
+    '        p.fecha_pedido,\n' +
+    '        p.total,\n' +
+    '        p.estado,\n' +
+    '        p.codigo_detalle\n' +
+    '      FROM pedido p\n' +
+    '      ORDER BY p.fecha_pedido DESC\n' +
+    '    ',
+  duration: 6,
+  rows: 5
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_cliente,\n' +
+    '        nombre,\n' +
+    '        apellido,\n' +
+    '        email,\n' +
+    '        cedula,\n' +
+    '        telefono,\n' +
+    '        direccion,\n' +
+    '        id_sede,\n' +
+    '        fecha_registro\n' +
+    '      FROM cliente\n' +
+    '      ORDER BY id_cliente\n' +
+    '    ',
+  duration: 12,
+  rows: 8
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 10,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 2,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 5,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 2,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 2,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 0,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 1, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 0, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 78,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 2, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: 'SELECT id, id_usuario FROM user_sessions WHERE token_hash = $1 AND is_active = true AND expires_at > NOW()',
+  duration: 71,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT id_usuario, nombre_usuario, email, rol, id_sede, activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 5,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: "DELETE FROM user_sessions WHERE expires_at < NOW() OR (is_active = false AND created_at < NOW() - INTERVAL '7 days')",
+  duration: 2,
+  rows: 0
+}
+ Query executed {
+  text: 'SELECT id_usuario, nombre_usuario, contrasena, email, rol, activo FROM "usuario" WHERE email = $1 LIMIT 1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: "DELETE FROM user_sessions WHERE expires_at < NOW() OR (is_active = false AND created_at < NOW() - INTERVAL '7 days')",
+  duration: 1,
+  rows: 0
+}
+ Query executed {
+  text: 'SELECT id_usuario, nombre_usuario, contrasena, email, rol, activo FROM "usuario" WHERE email = $1 LIMIT 1',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT COUNT(*) as active_count \n' +
+    '      FROM user_sessions \n' +
+    '      WHERE id_usuario = $1 AND is_active = true AND expires_at > NOW()\n' +
+    '    ',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      INSERT INTO user_sessions (id_usuario, token_hash, ip_address, user_agent, expires_at, token_type)\n' +
+    '      VALUES ($1, $2, $3, $4, $5, $6)\n' +
+    '      RETURNING id\n' +
+    '    ',
+  duration: 4,
+  rows: 1
+}
+ Query executed {
+  text: 'UPDATE user_sessions \n' +
+    '       SET is_active = false \n' +
+    '       WHERE id IN (\n' +
+    '         SELECT id FROM user_sessions \n' +
+    '         WHERE id_usuario = $1 AND is_active = true \n' +
+    '         ORDER BY created_at ASC \n' +
+    '         LIMIT 1\n' +
+    '       )',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 1,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 4, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 3,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 1,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_sede,\n' +
+    '        nombre,\n' +
+    '        ciudad,\n' +
+    '        direccion,\n' +
+    '        telefono,\n' +
+    '        email,\n' +
+    '        encargado,\n' +
+    '        activo,\n' +
+    '        fecha_creacion\n' +
+    '      FROM sede\n' +
+    '      ORDER BY nombre ASC\n' +
+    '    ',
+  duration: 92,
+  rows: 6
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 97,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        p.id_pedido,\n' +
+    '        p.id_cliente,\n' +
+    '        p.id_usuario,\n' +
+    '        p.id_sede,\n' +
+    '        p.fecha_pedido,\n' +
+    '        p.total,\n' +
+    '        p.estado,\n' +
+    '        p.codigo_detalle\n' +
+    '      FROM pedido p\n' +
+    '      ORDER BY p.fecha_pedido DESC\n' +
+    '    ',
+  duration: 5,
+  rows: 5
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_cliente,\n' +
+    '        nombre,\n' +
+    '        apellido,\n' +
+    '        email,\n' +
+    '        cedula,\n' +
+    '        telefono,\n' +
+    '        direccion,\n' +
+    '        id_sede,\n' +
+    '        fecha_registro\n' +
+    '      FROM cliente\n' +
+    '      ORDER BY id_cliente\n' +
+    '    ',
+  duration: 6,
+  rows: 8
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 119,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        id_sede,\n' +
+    '        nombre,\n' +
+    '        ciudad,\n' +
+    '        direccion,\n' +
+    '        telefono,\n' +
+    '        email,\n' +
+    '        encargado,\n' +
+    '        activo,\n' +
+    '        fecha_creacion\n' +
+    '      FROM sede\n' +
+    '      ORDER BY nombre ASC\n' +
+    '    ',
+  duration: 131,
+  rows: 6
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        codigo_producto, \n' +
+    '        nombre, \n' +
+    '        cantidad_stock,\n' +
+    '        precio,\n' +
+    '        categoria\n' +
+    '      FROM producto \n' +
+    '      ORDER BY codigo_producto\n' +
+    '    ',
+  duration: 132,
+  rows: 22
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT \n' +
+    '        i.id_movimiento,\n' +
+    '        i.codigo_producto,\n' +
+    '        p.nombre AS nombre_producto,\n' +
+    '        i.tipo_movimiento,\n' +
+    '        i.cantidad,\n' +
+    '        i.id_sede,\n' +
+    '        i.fecha_movimiento,\n' +
+    '        i.descripcion\n' +
+    '      FROM inventario i\n' +
+    '      LEFT JOIN producto p ON p.codigo_producto = i.codigo_producto\n' +
+    '      ORDER BY i.fecha_movimiento DESC, i.id_movimiento DESC\n' +
+    '      LIMIT 200\n' +
+    '    ',
+  duration: 10,
+  rows: 13
+}
+ Query executed {
+  text: 'SELECT codigo_producto, nombre, descripcion, precio, cantidad_stock, categoria, id_sede, imagen, fecha_creacion, fecha_actualizacion FROM "producto" ORDER BY codigo_producto ASC LIMIT 50 OFFSET 0',
+  duration: 2,
+  rows: 22
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "producto"',
+  duration: 1,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 91,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 91,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT COUNT(*) as total FROM "usuario"',
+  duration: 88,
+  rows: 1
+}
+ Query executed { text: 'SELECT COUNT(*) as total FROM pedido', duration: 2, rows: 1 }
+ Query executed {
+  text: 'SELECT SUM(cantidad_stock) as total FROM producto',
+  duration: 2,
+  rows: 1
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT estado, COUNT(*) as cantidad \n' +
+    '      FROM pedido \n' +
+    '      GROUP BY estado \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 2,
+  rows: 4
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT categoria, COUNT(*) as cantidad, SUM(cantidad_stock) as stock_total\n' +
+    '      FROM producto \n' +
+    '      GROUP BY categoria \n' +
+    '      ORDER BY cantidad DESC\n' +
+    '    ',
+  duration: 0,
+  rows: 12
+}
+ Query executed {
+  text: '\n' +
+    '      SELECT activo, COUNT(*) as cantidad \n' +
+    '      FROM "usuario" \n' +
+    '      GROUP BY activo\n' +
+    '    ',
+  duration: 0,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT id, id_usuario FROM user_sessions WHERE token_hash = $1 AND is_active = true AND expires_at > NOW()',
+  duration: 108,
+  rows: 1
+}
+ Query executed {
+  text: 'SELECT id_usuario, nombre_usuario, email, rol, id_sede, activo FROM "usuario" WHERE id_usuario = $1',
+  duration: 6,
+  rows: 1
+}
+^C

@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrarse - Systemsware</title>
     <link rel="stylesheet" href="../css/styles.css">
+    <!-- Servicios de autenticación -->
+    <script src="../javascript/password-strength.js"></script>
+    <script src="../javascript/auth-service.js"></script>
 </head>
 <body>
   <div class="container-seccion">
@@ -90,6 +93,8 @@
                 <span id="eyeIcon1">👁️‍🗨️</span>
               </button>
             </div>
+            <!-- Indicador de fortaleza de contraseña -->
+            <div id="password-strength-container"></div>
             <span class="error" id="error-contrasena"></span>
           </div>
         </div>
@@ -134,6 +139,31 @@
   </div>
 
 <script>
+// Variable global para el indicador de fortaleza
+let passwordStrengthIndicator = null;
+
+// Inicializar indicador de fortaleza cuando cargue la página
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar el indicador de fortaleza
+  const passwordInput = document.getElementById('contrasena');
+  if (passwordInput && typeof PasswordStrengthIndicator !== 'undefined') {
+    passwordStrengthIndicator = new PasswordStrengthIndicator(passwordInput, {
+      containerClass: 'password-strength-container',
+      showRequirements: true
+    });
+    
+    // Ocultar inicialmente los requisitos
+    const reqList = document.querySelector('.password-requirements');
+    if (reqList) reqList.style.display = 'none';
+  }
+  
+  // Cargar sedes
+  cargarSedes();
+  
+  // Focus en el primer campo
+  document.getElementById('nombre').focus();
+});
+
 // Cargar sedes al abrir la página
 async function cargarSedes() {
   try {
@@ -320,16 +350,16 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     valido = false;
   }
 
-  // Contraseña
+  // Contraseña - Usar validación del indicador de fortaleza
   if (contrasena === "") {
     errores.contrasena.textContent = "La contraseña es obligatoria.";
     valido = false;
-  } else if (contrasena.length < 6) {
-    errores.contrasena.textContent = "La contraseña debe tener al menos 6 caracteres.";
+  } else if (passwordStrengthIndicator && !passwordStrengthIndicator.isValid()) {
+    errores.contrasena.textContent = "La contraseña no cumple con los requisitos de seguridad.";
     valido = false;
-  } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(contrasena)) {
-    errores.contrasena.textContent = "La contraseña debe incluir mayúsculas, minúsculas y números.";
-    valido = false;
+    // Mostrar los requisitos para ayudar al usuario
+    const reqList = document.querySelector('.password-requirements');
+    if (reqList) reqList.style.display = 'block';
   }
 
   // Confirmar contraseña
@@ -345,69 +375,74 @@ document.getElementById("registroForm").addEventListener("submit", function(e) {
     setLoading(true);
     const errorElement = document.getElementById('errorConexion');
 
-    fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        nombre, 
-        correo, 
-        contrasena, 
-        direccion, 
-        numero_cel, 
-        ciudad,
-        rol,
-        id_sede: parseInt(sede)
-      }),
-      timeout: 5000
-    })
-    .then(r => {
-      if (!r.ok) throw new Error(`Servidor respondió con error: ${r.status}`);
-      return r.json();
+    // Usar el AuthService para registro profesional
+    authService.register({
+      nombre: nombre,
+      correo: correo,
+      contrasena: contrasena,
+      direccion: direccion,
+      numero_cel: numero_cel,
+      ciudad: ciudad,
+      rol: rol,
+      id_sede: parseInt(sede)
     })
     .then(data => {
       setLoading(false);
       errorElement.style.display = 'none';
       
-      if (data.ok) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userName', data.user.nombre_usuario);
-        
-        // Mostrar mensaje de éxito
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        successDiv.textContent = '¡Cuenta creada exitosamente! Redirigiendo...';
-        successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
-        document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
-        
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 2000);
-      } else {
-        showError(errorElement, data.error || 'Error al registrar la cuenta');
-      }
+      // Limpiar mensajes anteriores
+      const existingMessages = document.querySelectorAll('.success-message, .error-conexion');
+      existingMessages.forEach(msg => msg.remove());
+      
+      // Mostrar mensaje de éxito
+      const successDiv = document.createElement('div');
+      successDiv.className = 'success-message';
+      successDiv.textContent = '¡Cuenta creada exitosamente! Redirigiendo...';
+      successDiv.style.cssText = 'background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;';
+      document.querySelector('.cuadro-azul').insertBefore(successDiv, document.querySelector('.boton-cuenta'));
+      
+      successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 2000);
     })
     .catch(err => {
-      console.error('Error:', err);
+      console.error('Error de registro:', err);
       setLoading(false);
       
-      let mensaje = ' Error de conexión';
-      if (err.message.includes('Failed to fetch')) {
-        mensaje = 'No se pudo conectar al servidor. Por favor:\n\n1. Abre una terminal\n2. Ejecuta: npm start\n3. Espera a que el servidor inicie en puerto 3000\n\nLuego intenta nuevamente.';
-      } else if (err.message.includes('timeout')) {
-        mensaje = 'El servidor tardó demasiado en responder. Intenta nuevamente.';
-      } else {
-        mensaje = 'Error de red: ' + err.message;
+      // Limpiar mensajes anteriores
+      const existingMessages = document.querySelectorAll('.success-message, .error-conexion');
+      existingMessages.forEach(msg => msg.remove());
+      
+      // Construir mensaje de error
+      let mensaje = err.message || 'Error al registrar la cuenta';
+      
+      // Mensajes amigables para códigos de error conocidos
+      const errorMessages = {
+        'EMAIL_EXISTS': 'Este correo ya está registrado. Usa otro correo o inicia sesión.',
+        'WEAK_PASSWORD': 'La contraseña no es suficientemente segura. Sigue los requisitos indicados.',
+        'MISSING_FIELDS': 'Faltan campos obligatorios. Completa todos los campos.',
+        'INVALID_SEDE': 'La sede seleccionada no es válida.',
+        'SERVER_ERROR': 'Error del servidor. Intenta nuevamente en unos momentos.',
+        'NETWORK_ERROR': 'Error de conexión. Verifica tu internet e intenta nuevamente.',
+        'RATE_LIMITED': 'Demasiados intentos. Espera un momento antes de intentar nuevamente.'
+      };
+      
+      if (err.code && errorMessages[err.code]) {
+        mensaje = errorMessages[err.code];
       }
-      showError(errorElement, mensaje);
+      
+      // Mostrar error
+      errorElement.textContent = mensaje;
+      errorElement.style.display = 'block';
+      errorElement.style.cssText = 'display: block; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin: 15px 0; color: #c00; font-size: 14px; font-weight: 500; text-align: center;';
+      
+      errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
   }
 });
 
-// Auto-focus en el campo nombre al cargar
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('nombre').focus();
-  cargarSedes(); // Cargar sedes dinámicamente
-});
 </script>
 </body>
 </html>

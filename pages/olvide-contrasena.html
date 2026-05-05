@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es" class="cuenta-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - Systemsware</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <!-- AuthService para manejo profesional -->
+    <script src="../javascript/auth-service.js"></script>
+</head>
+<body>
+  <div class="container-seccion">
+    <div class="titulo">
+      <h1>Systemsware: Sistema de gestión de inventario</h1>
+    </div>
+    <form class="cuadro-azul" id="forgotPasswordForm">
+      <div class="login-header">
+        <h2 class="subtitulo">Recuperar Contraseña</h2>
+        <p class="descripcion">Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.</p>
+      </div>
+      
+      <div class="barra">
+        <label class="etiqueta" for="correo">Correo electrónico</label>
+        <input type="email" id="correo" placeholder="correo@ejemplo.com" required autocomplete="email">
+        <span class="error" id="error-correo"></span>
+      </div>
+      
+      <div id="successMessage" class="success-message" style="display: none;">
+        <p>Si el correo existe en nuestra base de datos, recibirás instrucciones para recuperar tu contraseña.</p>
+        <p style="margin-top: 10px; font-size: 13px;">Revisa tu bandeja de entrada y carpetas de spam.</p>
+      </div>
+      
+      <div id="devInfo" class="dev-info" style="display: none;">
+        <p><strong>Modo Desarrollo:</strong></p>
+        <p id="devLink" style="word-break: break-all; margin-top: 5px;"></p>
+        <p style="margin-top: 5px; font-size: 12px;">El link expira en 1 hora.</p>
+      </div>
+      
+      <div id="errorConexion" class="error-conexion" style="display: none;"></div>
+      
+      <div class="boton-cuenta">
+        <button type="submit" id="submitButton">
+          <span class="button-text">Enviar instrucciones</span>
+          <span class="button-loader" style="display: none;">⏳</span>
+        </button>
+      </div>
+      
+      <div class="register-link">
+        <p><a href="iniciar-sesion.html" class="olvidar">← Volver al inicio de sesión</a></p>
+      </div>
+    </form>
+  </div>
+
+<script>
+function setLoading(loading) {
+  const button = document.getElementById('submitButton');
+  const buttonText = button.querySelector('.button-text');
+  const buttonLoader = button.querySelector('.button-loader');
+  
+  if (loading) {
+    button.disabled = true;
+    buttonText.style.display = 'none';
+    buttonLoader.style.display = 'inline';
+  } else {
+    button.disabled = false;
+    buttonText.style.display = 'inline';
+    buttonLoader.style.display = 'none';
+  }
+}
+
+document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const correo = document.getElementById('correo').value.trim();
+  const errorCorreo = document.getElementById('error-correo');
+  const errorConexion = document.getElementById('errorConexion');
+  const successMessage = document.getElementById('successMessage');
+  const devInfo = document.getElementById('devInfo');
+  
+  // Limpiar errores previos
+  errorCorreo.textContent = '';
+  errorConexion.style.display = 'none';
+  
+  // Validar email
+  const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!correo) {
+    errorCorreo.textContent = 'El correo es obligatorio.';
+    return;
+  }
+  if (!regexCorreo.test(correo)) {
+    errorCorreo.textContent = 'Por favor, ingresa un correo válido.';
+    return;
+  }
+  
+  setLoading(true);
+  
+  try {
+    const response = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok && data.ok) {
+      // Mostrar mensaje de éxito
+      successMessage.style.cssText = 'display: block; background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center; font-size: 14px;';
+      document.getElementById('correo').disabled = true;
+      
+      // En desarrollo, mostrar el link
+      if (data.devInfo && data.devInfo.resetLink) {
+        devInfo.style.cssText = 'display: block; background: #e7f3ff; border: 1px solid #2196F3; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 13px;';
+        document.getElementById('devLink').innerHTML = `<a href="${data.devInfo.resetLink}" style="color: #1976D2; text-decoration: underline;">${data.devInfo.resetLink}</a>`;
+      }
+      
+      // Cambiar texto del botón
+      document.querySelector('.button-text').textContent = 'Enviado';
+    } else {
+      throw new Error(data.error || 'Error al procesar la solicitud');
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    errorConexion.textContent = err.message || 'Error de conexión. Intenta nuevamente.';
+    errorConexion.style.cssText = 'display: block; background: #fee; border: 1px solid #f99; padding: 12px; border-radius: 8px; margin: 15px 0; color: #c00; font-size: 14px; text-align: center;';
+  } finally {
+    setLoading(false);
+  }
+});
+
+// Focus en el campo correo
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('correo').focus();
+});
+</script>
+
+<style>
+.dev-info {
+  font-family: monospace;
+}
+.dev-info strong {
+  color: #1976D2;
+}
+</style>
+
+</body>
+</html>
