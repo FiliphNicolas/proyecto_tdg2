@@ -1,16 +1,35 @@
 const { Pool } = require('pg');
 
 // Configuración de la conexión a PostgreSQL
-const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'systemsware',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '1234',
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+// Soporta tanto DATABASE_URL (Render, Railway, etc.) como variables separadas (local)
+let poolConfig;
+
+if (process.env.DATABASE_URL) {
+  // Usar DATABASE_URL para servicios cloud (Render, Railway, Heroku, etc.)
+  poolConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000, // Aumentado para conexiones cloud
+  };
+  console.log('Usando DATABASE_URL para conexión a PostgreSQL');
+} else {
+  // Usar variables separadas para desarrollo local
+  poolConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    database: process.env.DB_NAME || 'systemsware',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '1234',
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  };
+  console.log('Usando configuración local de PostgreSQL');
+}
+
+const pool = new Pool(poolConfig);
 
 // Manejo de errores del pool
 pool.on('error', (err) => {
